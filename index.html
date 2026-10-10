@@ -688,6 +688,16 @@ function load() {
 }
 let S = load();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+/* Statistik tanpa identitas (GoatCounter). Tidak melakukan apa pun bila skripnya tidak dimuat (mis. saat main lokal). */
+const _trkAt = {};   /* nama yang sama tidak dikirim lagi dalam 5 detik (mis. menekan tembak berulang saat peluru habis) */
+function track(name, title) { try { const nw = Date.now(); if (_trkAt[name] && nw - _trkAt[name] < 5000) return; _trkAt[name] = nw; if (window.goatcounter && typeof window.goatcounter.count === 'function') window.goatcounter.count({ path: String(name).replace(/^\/+/, ''), title: title || name, event: true }); } catch (e) {} }
+/* Galat JavaScript: dihitung agar kelihatan bila ada HP/peramban yang bermasalah. Paling banyak 3 laporan per kunjungan, tanpa data pribadi. */
+let _errN = 0;
+function trackError(msg, where) { if (_errN >= 3) return; _errN++; track('galat-js', ('Galat JS: ' + String(msg || '?').slice(0, 80) + (where ? ' @' + String(where).split('/').pop().slice(0, 24) : ''))); }
+try {
+  window.addEventListener('error', ev => trackError(ev && ev.message, ev && ev.lineno != null ? 'baris ' + ev.lineno : ''));
+  window.addEventListener('unhandledrejection', ev => trackError(ev && ev.reason && (ev.reason.message || ev.reason), 'janji'));
+} catch (e) {}
 
 let view = 'home', G = null;
 const TITLE = { on: false, started: false, modal: null };   /* menu depan: lihat title.js */
@@ -895,8 +905,6 @@ const ammoOf = k => gunSt().ammo[k] || 0;
 function refreshAmmoUI() { const g = gunSt(), a = document.getElementById('ammo'); if (a) a.textContent = ammoOf(curWeapon() && g.cur); const w = document.getElementById('wpnbtn'); if (w) { const ic = w.querySelector('.actic'); if (ic) ic.innerHTML = wico(g.cur, 44); } }
 function giveAmmo(n, k) { const g = gunSt(); curWeapon(); const key = k || g.cur; g.ammo[key] = Math.min(40, (g.ammo[key] || 0) + n); save(); refreshAmmoUI(); return n; }
 const weaponsHTML = () => { const g = gunSt(); curWeapon(); return `<h4 style="margin:14px 0 6px">Senjata dan peluru</h4><div class="wlist">${Object.keys(WEAPONS).map(k => { const w = WEAPONS[k], un = wUnlocked(k), on = g.cur === k; return `<div class="wrow${on ? ' on' : ''}${un ? '' : ' lock'}"><span class="we">${un ? wico(k, 56) : '🔒'}</span><div class="wi"><b>${w.n}</b><small>${un ? w.d + ' Peluru: ' + ammoOf(k) : 'Terkunci: selesaikan misi terakhir ' + (w.ai >= 0 ? AREAS[w.ai].name : '')}</small></div>${un ? `<button class="btn sm ${on ? '' : 'ghost'}" data-a="equip" data-w="${k}">${on ? 'Dipakai' : 'Pakai'}</button>` : ''}</div>`; }).join('')}</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-a="buyammo">Beli ${WEAPONS[g.cur].pack} peluru (${AMMO_COST} 💎)</button><button class="btn sm mint" data-a="ammoquiz">Isi ulang: 3 soal untuk 6 peluru</button></div><p class="note">Peluru didapat dari jawaban benar di duel (combo memberi bonus), penembak yang kalah, bonus harian, kuis isi ulang, atau berlian. Senjata Pemula juga mengisi energi sendiri sampai 5 peluru.</p>`; };
-/* statistik anonim: hanya bekerja bila skrip GoatCounter terpasang di halaman (tanpa cookie, tanpa identitas); selain itu tidak melakukan apa-apa */
-function track(name, title) { try { if (window.goatcounter && typeof window.goatcounter.count === 'function') window.goatcounter.count({ path: String(name).replace(/^\/+/, ''), title: title || name, event: true }); } catch (e) {} }
 let tt;
 function toast(m) {
   let el = $('#toast');
@@ -1325,6 +1333,7 @@ const A = {
   },
   qtimeout() {   /* waktu habis: dihitung salah, monster menyerang */
     if (!G || G.res) return;
+    track('waktu-habis', 'Waktu soal habis: ' + G.m);
     if (G.m === 'quiz') { const q = G.q; if (!q || q.pick != null) return; q.pick = -1; q.late = true; G.combo = 0; missOnce(q.i); sfx.no(); record(q.i, false, 0); setTimeout(() => say(WORDS[q.i][1]), 250); render(); qScene(false); }
     else if (G.m === 'type') { const tt = G.t; if (!tt || tt.done) return; tt.late = true; typeFinish(false); }
     else if (G.m === 'match') { G.timedOut = true; G.sec = (Date.now() - G.t0) / 1000 | 0; G.ids.forEach(i => { if (!G.done.has(i)) missOnce(i); }); clearTimer(); finish(); }
@@ -1590,7 +1599,7 @@ function makeEngine(cfg) {
   E.shoot = () => {   /* tombol tembak: bidik otomatis ke penembak terdekat dalam jangkauan; tanpa sasaran, ke arah jalan terakhir; memakai satu peluru */
     if (!wordMode() || !gunOwned() || A_.enc || A_.dlg != null || A_.panel || E.shootCd > 0) return false;
     const w = curWeapon(), g = gunSt();
-    if (ammoOf(g.cur) <= 0) { E.shootCd = .5; cfg.toast('Peluru habis! Jawab soal di duel, atau isi ulang lewat kuis di Tas.'); sfx.no(); return true; }
+    if (ammoOf(g.cur) <= 0) { E.shootCd = .5; track('peluru-habis', 'Peluru habis saat menembak'); cfg.toast('Peluru habis! Jawab soal di duel, atau isi ulang lewat kuis di Tas.'); sfx.no(); return true; }
     const me = [A_.px, A_.py - 20], pts = []; let tp = null, bd = 340;
     E.shooters.forEach(s => { if (!s.dead && !s.gone) pts.push([s.x, s.y - 26]); });
     E.mons.forEach(m => { if (!m.dead && !m.gone && !m.engaged) pts.push([m.x, m.y - 26 * (m.sc || 1)]); });   /* monster kata dan bos juga jadi sasaran: ditembak berarti ditantang */
@@ -1676,7 +1685,8 @@ function makeEngine(cfg) {
   }
   function afterHit(e) { if (e.mh <= 0) { if (e.phases && e.ph < e.phases - 1) { e.phaseEnd = true; e.phase = 'reveal'; } else winDuel(e); } else e.phase = 'reveal'; }
   function startEnc(m, o) {
-    o = o || {}; const hp = o.phases ? (o.per || 10) : (m.words && m.words.length ? m.words.length : (o.hp || m.kind.hp || TUNE.monHp));
+    o = o || {}; if (o.phases && m && m.kind && AREAS[m.kind.area]) track('bos-dimulai-' + AREAS[m.kind.area].id, 'Bos dimulai: ' + AREAS[m.kind.area].id);
+    const hp = o.phases ? (o.per || 10) : (m.words && m.words.length ? m.words.length : (o.hp || m.kind.hp || TUNE.monHp));
     A_.enc = { m, o, bpos: (o.phases && cfg.boss) ? cfg.boss() : null, mh: hp, mmax: hp, onWin: o.onWin || null, carry: !!(m.words && m.words.length && !o.phases), phases: o.phases || 0, per: o.per || 10, ph: 0, streak: 0, hard: false, slime: !o.phases && !!o.slime, grow: o.phases ? 0 : (o.grow || 0), grown: 0, close: !o.phases && !!o.close, round: 0, rewind: !o.phases && !!o.rewind, fresh: 0, shield: has('perisai'), whistle: has('peluit'), glass: has('jam') };
     applyPhase(A_.enc); newRound(A_.enc); A_.keys.clear(); A_.tx = null; A_.cb = null; cfg.rerender();
   }
@@ -1765,7 +1775,7 @@ function makeEngine(cfg) {
     },
     buyheart() { const s = st(); if (s.hp >= s.maxhp || s.gems < TUNE.costHeart) return; s.gems -= TUNE.costHeart; s.hp++; cfg.save(); E.refreshHud(); cfg.rerender(); },
     buyfull() { const s = st(); if (s.hp >= s.maxhp || s.gems < TUNE.costFull) return; s.gems -= TUNE.costFull; s.hp = s.maxhp; cfg.save(); E.refreshHud(); cfg.rerender(); },
-    setdiff(el) { st().diff = el.dataset.v; cfg.save(); E.spawn(); cfg.rebuild(); }
+    setdiff(el) { st().diff = el.dataset.v; track('tingkat-' + el.dataset.v, 'Tingkat dipilih: ' + el.dataset.v); cfg.save(); E.spawn(); cfg.rebuild(); }
   };
   E.encHTML = () => {
     const e = A_.enc, q = e.q, k = e.m.kind, s = st(), ph = e.phase;
@@ -2012,9 +2022,9 @@ function autoFs() {
   };
   ['pointerup', 'touchend', 'click'].forEach(t => document.addEventListener(t, go, true));
 }
+const privacyHTML = () => `<h4 style="margin:16px 0 8px">Privasi</h4><p class="note">Kemajuanmu hanya tersimpan di perangkat ini, tidak dikirim ke server mana pun. Bila halaman memakai statistik, yang dihitung hanya jumlah kunjungan, kejadian umum (misalnya cerita pembuka selesai, area selamat, atau galat teknis), dan data gabungan yang kasar: perkiraan negara, jenis peramban, sistem, dan ukuran layar. Tanpa nama, tanpa cookie, tanpa identitas, dan alamat IP tidak disimpan.</p>`;
 const fsPanelHTML = s => `<h4 style="margin:16px 0 8px">Layar penuh</h4><div class="actions" style="margin-top:0"><button class="btn sm" data-a="fsenter">Masuk layar penuh</button><button class="btn sm ghost" data-a="fsexit">Keluar (mode Manual)</button></div><div class="actions" style="margin-top:8px">${[['1', 'Otomatis (HP dan tablet)'], ['0', 'Manual']].map(([k, l]) => `<button class="btn sm ${((s.autofs !== false) ? '1' : '0') === k ? '' : 'ghost'}" data-a="setautofs" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Mode Otomatis: game masuk layar penuh pada sentuhan pertama, dan masuk lagi pada sentuhan berikutnya setelah kamu keluar (misalnya dengan tombol Back). Untuk berhenti, tekan Keluar atau pilih Manual. iPhone tidak mendukung layar penuh di browser: pakai Bagikan, lalu Tambah ke Layar Utama.</p>`;
 const fxPanelHTML = s => `<h4 style="margin:16px 0 8px">Efek visual dan getaran</h4><div class="actions" style="margin-top:0">${[['full', 'Penuh'], ['lite', 'Hemat'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${fxMode() === k ? '' : 'ghost'}" data-a="setfx" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Penuh: ledakan, getaran layar, kilatan, dan getaran HP. Hemat: efek lebih sedikit dan tanpa getaran layar (dipakai otomatis bila perangkat meminta gerakan dikurangi). Mati: tanpa efek dan tanpa getaran HP. Suara diatur terpisah.</p>`;
-const privacyHTML = () => `<h4 style="margin:16px 0 8px">Privasi</h4><p class="note">Kemajuanmu hanya tersimpan di perangkat ini, tidak dikirim ke server mana pun. Bila halaman memakai statistik, yang dihitung hanya jumlah kunjungan dan kejadian umum (misalnya cerita pembuka selesai atau area selamat), tanpa nama, tanpa cookie, dan tanpa identitas.</p>`;
 const storyReplayHTML = () => `<h4 style="margin:16px 0 8px">Cerita pembuka</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="replayintro">▶ Putar ulang cerita pembuka</button><button class="btn sm ghost" data-a="helpplay">🦉 Bantuan cara bermain</button></div>`;
 const qtPanelHTML = s => `<h4 style="margin:16px 0 8px">Waktu per soal</h4><div class="actions" style="margin-top:0">${[['on', 'Nyala'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${(s.qtimer === 'off' ? 'off' : 'on') === k ? '' : 'ghost'}" data-a="setqt" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Nyala: tiap soal punya batas waktu dan monster berjalan mendekat. Santai 20 detik, Petualang 12, Pendekar 8 (Jago Ejaan 1,5 kali lebih lama). Pasang Kartu memakai satu waktu untuk seluruh papan: 180, 120, atau 90 detik. Kartu Kilat tanpa waktu. Waktu habis dihitung salah, tanpa mengurangi nyawa. Mati: tanpa batas waktu.</p>`;
 const ctrlPanelHTML = s => `<h4 style="margin:16px 0 8px">Kontrol di layar</h4><div class="actions" style="margin-top:0">${[['joystick', 'Joystick'], ['dpad', 'Tombol arah'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${(s.ctrl || 'joystick') === k ? '' : 'ghost'}" data-a="setctrl" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Joystick: tahan atau geser jarimu di peta, dan joystick muncul tepat di titik sentuhan. Geser pelan berarti jalan pelan, angkat jari untuk menyembunyikannya. Ketukan singkat tetap berjalan ke titik yang diketuk. Tombol 💬 muncul di kiri bawah saat ada yang bisa diajak bicara.</p>`;
@@ -3258,7 +3268,7 @@ Object.assign(A, {
   portalch() { ADV.dlg = null; start('quiz', 'all', 15, 'portal'); },
   panel(el) {
     if (ADV.enc) return;
-    ADV.panel = el.dataset.p; ADV.keys.clear(); ADV.tx = null; ADV.cb = null;
+    ADV.panel = el.dataset.p; track('menu-' + el.dataset.p, 'Menu dibuka: ' + el.dataset.p); ADV.keys.clear(); ADV.tx = null; ADV.cb = null;
     if (ADV.panel === 'msg') { S.adv.msgDay = dstr(); save(); }
     renderOverlay();
   },
@@ -3323,6 +3333,7 @@ function travel(dest) {
   t.innerHTML = `<div><div class="tv-ring"></div><p>${msg}</p></div>`;
   t.classList.add('show'); ADV.keys.clear(); ADV.dlg = null; ADV.panel = null;
   setTimeout(() => {
+    { const ia = AREA_MAPID.indexOf(to); if (ia >= 0) track('area-masuk-' + AREAS[ia].id, 'Masuk area: ' + AREAS[ia].id); }
     S.map = to === 'ielts' ? 'akademi' : to; if (to === 'ielts') S.adv.castle = (S.adv.castle || 0) + 1; save();
     if (to === 'ielts') showExam();
     else if (cur === 'ielts') showHoot();
@@ -4356,7 +4367,7 @@ const PM = {
 
 
 if (INNER_MAPS.includes(S.map)) enterMapPos(S.map, 'hutan');   /* dibuka kembali di gua: mulai dari pintu masuk */
-if (window.__DG_TEST) window.__DG = { rpgHelp, RPG_LILA, RPG_RAJA, RPG_HINT, RPG_HELP, gunOwned, rpgIntro, rpg: RPG, rpgSt, RPG_TXT, qt: () => (G && G.qt) || null, G: () => G, wcell: WCELL, heroGrip: () => HERO_GRIP, gun: { st: gunSt, WEAPONS, unlocked: unlockedList, give: giveAmmo, ammoOf, cur: curWeapon }, startMode: m => start(m, 'all', 0, null), showResult: r => { G = r; view = 'result'; render(); }, frameNow: ts => frame(ts), solids: () => CM().SOLID, inMain: () => CM().E.inMain, areaWordIds, doorWords, ensureDeal, monstersLeft, bossInfo, fx: { burst: fxBurst, explode: fxExplode, count: () => FX.parts.length, mode: fxMode }, sfx, shooterQuota, shotState: ai => { S.shot = S.shot || {}; return S.shot[AREAS[ai].id] || (S.shot[AREAS[ai].id] = { killed: 0, gems: 0 }); }, bossHere: () => AREA_BY_MAP[S.map] != null ? bossInfo(AREA_BY_MAP[S.map]) : null, areaProgressText, missionDone, record, areaStats, AREAS, MAST_B, G: () => G, S: () => S, A: () => ADV, vil: () => vil(), eng: () => ({ 0: DE, 1: ME, 2: SE, 3: KE, 4: WE, 5: GE }) };   /* pintu uji: hanya aktif bila uji menyalakannya */
+if (window.__DG_TEST) window.__DG = { travel, CM, rpgHelp, RPG_LILA, RPG_RAJA, RPG_HINT, RPG_HELP, gunOwned, rpgIntro, rpg: RPG, rpgSt, RPG_TXT, qt: () => (G && G.qt) || null, G: () => G, wcell: WCELL, heroGrip: () => HERO_GRIP, gun: { st: gunSt, WEAPONS, unlocked: unlockedList, give: giveAmmo, ammoOf, cur: curWeapon }, startMode: m => start(m, 'all', 0, null), showResult: r => { G = r; view = 'result'; render(); }, frameNow: ts => frame(ts), solids: () => CM().SOLID, inMain: () => CM().E.inMain, areaWordIds, doorWords, ensureDeal, monstersLeft, bossInfo, fx: { burst: fxBurst, explode: fxExplode, count: () => FX.parts.length, mode: fxMode }, sfx, shooterQuota, shotState: ai => { S.shot = S.shot || {}; return S.shot[AREAS[ai].id] || (S.shot[AREAS[ai].id] = { killed: 0, gems: 0 }); }, bossHere: () => AREA_BY_MAP[S.map] != null ? bossInfo(AREA_BY_MAP[S.map]) : null, areaProgressText, missionDone, record, areaStats, AREAS, MAST_B, G: () => G, S: () => S, A: () => ADV, vil: () => vil(), eng: () => ({ 0: DE, 1: ME, 2: SE, 3: KE, 4: WE, 5: GE }) };   /* pintu uji: hanya aktif bila uji menyalakannya */
 lockdown(); autoFs(); syncKb(); window.addEventListener('resize', syncKb);
 TITLE.init();
 })();
