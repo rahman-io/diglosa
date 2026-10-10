@@ -403,8 +403,8 @@ html[data-skin="petualangan"] .rpg-en{font-size:.98rem;min-height:2.6em}
 html[data-skin="petualangan"] .rpg-id{font-size:.85rem;margin-top:3px}
 html[data-skin="petualangan"] .rpgname{padding:3px 14px;font-size:1rem}
 html[data-skin="petualangan"] .rpgacts{margin-top:6px}}
-html[data-skin="petualangan"] .mist{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity 2.4s ease;background:radial-gradient(ellipse at 50% 55%,rgba(var(--tint),.16) 0%,rgba(var(--tint),.38) 58%,rgba(8,6,22,.70) 100%);backdrop-filter:saturate(.62) brightness(.84);-webkit-backdrop-filter:saturate(.62) brightness(.84)}
-html[data-skin="petualangan"] .mist .mf{position:absolute;width:70%;height:55%;border-radius:50%;background:radial-gradient(closest-side,rgba(235,238,255,.46),rgba(235,238,255,0));filter:blur(16px);animation:mistdrift 22s ease-in-out infinite alternate}
+html[data-skin="petualangan"] .mist{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity 2.4s ease;background:radial-gradient(ellipse at 50% 55%,rgba(var(--tint),.16) 0%,rgba(var(--tint),.38) 58%,rgba(8,6,22,.70) 100%),rgba(26,24,44,.16)}
+html[data-skin="petualangan"] .mist .mf{position:absolute;width:70%;height:55%;border-radius:50%;background:radial-gradient(closest-side,rgba(235,238,255,.46),rgba(235,238,255,0));will-change:transform;animation:mistdrift 22s ease-in-out infinite alternate}
 html[data-skin="petualangan"] .mist .mf.a{left:-15%;top:12%}
 html[data-skin="petualangan"] .mist .mf.b{left:45%;top:48%;animation-duration:28s;animation-delay:-9s}
 html[data-skin="petualangan"] .mist .mf.c{left:10%;top:62%;width:90%;animation-duration:34s;animation-delay:-16s}
@@ -412,7 +412,7 @@ html[data-skin="petualangan"] .mist .mf.c{left:10%;top:62%;width:90%;animation-d
 html[data-skin="petualangan"] .mist.lift{opacity:0}
 html[data-skin="petualangan"] .mist.lift::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,244,190,.6),rgba(255,244,190,0) 70%);animation:mistflash 1.8s ease-out forwards}
 @keyframes mistflash{from{opacity:1}to{opacity:0}}
-html[data-skin="petualangan"] .mist.fx-lite .mf{animation:none}
+html[data-skin="petualangan"] .mist.fx-lite .mf{animation:none;will-change:auto}
 html[data-skin="petualangan"] .mist.fx-off .mf{display:none}
 html[data-skin="petualangan"] .mist.fx-off{background:rgba(var(--tint),.12)}
 @media (prefers-reduced-motion:reduce){html[data-skin="petualangan"] .mist .mf{animation:none}}
@@ -691,6 +691,25 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 /* Statistik tanpa identitas (GoatCounter). Tidak melakukan apa pun bila skripnya tidak dimuat (mis. saat main lokal). */
 const _trkAt = {};   /* nama yang sama tidak dikirim lagi dalam 5 detik (mis. menekan tembak berulang saat peluru habis) */
 function track(name, title) { try { const nw = Date.now(); if (_trkAt[name] && nw - _trkAt[name] < 5000) return; _trkAt[name] = nw; if (window.goatcounter && typeof window.goatcounter.count === 'function') window.goatcounter.count({ path: String(name).replace(/^\/+/, ''), title: title || name, event: true }); } catch (e) {} }
+/* Diagnosa kinerja: tidak aktif kecuali alamatnya memakai ?tes=... (pisahkan dengan koma): fps, tanpakabut, tanpaanim, tanpabayangan, semua.
+   Menampilkan FPS di layar dan mematikan satu per satu hal yang dicurigai berat di HP. Tidak mengubah simpanan dan tidak dikirim ke statistik. */
+(function () {
+  try {
+    const q = new URLSearchParams(location.search).get('tes'); if (!q) return;
+    const T = new Set(q.split(',').map(s => s.trim()).filter(Boolean)); if (T.has('semua')) ['tanpakabut', 'tanpaanim', 'tanpabayangan'].forEach(x => T.add(x));
+    const css = [];
+    if (T.has('tanpakabut')) css.push('.mist{display:none!important}');
+    if (T.has('tanpaanim')) css.push('*,*::before,*::after{animation:none!important;transition:none!important}');
+    if (T.has('tanpabayangan')) css.push('*{filter:none!important;-webkit-filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}');
+    if (css.length) { const st = document.createElement('style'); st.id = 'tes-css'; st.textContent = css.join(''); document.head.appendChild(st); }
+    const box = document.createElement('div'); box.id = 'tes-fps';
+    box.style.cssText = 'position:fixed;left:50%;top:2px;transform:translateX(-50%);z-index:99999;background:rgba(0,0,0,.75);color:#9dff9d;font:700 12px/1.3 monospace;padding:3px 8px;border-radius:8px;pointer-events:none;white-space:nowrap';
+    box.textContent = 'FPS ... | ' + [...T].join('+'); (document.body || document.documentElement).appendChild(box);
+    let t0 = performance.now(), last = t0, n = 0, worst = 0;
+    const tick = now => { n++; worst = Math.max(worst, now - last); last = now; if (now - t0 >= 1000) { box.textContent = 'FPS ' + Math.round(n * 1000 / (now - t0)) + ' | terburuk ' + Math.round(worst) + 'ms | ' + [...T].join('+'); t0 = now; n = 0; worst = 0; } requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  } catch (e) {}
+})();
 /* Galat JavaScript: dihitung agar kelihatan bila ada HP/peramban yang bermasalah. Paling banyak 3 laporan per kunjungan, tanpa data pribadi. */
 let _errN = 0;
 function trackError(msg, where) { if (_errN >= 3) return; _errN++; track('galat-js', ('Galat JS: ' + String(msg || '?').slice(0, 80) + (where ? ' @' + String(where).split('/').pop().slice(0, 24) : ''))); }
