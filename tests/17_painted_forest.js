@@ -5,7 +5,7 @@ const obst=[...html.match(/const OBST = \[([\s\S]*?)\n\];/)[1].matchAll(/\[(\d+)
 const [x0,x1,y0,y1]=html.match(/const FB = \{ x0: (\d+), x1: (\d+), y0: (\d+), y1: (\d+) \}/).slice(1).map(Number);
 const inObst=(x,y,pad=0)=>obst.find(o=>Math.hypot(x-o[0],y-o[1])<o[2]+pad);
 const FOREST=html.slice(0,html.indexOf('/* ---------- dunia dalam: Gua Portal'));   // the cave and the castle maps live later in the same file
-const gos=[...FOREST.matchAll(/npc: \{ n: '([^']+)', e: '[^']+', x: (\d+), y: (\d+) \}, go: \[(\d+), (\d+)\]/g)].map(m=>({n:m[1],x:+m[2],y:+m[3],gx:+m[4],gy:+m[5]})).filter(g=>g.n!=='Portal Ungu');
+const gos=[...FOREST.matchAll(/npc: \{ n: '([^']+)', e: '[^']+',(?: spr: '[^']+',)? x: (\d+), y: (\d+) \}, go: \[(\d+), (\d+)\]/g)].map(m=>({n:m[1],x:+m[2],y:+m[3],gx:+m[4],gy:+m[5]})).filter(g=>g.n!=='Portal Ungu');
 (async()=>{
  // the art
  const b64=(html.match(/const FOREST_IMG = '<image href="data:image\/webp;base64,([A-Za-z0-9+\/=]+)"/)||[])[1]; must(b64&&b64.length>100000,'painted background is embedded'); const head=Buffer.from(b64||'','base64').slice(0,12).toString('latin1'); must(/^RIFF.{4}WEBP$/s.test(head),'it is a real WebP image');

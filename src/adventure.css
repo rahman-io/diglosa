@@ -124,6 +124,31 @@ select.inp{font-size:1rem;padding:10px 14px}
 .npc{cursor:pointer}
 .npc .em{animation:advidle 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
 .mk{animation:advfloat 1.3s ease-in-out infinite}
+/* tokoh penjaga beranimasi (sprite dari src/npc): bernapas, berkedip, minta tolong berkala, senang saat didekati */
+.nsp .gh,.nsp .gp,.nsp .nbl,.nsp .nbub{opacity:0}
+.nsp .nbr{transform-box:fill-box;transform-origin:50% 100%;animation:nBreathe 3.8s ease-in-out infinite;animation-delay:var(--nd,0s)}
+.nsp .nbl{animation:nBlink 6.3s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .gi{animation:nIdleF 11s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .gh{animation:nHelpF 11s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .nbob{animation:nHop 11s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .nbub{transform-box:fill-box;transform-origin:0 100%;animation:nBub 11s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .gi{animation:nIdleF 9s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .gp{animation:nHelpF 9s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .nbob{animation:nHopDone 9s linear infinite;animation-delay:var(--nd,0s)}
+.npc.near .nsp .gi,.npc.near .nsp .gh,.npc.near .nsp .nbub{animation:none;opacity:0}
+.npc.near .nsp .gp{animation:none;opacity:1}
+.npc.near .nsp .nbob{animation:nHopNear 1.2s ease-in-out infinite}
+@keyframes nBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.99,1.02)}}
+@keyframes nBlink{0%,41.9%{opacity:0}42%,44.5%{opacity:1}44.6%,81.9%{opacity:0}82%,84.5%{opacity:1}84.6%,100%{opacity:0}}
+@keyframes nIdleF{0%,77.9%{opacity:1}78%,92%{opacity:0}92.1%,100%{opacity:1}}
+@keyframes nHelpF{0%,77.9%{opacity:0}78%,92%{opacity:1}92.1%,100%{opacity:0}}
+@keyframes nHop{0%,77.9%{transform:translateY(0)}80%{transform:translateY(-11px)}82%{transform:translateY(0)}84%{transform:translateY(-11px)}86%{transform:translateY(0)}88%{transform:translateY(-7px)}90%,100%{transform:translateY(0)}}
+@keyframes nHopDone{0%,77.9%{transform:translateY(0)}83%{transform:translateY(-8px)}88%,100%{transform:translateY(0)}}
+@keyframes nHopNear{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px)}62%{transform:translateY(0)}}
+@keyframes nBub{0%,77%{opacity:0;transform:scale(.55)}80%{opacity:1;transform:scale(1.1)}82%,91%{opacity:1;transform:scale(1)}93%,100%{opacity:0;transform:scale(.8)}}
+.nsp.fx-lite .nbob,.nsp.fx-lite .nbr{animation:none}
+.nsp.fx-off *{animation:none!important}
+@media (prefers-reduced-motion:reduce){.nsp *{animation:none!important}}
 .portal{animation:advglow 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .hudL{position:absolute;left:2cqw;top:2cqw;display:grid;gap:.7cqw;justify-items:start;pointer-events:none;z-index:3}
 .ahud{display:flex;align-items:center}
@@ -255,7 +280,7 @@ select.inp{font-size:1rem;padding:10px 14px}
 @media (max-height:430px){.fjoy{width:104px;height:104px}.joyknob{width:46px;height:46px;margin:-23px 0 0 -23px}.ctl-dpad{width:126px;height:126px}.ctl-act{width:72px;height:72px}.advwrap.full.hasctl .abtns{max-height:calc(100% - 144px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
 
 /* ---- dialog penduduk: gaya sama dengan panel monster ---- */
-.dlgav{width:64px;height:64px;flex:none;border:3px solid var(--wood2);border-radius:16px;background:var(--parch2);display:grid;place-items:center;font-size:2.5rem;line-height:1}
+.dlgav{overflow:hidden;width:64px;height:64px;flex:none;border:3px solid var(--wood2);border-radius:16px;background:var(--parch2);display:grid;place-items:center;font-size:2.5rem;line-height:1}
 .dlgname{font:400 1.45rem var(--font-h);color:var(--wood3);line-height:1.1}
 .dlgsub{font:800 1rem var(--font-b);color:var(--wood2);margin-top:2px}
 .dlglines{display:grid;gap:10px;margin:12px 0 4px}

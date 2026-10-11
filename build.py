@@ -113,6 +113,12 @@ tpl=tpl.replace('__HEROWALK_B64__',base64.b64encode(open(os.path.join(SRC,'hero-
 tpl=tpl.replace('__HEROWALKBLINK_B64__',base64.b64encode(open(os.path.join(SRC,'hero-walk-blink.webp'),'rb').read()).decode('ascii'))
 tpl=tpl.replace('__HEROSHOOT_B64__',base64.b64encode(open(os.path.join(SRC,'hero-shoot.webp'),'rb').read()).decode('ascii'))
 tpl=tpl.replace('__WEAPONS_B64__',base64.b64encode(open(os.path.join(SRC,'weapons.webp'),'rb').read()).decode('ascii'))
+import json, glob   # sprite tokoh beranimasi (src/npc, dibuat oleh tools/make_npc.py): satu tabel JS berisi ukuran dan data gambar
+_spr = {}
+for _jf in sorted(glob.glob(os.path.join(SRC, 'npc', '*.json'))):
+    _n = os.path.basename(_jf)[:-5]; _m = json.load(open(_jf)); _m['u'] = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'npc', '%s-%s.webp' % (_n, k)), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'help', 'happy', 'head')}; _spr[_n] = _m
+assert '/*__NPC_SPRITES__*/' in tpl
+tpl=tpl.replace('/*__NPC_SPRITES__*/', 'const NPC_SPR = ' + json.dumps(_spr, separators=(',', ':')) + ';')
 travel_css="""
 .travel{position:fixed;inset:0;z-index:200;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 45%,#c58bff 0%,#5b1fb0 45%,#1a0638 100%);color:#fff;font:400 clamp(1.3rem,4vw,2.4rem) 'Lilita One','Fredoka',sans-serif;opacity:0;pointer-events:none;transition:opacity .3s}
 .travel.show{opacity:1;pointer-events:auto}
