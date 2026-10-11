@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="dg-pwa" content="9a6e2c35cf" data-mb="5.5">
+<meta name="dg-pwa" content="6b9a870a16" data-mb="5.5">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="fonts/fonts.css">
@@ -4282,8 +4282,19 @@ const PWA = {
   async run(quiet) {
     this.ui = { phase: 'busy', done: 0, total: 0 }; if (!quiet) this.repaint();
     try { await this.install((d, t) => this.progress(d, t)); this.ui = { phase: 'done' }; track('pasang-selesai', 'Pasang offline selesai'); }
-    catch (e) { if (this.ui.phase === 'ask') return; this.ui = { phase: 'fail', err: String((e && e.message) || e).slice(0, 80) }; track('pasang-gagal', 'Pasang offline gagal: ' + this.ui.err); }
+    catch (e) { if (this.ui.phase === 'ask') return; const m = String((e && e.message) || e), kind = this.kind(e, m); this.ui = { phase: 'fail', err: m.slice(0, 160), kind }; track('pasang-gagal', 'Pasang gagal (' + kind + '): ' + m.slice(0, 60)); }
     if (!quiet) this.repaint();
+  },
+  /* Jenis kegagalan, supaya pesannya jujur: jaringan, penyimpanan penuh, atau berkas yang belum ada di server. */
+  kind(e, m) {
+    if (e && (e.name === 'QuotaExceededError' || /quota/i.test(m))) return 'ruang';
+    if (/HTTP [45]\d\d|bad HTTP response|Failed to register a ServiceWorker|status code|SecurityError|Unexpected token|JSON/i.test(m)) return 'server';
+    if (navigator.onLine === false || (e && e.name === 'AbortError') || /Failed to fetch|NetworkError|Load failed|network/i.test(m)) return 'jaringan';
+    return 'lain';
+  },
+  failText(u) {
+    const why = { jaringan: 'Internet terputus atau terlalu lambat. Coba lagi saat koneksinya membaik.', ruang: 'Penyimpanan HP penuh. Kosongkan sedikit ruang, lalu coba lagi.', server: 'Sebagian berkas game belum tersedia di server. Ini bukan salah internet atau HP-mu, dan kami akan memperbaikinya. Kamu tetap bisa main dulu.', lain: 'Terjadi masalah saat menyimpan.' }[u.kind || 'lain'];
+    return why + ' <small style="opacity:.7">(' + String(u.err || '').replace(/[<>&]/g, ' ') + ')</small>';
   },
   saveData() { try { return !!(navigator.connection && navigator.connection.saveData); } catch (e) { return false; } },
   background() { if (!this.eligible() || this.saveData() || this.get().at || this.bgTried) return; this.bgTried = true; this.run(true); },   /* sekali per kunjungan, dan tidak bila Penghemat Data aktif */
@@ -4320,7 +4331,7 @@ const pwaHTML = () => {
   const u = PWA.ui;
   if (u.phase === 'busy') return pwaHead('Mengunduh...') + `<p>Game sedang disimpan di HP-mu. Jangan tutup halaman ini.</p>${pwaBar()}<div class="actions c"><button class="btn sm ghost" data-t="pwa" data-v="now">Batal, mainkan dulu</button></div></div></div>`;
   if (u.phase === 'done') return pwaHead('Sudah tersimpan!') + `<p>✅ Diglosa sekarang bisa dimainkan <b>tanpa internet</b>. Saat ada internet, versi baru otomatis ikut diperbarui.</p>${pwaHow()}<div class="actions c"><button class="btn mint" data-t="pwa" data-v="go">Mulai main</button></div></div></div>`;
-  if (u.phase === 'fail') return pwaHead('Belum berhasil') + `<p>Unduhan terhenti (${u.err || 'tidak diketahui'}). Biasanya karena internet putus atau penyimpanan HP penuh.</p><div class="actions c"><button class="btn mint" data-t="pwa" data-v="retry">Coba lagi</button><button class="btn ghost" data-t="pwa" data-v="now">Mainkan dulu</button></div></div></div>`;
+  if (u.phase === 'fail') return pwaHead('Belum berhasil') + `<p>${PWA.failText(u)}</p><div class="actions c"><button class="btn mint" data-t="pwa" data-v="retry">Coba lagi</button><button class="btn ghost" data-t="pwa" data-v="now">Mainkan dulu</button></div></div></div>`;
   return pwaHead('Mau main di mana?') + `<p>Diglosa bisa disimpan di HP-mu supaya <b>bisa dimainkan tanpa internet</b>. Unduhannya sekitar ${PWA.mb()} MB, hanya sekali.</p><p class="note"><b>Pasang di HP</b>: tunggu unduhan selesai (sebentar), lalu lihat cara menaruh ikon di layar utama.<br><b>Mainkan dulu</b>: langsung main, unduhan tetap berjalan diam-diam di latar belakang.</p><div class="actions c"><button class="btn mint" data-t="pwa" data-v="offline">⬇️ Pasang di HP</button><button class="btn ghost" data-t="pwa" data-v="now">▶ Mainkan dulu</button></div><p class="note" style="text-align:center">Bisa diubah kapan saja di Opsi.</p></div></div>`;
 };
 const pwaPanelHTML = () => {
@@ -4329,7 +4340,7 @@ const pwaPanelHTML = () => {
   if (u.phase === 'busy') return h + pwaBar();
   if (u.phase === 'done') return h + `<p class="note">✅ Sudah tersimpan di HP ini.</p>${pwaHow()}<div class="actions" style="margin-top:6px"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>`;
   if ((g.choice === 'offline' || g.choice === 'online') && g.at) return h + `<p class="note">✅ Tersimpan di HP ini (${((g.bytes || 0) / 1048576).toFixed(1)} MB). Game bisa dibuka tanpa internet, dan versi baru otomatis diperbarui saat ada internet.</p><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>`;
-  return h + `<p class="note">Simpan game di HP ini supaya bisa dimainkan tanpa internet (sekitar ${PWA.mb()} MB).${u.phase === 'fail' ? ' Terakhir gagal: ' + (u.err || '') + '.' : ''}${PWA.saveData() ? ' Penghemat Data aktif, jadi unduhan otomatis ditunda.' : ''}</p><div class="actions" style="margin-top:0"><button class="btn sm" data-a="pwainstall">⬇️ Pasang di HP</button></div>`;
+  return h + `<p class="note">Simpan game di HP ini supaya bisa dimainkan tanpa internet (sekitar ${PWA.mb()} MB).${u.phase === 'fail' ? ' Terakhir gagal: ' + PWA.failText(u) : ''}${PWA.saveData() ? ' Penghemat Data aktif, jadi unduhan otomatis ditunda.' : ''}</p><div class="actions" style="margin-top:0"><button class="btn sm" data-a="pwainstall">⬇️ Pasang di HP</button></div>`;
 };
 
 /* ---------- menu depan ---------- */
