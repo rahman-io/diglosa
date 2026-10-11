@@ -5,7 +5,7 @@ const {JSDOM}=require('jsdom');const fs=require('fs'),path=require('path');
 const root=path.join(__dirname,'..'); const html=fs.readFileSync(path.join(root,'dist','diglosa.html'),'utf8');
 const errs=[]; const wait=ms=>new Promise(r=>setTimeout(r,ms)); const must=(c,m)=>{if(!c)errs.push('FAIL '+m)};
 // ---- files ----
-const GUARDS={kakek:86,mimi:80,rimba:82};   // name -> body height in world units
+const GUARDS={kakek:86,mimi:80,rimba:82,gerbang:84};   // name -> body height in world units
 for(const [nm,body] of Object.entries(GUARDS)){ const d=path.join(root,'src','npc'); const j=JSON.parse(fs.readFileSync(path.join(d,nm+'.json'),'utf8'));
   for(const k of ['idle','help','happy','head','blink']) must(fs.existsSync(path.join(d,nm+'-'+k+'.webp')),nm+': sprite file '+k+' exists');
   const sz=k=>fs.statSync(path.join(d,nm+'-'+k+'.webp')).size; must(sz('blink')<4000,nm+': the blink is a small patch ('+sz('blink')+' bytes), not a whole picture'); must(['idle','help','happy'].every(k=>sz(k)<40000)&&sz('head')<20000,nm+': every pose stays small');
@@ -22,11 +22,11 @@ function open(seed,url){
 }
 (async()=>{
  // ---- the forest ----
- { const t=open({}); await wait(700); const d=t.d; const sp=d.querySelectorAll('.nsp'); must(sp.length===3,'Kakek Sapa, Koki Mimi and Rimba have sprites so far: '+sp.length);
+ { const t=open({}); await wait(700); const d=t.d; const sp=d.querySelectorAll('.nsp'); must(sp.length===4,'Kakek Sapa, Koki Mimi, Rimba and Penjaga Gerbang have sprites so far: '+sp.length);
    const g=[...sp].find(x=>x.parentNode.getAttribute('aria-label')==='Bicara dengan Kakek Sapa'); must(!!g&&[...sp].some(x=>x.parentNode.getAttribute('aria-label')==='Bicara dengan Koki Mimi'),'Koki Mimi\'s sprite is in the forest too'); must(g&&g.parentNode.getAttribute('aria-label')==='Bicara dengan Kakek Sapa','the sprite sits in Kakek Sapa\'s place'); must(g.dataset.s==='call','the open mission makes him call for help');
    must(g.querySelectorAll('image').length===4&&!!g.querySelector('.gi .nbl')&&!!g.querySelector('.gh')&&!!g.querySelector('.gp')&&!!g.querySelector('.nbub'),'idle, blink patch, help and happy pictures and the bubble exist');
    must(/Help!/.test(g.textContent)&&/Tolong!/.test(g.textContent),'the bubble says Help! with Tolong! under it');
-   const emo=[...d.querySelectorAll('.npc')].filter(n=>n.querySelector('.em')).length; must(emo>=3,'the other guards keep their emoji for now ('+emo+')');
+   const emo=[...d.querySelectorAll('.npc')].filter(n=>n.querySelector('.em')).length; must(emo>=2,'the other guards keep their emoji for now ('+emo+')');
    must(g.classList.contains('fx-full'),'effects are on by default');
    // near: the player walks close, frame() adds .near, and leaving removes it
    const A=t.w.__DG.A(); const npc=[...d.querySelectorAll('.npc')].find(n=>n.querySelector('.nsp')); const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const nx=+m[1],ny=+m[2];
@@ -53,7 +53,12 @@ function open(seed,url){
    const npc=g.parentNode; const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const A=t.w.__DG.A(); A.px=+m[1]+40; A.py=+m[2]+70; await wait(300); must(npc.classList.contains('near'),'near pose in the animal forest too');
    t.click(npc); await wait(300); must(!!d.querySelector('.dlgav img'),'his face is the avatar in the dialog'); t.w.close(); }
  { const t=open({map:'satwa',sat:{d:{},boss:1}}); await wait(900); const g=t.d.querySelector('.nsp'); must(!!g&&g.dataset.s==='done','Rimba is happy once the animal forest is saved'); t.w.close(); }
+ { const t=open({map:'gerbang',kot:{d:{},boss:0}}); await wait(900); const d=t.d; const g=d.querySelector('.nsp'); must(!!g&&g.dataset.s==='call'&&d.querySelectorAll('.nsp').length===1,'the gatekeeper calls for help in the city while it is not saved');
+   must(/--cd:9s/.test(g.getAttribute('style'))&&/--hop:0\.8/.test(g.getAttribute('style')),'with a firm, low hop: '+g.getAttribute('style'));
+   const npc=g.parentNode; const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const A=t.w.__DG.A(); A.px=+m[1]+40; A.py=+m[2]+70; await wait(300); must(npc.classList.contains('near'),'near pose in the city too');
+   t.click(npc); await wait(300); must(!!d.querySelector('.dlgav img'),'his face is the avatar in the dialog'); t.w.close(); }
+ { const t=open({map:'gerbang',kot:{d:{},boss:1}}); await wait(900); const g=t.d.querySelector('.nsp'); must(!!g&&g.dataset.s==='done','the gatekeeper is happy once the city is saved'); t.w.close(); }
  // ---- the other guards still work with emoji, and their dialog avatar too ----
- { const t=open({}); await wait(600); const npcs=[...t.d.querySelectorAll('.npc')].filter(n=>!n.querySelector('.nsp')&&n.querySelector('.em')); must(npcs.length>=3,'emoji guards remain ('+npcs.length+')'); t.w.close(); }
+ { const t=open({}); await wait(600); const npcs=[...t.d.querySelectorAll('.npc')].filter(n=>!n.querySelector('.nsp')&&n.querySelector('.em')); must(npcs.length>=2,'emoji guards remain ('+npcs.length+')'); t.w.close(); }
  console.log(errs.length?errs.join('\n'):'ANIMATED NPC SPRITES TESTS PASSED'); process.exit(0);
 })().catch(e=>{console.log('EXC',e.stack,errs);process.exit(1)});

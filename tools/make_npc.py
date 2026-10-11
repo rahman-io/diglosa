@@ -3,7 +3,7 @@ Pakai:  python3 tools/make_npc.py <lembar.png> <nama> <x0,y0,x1,y1>
   lembar.png  empat pose berjajar kiri ke kanan: diam (idle), kedip (mata tertutup), minta tolong (help), senang (happy)
   nama        nama berkas, mis. kakek  ->  src/npc/kakek-idle.webp, kakek-help.webp, kakek-happy.webp, kakek-blink.webp, kakek-head.webp, kakek.json
   x0,y0,x1,y1 kotak mata pada pose diam, dalam piksel kanvas penuh (--info menyimpan gambar kanvasnya untuk diukur); hanya kotak ini yang dipakai untuk kedipan
-  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan)
+  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan), top=170 (y puncak kepala pada kanvas bila ada benda lebih tinggi dari kepala, mis. tombak), hcx=185 (x tengah kepala untuk gambar wajah dialog, bersama top=)
 Langkah: buang latar magenta (matte lembut + buang sisa merah muda di tepi), pisahkan pose, samakan garis tanah dan sepatu kiri (titik pijak),
 pakai satu kanvas untuk semua pose, kecilkan, simpan WebP. Kedipan hanya tambalan kecil di sekitar mata (seperti kedipan Hoot), bukan gambar penuh."""
 import sys, os, json
@@ -79,10 +79,12 @@ def build(sheet, name, eyes, info=False, opts=None):
     allm = np.zeros((Hc, Wc), bool)
     for n in NAMES: allm |= fr[n][..., 3] > 128
     ys, xs = np.where(allm); cx0, cx1, cy0, cy1 = max(0, xs.min() - 3), min(Wc, xs.max() + 4), max(0, ys.min() - 3), min(Hc, ys.max() + 4)     # satu kotak potong untuk semua pose
-    idle_m = fr['idle'][..., 3] > 128; iy = np.where(idle_m.any(1))[0]; body_h = iy.max() - iy.min() + 1
+    idle_m = fr['idle'][..., 3] > 128; iy = np.where(idle_m.any(1))[0]
+    top = int(opts['top']) if 'top' in opts else iy.min()                      # puncak kepala; beri top= bila ada benda yang lebih tinggi dari kepala (ujung tombak)
+    body_h = iy.max() - top + 1
     if info:
         print('kanvas penuh %dx%d, potong x %d..%d y %d..%d, tinggi badan pose diam %d, titik pijak x=%.1f, garis tanah y=%d' % (Wc, Hc, cx0, cx1, cy0, cy1, body_h, ax, BY))
-        print('kotak kepala pose diam (kasar): y %d..%d' % (iy.min(), iy.min() + 260))
+        print('puncak pose diam y=%d (pakai top=<y puncak kepala> bila ada benda lebih tinggi dari kepala); kotak kepala kasar y %d..%d' % (iy.min(), top, top + 260))
         for n in ('idle', 'blink'): Image.fromarray(fr[n]).save(os.path.join(os.environ.get('TMPDIR', '/tmp'), '%s-%s-canvas.png' % (name, n)))
         print('kanvas pose diam dan kedip disimpan di %s/ (%s-idle-canvas.png): ukur kotak mata dari gambar itu' % (os.environ.get('TMPDIR', '/tmp'), name)); return
     os.makedirs(OUT, exist_ok=True)
@@ -110,8 +112,9 @@ def build(sheet, name, eyes, info=False, opts=None):
     patch[..., 3] = (patch[..., 3].astype(np.float32) * mk).astype(np.uint8)
     pw, ph = save(patch, '%s-blink.webp' % name, 88)
     # kepala untuk kotak dialog: bagian atas pose diam, persegi
-    hy0 = iy.min(); hh = int(body_h * 0.50); cxh = (fr['idle'][..., 3] > 128)[hy0:hy0 + hh].any(0); hx = np.where(cxh)[0]
-    hcx = (hx.min() + hx.max()) // 2; side = max(hh, hx.max() - hx.min() + 1); side = int(side * 1.0)
+    hy0 = top; hh = int(body_h * 0.50); cxh = (fr['idle'][..., 3] > 128)[hy0:hy0 + hh].any(0); hx = np.where(cxh)[0]
+    hcx = int(opts['hcx']) if 'hcx' in opts else (hx.min() + hx.max()) // 2          # hcx= bila ada benda di samping kepala (tombak)
+    side = hh if 'hcx' in opts else max(hh, hx.max() - hx.min() + 1); side = int(side * 1.0)
     hx0 = max(0, hcx - side // 2); head = fr['idle'][hy0:hy0 + side, hx0:hx0 + side]
     Image.fromarray(head).resize((128, 128), Image.LANCZOS).save(os.path.join(OUT, '%s-head.webp' % name), 'WEBP', quality=86, method=6)
     u = body_units / (body_h * sc)                                                # satuan dunia per piksel akhir

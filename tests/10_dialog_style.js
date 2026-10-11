@@ -18,7 +18,7 @@ const rem=(sel)=>{ const m=css.match(new RegExp(sel.replace(/[.\[\]]/g,'\\$&')+'
  let t=boot({skin:'petualangan',diff:'santai'},375,667); await wait(250);
  t.click('#act'); const P=t.d.querySelector('.dlg');
  must(P&&P.classList.contains('encpanel'),'dialog uses the same panel as the monster question'); must(/modal/.test(t.d.querySelector('#ovl').className),'dialog is shown in the centred overlay like the monster panel');
- must(!t.d.querySelector('.nmtag'),'no clipped name tag any more'); must(t.d.querySelector('.enchead .dlgav')&&t.d.querySelector('.dlgav').textContent==='💂','header shows the villager avatar'); must(t.d.querySelector('.dlgname').textContent==='Penjaga Gerbang'&&/Gerbang Kota/.test(t.d.querySelector('.dlgsub').textContent),'name and place in the header');
+ must(!t.d.querySelector('.nmtag'),'no clipped name tag any more'); must(t.d.querySelector('.enchead .dlgav')&&!!t.d.querySelector('.dlgav img'),'header shows the gatekeeper\'s painted face as the avatar'); must(t.d.querySelector('.dlgname').textContent==='Penjaga Gerbang'&&/Gerbang Kota/.test(t.d.querySelector('.dlgsub').textContent),'name and place in the header');
  must(t.d.querySelectorAll('.dlgline').length===2&&t.d.querySelector('.dlgline .en').textContent.startsWith('Stop! Where are you going')&&/Berhenti! Kamu mau ke mana/.test(t.d.querySelector('.dlgline .id').textContent),'English lines with Indonesian hints');
  must(t.d.querySelector('.dlgacts .acc[data-a=accept]')&&t.d.querySelector('.dlgacts .ign[data-a=ignore]'),'accept and ignore buttons');
  { const cs=t.w.getComputedStyle(P); must(cs.bottom==='auto'&&cs.top==='50%'&&cs.left==='50%','panel is centred (not stuck to the bottom): top='+cs.top+' bottom='+cs.bottom); }
