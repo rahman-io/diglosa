@@ -17,18 +17,25 @@ SCALE = 0.5          # ukuran akhir terhadap gambar asli
 BODY_UNITS = 86      # tinggi badan (topi sampai sepatu, pose diam) dalam satuan dunia game
 
 def key(path):
+    """Buang latar rata. Piksel dekat latar (cincin 5 px di tepi tokoh) dipisahkan dengan memproyeksikan warnanya ke garis latar-tokoh, memakai warna tokoh terdekat dari bagian dalam sebagai acuan; hasilnya tepi tanpa lingkaran merah muda, juga pada bulu oranye."""
+    from scipy import ndimage as ndi
     im = np.array(Image.open(path).convert('RGB')).astype(np.float32)
-    R, G, B = im[..., 0], im[..., 1], im[..., 2]
-    mg = np.minimum(R, B) - G                       # "kemagentaan": latar ~235, warna tokoh jauh lebih rendah
-    a = 1 - np.clip((mg - 70) / (200 - 70), 0, 1)
-    bg = np.array([245, 4, 245], np.float32)
-    al = np.maximum(a, 1e-3)[..., None]
-    F = np.clip((im - (1 - al) * bg) / al, 0, 255)
-    edge = (a < 0.98) & (a > 0)
-    lim = F[..., 1] + 60
-    for c in (0, 2):
-        F[..., c] = np.where(edge, np.minimum(F[..., c], lim), F[..., c])
-    return np.dstack([F, a * 255]).astype(np.uint8)
+    border = np.concatenate([im[:6].reshape(-1, 3), im[-6:].reshape(-1, 3), im[:, :6].reshape(-1, 3), im[:, -6:].reshape(-1, 3)])
+    BG = np.median(border, axis=0)
+    bgm = np.sqrt(((im - BG) ** 2).sum(-1)) < 70                 # pasti latar
+    bgm = ndi.binary_opening(bgm, iterations=1) | (bgm & ~ndi.binary_dilation(~bgm, iterations=2))   # buang bintik latar palsu di dalam tokoh
+    zone_out = ndi.binary_dilation(bgm, iterations=5)
+    solid = ~zone_out                                             # pasti tokoh (bagian dalam)
+    idx = ndi.distance_transform_edt(~solid, return_distances=False, return_indices=True)
+    Fn = im[idx[0], idx[1]]                                       # warna tokoh terdekat dari dalam
+    v = Fn - BG; a = np.clip(((im - BG) * v).sum(-1) / ((v * v).sum(-1) + 1e-6), 0, 1)
+    alpha = np.where(solid, 1.0, np.where(bgm, 0.0, a))
+    color = np.where(solid[..., None], im, Fn)
+    edge = ndi.binary_dilation(alpha < 0.5, iterations=9)                 # dekat tepi: buang sisa magenta (biru lebih tinggi dari hijau tidak ada pada bulu, kulit, kain, kulit sepatu)
+    spill = edge & (color[..., 2] > color[..., 1]) & (color[..., 0] > color[..., 1])
+    color[..., 2] = np.where(spill, np.minimum(color[..., 2], color[..., 1]), color[..., 2])
+    color[..., 0] = np.where(spill, np.minimum(color[..., 0], color[..., 1] + (color[..., 0] - color[..., 1]) * 0.5 + 0), color[..., 0])
+    return np.dstack([np.clip(color, 0, 255), alpha * 255]).astype(np.uint8)
 
 def split(rgba):
     m = rgba[..., 3] > 128
