@@ -1,0 +1,41 @@
+name: Terbitkan ke GitHub Pages
+# Setiap perubahan yang masuk ke main otomatis tayang di https://NAMAAKUN.github.io/diglosa/
+# (aktifkan dulu: Settings, lalu Pages, lalu Source: GitHub Actions). Bisa juga dijalankan manual.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+env:
+  SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bangun diglosa.html (alamat situs terisi otomatis untuk kartu pratinjau)
+        run: python build.py
+      - name: Siapkan situs
+        run: |
+          mkdir site
+          cp dist/diglosa.html site/index.html
+          cp dist/preview.jpg site/preview.jpg
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>%s/</loc></url></urlset>\n' "$SITE_URL" > site/sitemap.xml
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

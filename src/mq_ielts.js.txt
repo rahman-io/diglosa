@@ -1,0 +1,41 @@
+/* --- monster Akademi: soal mini bergaya IELTS + kosakata ujian --- */
+const MQ = [
+  { t: 'tfng', ctx: 'Tom has a red bag and a blue hat.', q: 'Tom has a green bag.', a: 'FALSE', e: 'Teks menyebut red bag, bukan green.' },
+  { t: 'tfng', ctx: "The library opens at nine o'clock and closes at five o'clock.", q: "The library closes at five o'clock.", a: 'TRUE', e: "Teks: closes at five o'clock." },
+  { t: 'tfng', ctx: 'Anna likes tea. She does not like coffee.', q: 'Anna likes coffee.', a: 'FALSE', e: 'Teks: she does not like coffee.' },
+  { t: 'tfng', ctx: 'My brother plays football on Saturday.', q: 'My brother plays football with his friends.', a: 'NOT GIVEN', e: 'Teks tidak menyebut teman.' },
+  { t: 'tfng', ctx: 'The shop is next to the bank.', q: 'The bank is next to the shop.', a: 'TRUE', e: 'Teks: the shop is next to the bank.' },
+  { t: 'tfng', ctx: 'Lina has two cats and one dog.', q: 'Lina has two cats.', a: 'TRUE', e: 'Teks: two cats and one dog.' },
+  { t: 'tfng', ctx: 'It is cold today. Ben wears a coat.', q: 'Ben wears a hat.', a: 'NOT GIVEN', e: 'Teks hanya menyebut coat, bukan hat.' },
+  { t: 'tfng', ctx: 'The train goes at six in the morning.', q: 'The train goes in the evening.', a: 'FALSE', e: 'Teks: in the morning.' },
+  { t: 'tfng', ctx: 'Maya has a new phone.', q: 'The phone is expensive.', a: 'NOT GIVEN', e: 'Teks tidak menyebut harga.' },
+  { t: 'mcq', ctx: 'Maya eats rice and fish for lunch.', q: 'What does Maya eat for lunch?', o: ['Rice and fish', 'Bread and egg', 'Soup and cake'], a: 0 },
+  { t: 'mcq', ctx: "The party is on Friday at seven o'clock.", q: 'When is the party?', o: ['On Monday', 'On Friday', 'On Sunday'], a: 1 },
+  { t: 'mcq', ctx: 'Dina goes to school by bus because it is cheap.', q: 'Why does Dina take the bus?', o: ['It is fast', 'It is new', 'It is cheap'], a: 2 },
+  { t: 'mcq', ctx: 'My teacher is tall. She has long black hair.', q: 'What is her hair like?', o: ['Short and white', 'Long and black', 'Long and red'], a: 1 },
+  { t: 'mcq', ctx: 'Budi has a pen, a book and a ruler on his desk.', q: 'What is on the desk?', o: ['A pen, a book and a ruler', 'A phone and a cup', 'A bag and a hat'], a: 0 },
+  { t: 'mcq', ctx: 'The weather is hot. We go to the beach.', q: 'Where do they go?', o: ['To the park', 'To the beach', 'To the market'], a: 1 },
+  { t: 'fill', ctx: "The shop opens at nine o'clock.", q: "The shop opens at ___ o'clock.", a: ['nine', '9'] },
+  { t: 'fill', ctx: 'Rina is twelve years old.', q: 'Rina is ___ years old.', a: ['twelve', '12'] },
+  { t: 'fill', ctx: 'There is a cat under the table.', q: 'The cat is under the ___.', a: ['table'] },
+  { t: 'fill', ctx: 'I drink milk in the morning.', q: 'I drink ___ in the morning.', a: ['milk'] },
+  { t: 'fill', ctx: 'My father is a doctor. He works in a hospital.', q: 'He works in a ___.', a: ['hospital'] },
+  { t: 'fill', ctx: 'We eat dinner at seven in the evening.', q: 'We eat ___ in the evening.', a: ['dinner'] }
+];
+const ieltsCats = ['Persiapan IELTS A1', 'Kata Bantu & Dasar Tambahan', 'Pelengkap Topik A1'].map(n => CATS.findIndex(c => c[0] === n));
+function examQ() {
+  if (Math.random() < .4) return HOST.vocabQ(ieltsCats);
+  const it = MQ[Math.random() * MQ.length | 0];
+  if (it.t === 'fill') return { kind: 'fill', ctx: it.ctx, prompt: it.q.replace('___', '<b>____</b>'), accept: it.a, show: it.a[0], extra: '' };
+  if (it.t === 'mcq') return { kind: 'mcq', ctx: it.ctx, prompt: it.q, opts: it.o, correct: it.a, show: it.o[it.a], extra: '' };
+  const opts = ['TRUE', 'FALSE', 'NOT GIVEN'];
+  return { kind: 'tfng', ctx: it.ctx, prompt: `<b>${it.q}</b><br><small>TRUE, FALSE, atau NOT GIVEN?</small>`, opts, correct: opts.indexOf(it.a), show: it.a, extra: it.e };
+}
+const AE = makeEngine({
+  adv: ADV, S: () => HOST.S(), save: () => HOST.save(), toast: m => toast(m), xp: n => HOST.award(n, true), sfx: () => {}, nk,
+  obst: SOLID, bounds: [CB.x0, CB.x1, CB.y0, CB.y1], start: [503, 517], fallback: [600, 470],
+  anchors: () => EX.map(e => [e.npc.x, e.npc.y]).concat([[299, 570]]),
+  kinds: [{ n: 'Bayangan Dengar', c: '#7aa8ff', d: '#1b3a90' }, { n: 'Bayangan Baca', c: '#7ad08a', d: '#1b6a30' }, { n: 'Bayangan Tulis', c: '#ffb35a', d: '#8a4a0a' }, { n: 'Bayangan Bicara', c: '#ff8ac8', d: '#8a1a5a' }],
+  question: () => examQ(),
+  rerender: () => renderOverlay(), rebuild: () => render(), after: () => renderOverlay()
+});

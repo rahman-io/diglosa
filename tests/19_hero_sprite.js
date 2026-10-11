@@ -1,0 +1,37 @@
+// The hero is an image set: an idle pose that breathes, a 6-pose walk cycle driven by distance, and random blinks. All embedded, anchored at the feet, mirrored when facing left.
+const {JSDOM}=require('jsdom');const fs=require('fs');
+const html=fs.readFileSync(require('path').join(__dirname,'..','dist','diglosa.html'),'utf8'); const errs=[]; const wait=ms=>new Promise(r=>setTimeout(r,ms)); const must=(c,m)=>{if(!c)errs.push('FAIL '+m)};
+const css=html.match(/<style>([\s\S]*?)<\/style>/)[1];
+const webp=b=>/^RIFF.{4}WEBP/s.test(Buffer.from(b,'base64').slice(0,12).toString('latin1'));
+function boot(seed,hash,W=390,H=780){ const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://example.com/'+(hash||''),beforeParse(w){ if(seed) w.localStorage.setItem('hoot-a1-v1',JSON.stringify(Object.assign({storyLock:false,norpg:true},seed))); Object.defineProperty(w,'innerWidth',{value:W,configurable:true,writable:true}); Object.defineProperty(w,'innerHeight',{value:H,configurable:true,writable:true}); w.matchMedia=()=>({matches:false}); w.scrollTo=()=>{}; w.Element.prototype.scrollIntoView=()=>{}; w.addEventListener('error',e=>errs.push('ERR '+e.message)); }}); const w=dom.window,d=w.document;
+  return {w,d,key:(t,k)=>d.dispatchEvent(new w.KeyboardEvent(t,{key:k,bubbles:true})),click:s=>{const el=d.querySelector(s); if(!el) throw new Error('missing '+s); el.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));}}; }
+(async()=>{
+ // assets
+ const imgs=[...html.matchAll(/data:image\/webp;base64,([A-Za-z0-9+\/=]+)/g)].map(m=>m[1]); must(imgs.length>=7&&imgs.every(webp),'every embedded image is a real WebP ('+imgs.length+' images)');
+ must(html.split('const heroBody =').length===2&&html.split('const heroHead =').length===2,'exactly one hero definition each (the castle shares the forest one)'); must(!html.includes('fill="#ffd9b0"'),'no trace of the old vector hero left');
+ // css
+ must(/\.hbreath\{[^}]*animation:hBreathe[^}]*infinite/.test(css)&&/@keyframes hBreathe\{[^@]*scale\(1,1\)[^@]*scale\(\.992,1\.018\)/.test(css),'idle breathing: a slow loop, chest rises about 2%'); must(/#pl\.mv \.hbreath\{animation:none\}/.test(css),'breathing is off while walking'); must(/prefers-reduced-motion:reduce\)\{\.hbreath\{animation:none\}/.test(css),'breathing respects the reduced-motion setting');
+ must(/\.hb1\{animation:hBlinkA/.test(css)&&/\.hb2\{animation:hBlinkB/.test(css)&&/@keyframes hBlinkA/.test(css)&&/@keyframes hBlinkB/.test(css)&&/\.hblink\{opacity:0\}/.test(css),'two irregular blink rhythms (idle and walking), closed eyes only flash briefly'); must(/prefers-reduced-motion:reduce\)\{\.hblink\{animation:none\}/.test(css),'blinking respects the reduced-motion setting');
+ // forest map
+ let t=boot({diff:'santai'},'#play'); await wait(300); let d=t.d; const pl=()=>d.querySelector('#pl'), plin=()=>d.querySelector('#plin');
+ const im=d.querySelector('#pl .hidle .hbreath > image'); must(im&&/^data:image\/webp/.test(im.getAttribute('href')),'idle hero is the sprite'); must(im&&Math.abs(+im.getAttribute('y')+ +im.getAttribute('height')-0.42)<0.3&&+im.getAttribute('height')===100,'idle: 100 units tall, feet on the ground point');
+ const wv=d.querySelector('#pl .hwalk .hwv'); must(wv&&wv.tagName.toLowerCase()==='svg'&&+wv.getAttribute('y')+ +wv.getAttribute('height')===0&&Math.abs(+wv.getAttribute('x')+ +wv.getAttribute('width')/2)<0.01,'walk sheet: cell centred on the body axis with its bottom on the ground point'); must(wv&&wv.getAttribute('viewBox')==='0 0 206 368'&&wv.querySelector('image').getAttribute('width')==='1236','walk sheet: 6 poses of 206 x 368 px');
+ must(d.querySelector('#pl .hb1 image')&&d.querySelector('#pl .hb2 image')&&/^data:image\/webp/.test(d.querySelector('#pl .hb2 image').getAttribute('href')),'blink overlays exist for both pose sets');
+ must(d.querySelector('#pl .hidle').getAttribute('display')!=='none'&&d.querySelector('#pl .hwalk').getAttribute('display')==='none'&&!pl().classList.contains('mv'),'standing: idle pose shown, walk set hidden');
+ // facing right first (short walk), then a longer walk to the left over open ground (to the right there is a fence)
+ t.key('keydown','ArrowRight'); await wait(300); must(pl().classList.contains('mv')&&d.querySelector('.hwalk').getAttribute('display')==='inline'&&d.querySelector('.hidle').getAttribute('display')==='none','walking: walk set shown, idle pose hidden'); must(/^scale\(1 1\)$/.test(plin().getAttribute('transform')),'walking right: facing right, no fake bob or tilt any more'); t.key('keyup','ArrowRight'); await wait(250);
+ t.key('keydown','ArrowLeft'); const seen=new Set(), seq=[]; for(let k=0;k<60;k++){ await wait(20); const v=+d.querySelector('.hwv').getAttribute('viewBox').split(' ')[0]/206; seen.add(v); if(seq[seq.length-1]!==v) seq.push(v); }
+ must(seen.size===6&&[...seen].every(v=>Number.isInteger(v)&&v>=0&&v<=5),'walking runs through all 6 poses ('+[...seen].sort().join(',')+')');
+ const inOrder=seq.slice(1).every((v,i)=>v===(seq[i]+1)%6||v===(seq[i]+2)%6||v===(seq[i]+3)%6); must(inOrder,'poses advance in cycle order (a slow frame may skip ahead, never go back): '+seq.join(' '));
+ must(/^scale\(-1 1\)$/.test(plin().getAttribute('transform')),'walking left: whole sprite is mirrored'); t.key('keyup','ArrowLeft'); await wait(250);
+ must(!pl().classList.contains('mv')&&d.querySelector('.hidle').getAttribute('display')==='inline'&&d.querySelector('.hwalk').getAttribute('display')==='none','stopping: back to the idle pose, so breathing resumes'); must(/^scale\(-1 1\)$/.test(plin().getAttribute('transform')),'it keeps facing the way it last walked');
+ t.key('keydown','ArrowRight'); await wait(40); const first=+d.querySelector('.hwv').getAttribute('viewBox').split(' ')[0]/206; t.key('keyup','ArrowRight'); must(first<=1,'every walk starts at the beginning of the cycle (first pose '+first+')');
+ must(d.querySelector('.aav image')&&/^data:image\/webp/.test(d.querySelector('.aav image').getAttribute('href')),'HUD avatar is the new face'); t.w.close();
+ // castle map shares everything
+ t=boot({diff:'santai',map:'akademi'},'#play'); await wait(400); d=t.d; must(d.querySelector('#xapp #pl .hwv')&&d.querySelector('#xapp #pl .hb1'),'castle hero has the same walk set and blinks'); must(d.querySelector('#xapp .aav image'),'castle HUD avatar is the new face');
+ t.key('keydown','ArrowUp'); await wait(350); must(d.querySelector('#xapp #pl').classList.contains('mv')&&d.querySelector('#xapp .hwalk').getAttribute('display')==='inline','castle: walking shows the walk set'); t.key('keyup','ArrowUp'); await wait(250); must(d.querySelector('#xapp .hwalk').getAttribute('display')==='none','castle: standing shows the idle pose'); t.w.close();
+ // title: big idle hero, breathes and blinks, no duplicated id, head crops
+ t=boot({xp:186,diff:'santai'}); await wait(300); d=t.d; must(d.querySelector('#title .t-hero .hbreath')&&d.querySelector('#title .t-hero .hb1'),'title hero breathes and blinks'); must(d.querySelectorAll('[id=plin]').length===0,'no duplicate #plin while the map is not drawn'); must(d.querySelector('#title .t-sq .ic image'),'Profil tile shows the head crop');
+ t.click('[data-p=profile]'); must(d.querySelector('#tovl .t-pav image'),'Profil window shows the head crop'); t.w.close();
+ console.log(errs.length?errs.join('\n'):'HERO SPRITE TESTS PASSED'); process.exit(0);
+})().catch(e=>{console.log('EXC',e.stack,errs);process.exit(1)});

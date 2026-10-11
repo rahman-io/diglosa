@@ -1,57 +1,70 @@
 {
- "v": "6b9a870a16",
+ "v": "f3d61509c2",
  "files": [
   {
    "u": "index.html",
-   "s": 5614946
+   "s": 5620541,
+   "h": "9421257478"
   },
   {
    "u": "manifest.webmanifest",
-   "s": 675
+   "s": 675,
+   "h": "0fc543868f"
   },
   {
    "u": "fonts/fonts.css",
-   "s": 1414
+   "s": 1414,
+   "h": "cfb50d4ad4"
   },
   {
    "u": "fonts/cinzel-latin-600-normal.woff2",
-   "s": 15204
+   "s": 15204,
+   "h": "f013ac32c1"
   },
   {
    "u": "fonts/cinzel-latin-700-normal.woff2",
-   "s": 15184
+   "s": 15184,
+   "h": "e30aae05f7"
   },
   {
    "u": "fonts/cinzel-latin-800-normal.woff2",
-   "s": 15260
+   "s": 15260,
+   "h": "eacb8e500a"
   },
   {
    "u": "fonts/fredoka-latin-500-normal.woff2",
-   "s": 16248
+   "s": 16248,
+   "h": "84a3167d81"
   },
   {
    "u": "fonts/fredoka-latin-600-normal.woff2",
-   "s": 16468
+   "s": 16468,
+   "h": "b9fca786c0"
   },
   {
    "u": "fonts/fredoka-latin-700-normal.woff2",
-   "s": 15900
+   "s": 15900,
+   "h": "8adf2df55f"
   },
   {
    "u": "fonts/lilita-one-latin-400-normal.woff2",
-   "s": 10672
+   "s": 10672,
+   "h": "3b71f6c24c"
   },
   {
    "u": "fonts/nunito-latin-600-normal.woff2",
-   "s": 16556
+   "s": 16556,
+   "h": "ce661d0099"
   },
   {
    "u": "fonts/nunito-latin-700-normal.woff2",
-   "s": 16228
+   "s": 16228,
+   "h": "fd0ec8a345"
   },
   {
    "u": "fonts/nunito-latin-800-normal.woff2",
-   "s": 16520
+   "s": 16520,
+   "h": "bce64e8580"
   }
  ]
 }

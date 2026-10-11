@@ -1,0 +1,12 @@
+# hasil bangunan dan alat (dibuat ulang oleh build.py dan npm)
+dist/
+diglosa.html
+node_modules/
+tests/node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+# jangan pernah menyimpan rahasia di repositori
+.env
+*.token

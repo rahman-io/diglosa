@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id" data-skin="petualangan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diglosa: Simulasi Ujian IELTS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Lilita+One&family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/*__CSS__*/
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(() => {
+'use strict';
+const HOOT = 'https://claude.ai/artifact/L8LXU4EGefDkKDyKVTySwe';
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app');
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+const nk = s => norm(s).replace(/ /g, '');
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const fmt = s => `${String(s / 60 | 0).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+const dstr = () => { const d = new Date(); return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`; };
+const wc = s => ((s || '').match(/[A-Za-z']+/g) || []).length;
+
+/* ================= CONTENT ================= */
+const MODS = {
+  L: { name: 'Listening', e: '🎧', min: 15, c: 'var(--sky)',   real: '30 menit (+10 menit transfer di tes kertas)', desc: '4 section, 20 soal' },
+  R: { name: 'Reading',   e: '📖', min: 30, c: 'var(--mint)',  real: '60 menit',  desc: '3 section, 15 soal' },
+  W: { name: 'Writing',   e: '✍️', min: 30, c: 'var(--sun)',   real: '60 menit (20 menit Task 1, 40 menit Task 2)', desc: '2 tugas menulis' },
+  S: { name: 'Speaking',  e: '🗣️', min: 6,  c: 'var(--pink)',  real: '11 sampai 14 menit', desc: '3 bagian, tatap muka' }
+};
+
+const LIS = [
+  { k: 'Percakapan 2 orang: mendaftar kelas bahasa Inggris (isi formulir)',
+    script: [['A', 'Hello, English Star School. How can I help you?'], ['B', 'Hello. I want to join an English class.'],
+      ['A', 'Sure. What is your name, please?'], ['B', 'My name is Anna Brown.'],
+      ['A', 'How do you spell Brown?'], ['B', 'B, R, O, W, N.'],
+      ['A', 'Thank you. And your phone number?'], ['B', 'It is zero eight one, two three four, five six seven.'],
+      ['A', 'What day do you want to come?'], ['B', 'I am free on Wednesday.'],
+      ['A', 'Good. The class is at four o\'clock in the afternoon.'], ['B', 'How much is it?'],
+      ['A', 'It is fifty dollars for one month.']],
+    qs: [
+      { t: 'fill', q: 'Surname: ___', a: ['Brown'] },
+      { t: 'fill', q: 'Phone number: ___', a: ['081234567'] },
+      { t: 'fill', q: 'Day of the class: ___', a: ['Wednesday'] },
+      { t: 'fill', q: 'Time of the class: ___ p.m.', a: ['4', 'four', '4 oclock', 'four oclock', '4pm', '400'] },
+      { t: 'fill', q: 'Price for one month: $___', a: ['50', 'fifty', '50 dollars', 'fifty dollars'] }] },
+  { k: 'Monolog: pemandu di kebun binatang (situasi sosial sehari-hari)',
+    script: [['A', 'Good morning, everyone. Welcome to Green Park Zoo. The zoo opens at nine o\'clock and closes at five o\'clock. The ticket office is next to the main gate. On the left you can see the monkeys. On the right there is a cafe. You can eat lunch there. The elephants are behind the cafe. Please do not give food to the animals. The shop is near the exit. Enjoy your day!']],
+    qs: [
+      { t: 'mcq', q: 'What time does the zoo close?', o: ['4 o\'clock', '5 o\'clock', '9 o\'clock'], a: 1 },
+      { t: 'mcq', q: 'Where is the ticket office?', o: ['Next to the main gate', 'Near the exit', 'Behind the cafe'], a: 0 },
+      { t: 'mcq', q: 'Where can visitors have lunch?', o: ['In the shop', 'Near the monkeys', 'In the cafe'], a: 2 },
+      { t: 'fill', q: 'The elephants are ___ the cafe.', a: ['behind'] },
+      { t: 'fill', q: 'Visitors must not give ___ to the animals.', a: ['food'] }] },
+  { k: 'Percakapan 2 orang: dua siswa membahas PR (konteks pendidikan)',
+    script: [['A', 'Hi Mia. Do you have the English homework?'], ['B', 'Yes, Tom. We must write ten sentences about our family.'],
+      ['A', 'When do we give it to the teacher?'], ['B', 'On Friday. Mr. Lee wants it in the morning.'],
+      ['A', 'I have a problem. I do not have a dictionary.'], ['B', 'You can use the library. It is open until six o\'clock.'],
+      ['A', 'Good idea. Can you come with me?'], ['B', 'Sorry, I can\'t today. I have a piano lesson. But I can go tomorrow.'],
+      ['A', 'Great. Let\'s meet at the library tomorrow at three o\'clock.']],
+    qs: [
+      { t: 'mcq', q: 'What is the English homework?', o: ['Write sentences about family', 'Read a book', 'Draw a picture'], a: 0 },
+      { t: 'fill', q: 'They give the homework to Mr. Lee on ___.', a: ['Friday'] },
+      { t: 'mcq', q: 'What does Tom need?', o: ['A pen', 'A phone', 'A dictionary'], a: 2 },
+      { t: 'mcq', q: 'Why can\'t Mia go to the library today?', o: ['She has a piano lesson', 'She is tired', 'She has no homework'], a: 0 },
+      { t: 'fill', q: 'They will meet at the library at ___ tomorrow.', a: ['3', 'three', '3 oclock', 'three oclock', '3pm', '300'] }] },
+  { k: 'Monolog: kuliah singkat tentang lebah (subjek akademis)',
+    script: [['A', 'Today I will talk about bees. Bees are small insects. They live in a group, and the group lives in a hive. A hive can have fifty thousand bees. Bees fly from flower to flower. They take a sweet drink from the flowers. They make honey from this drink. Bees also help plants to grow. Without bees, we have less fruit and vegetables. A bee is very busy. It visits about two hundred flowers in one day. Please help bees!']],
+    qs: [
+      { t: 'fill', q: 'Bees live in a ___.', a: ['hive'] },
+      { t: 'mcq', q: 'Bees make ___ from the sweet drink.', o: ['milk', 'sugar', 'honey'], a: 2 },
+      { t: 'fill', q: 'A hive can have about ___ bees.', a: ['50000', 'fifty thousand', '50 thousand'] },
+      { t: 'mcq', q: 'Why are bees important?', o: ['They help plants to grow', 'They are big', 'They live in houses'], a: 0 },
+      { t: 'fill', q: 'A bee visits about ___ flowers in one day.', a: ['200', 'two hundred'] }] }
+];
+
+const RD = {
+  academic: [
+    { k: 'Teks akademik 1: The Moon', text: [
+        'The Moon is in the sky. It is not a star. It goes around the Earth. The Moon is smaller than the Earth.',
+        'It does not have water or air, so people cannot live there. In 1969, two men walked on the Moon for the first time. They came from the USA.',
+        'Many people look at the Moon at night because it is beautiful. Once a month, the Moon looks big and round. We call this the full moon.'],
+      qs: [
+        { t: 'tfng', q: 'The Moon is a star.', a: 'FALSE', e: 'Teks: "It is not a star."' },
+        { t: 'tfng', q: 'The Moon goes around the Earth.', a: 'TRUE', e: 'Teks: "It goes around the Earth."' },
+        { t: 'tfng', q: 'People live on the Moon.', a: 'FALSE', e: 'Teks: "people cannot live there."' },
+        { t: 'tfng', q: 'Two men walked on the Moon in 1969.', a: 'TRUE', e: 'Teks menyebut tahun 1969 dan dua orang.' },
+        { t: 'tfng', q: 'There are many animals on the Moon.', a: 'NOT GIVEN', e: 'Teks tidak menyebut hewan sama sekali.' }] },
+    { k: 'Teks akademik 2: Water', text: [
+        'Water is very important. People, animals and plants need water to live. Most of the Earth is water, but we can drink only a small part.',
+        'The water in the sea is salty, so we cannot drink it. We get clean water from rivers, lakes and rain. In some countries, people walk many kilometers to find water.',
+        'We can save water. Close the tap when you brush your teeth, and take short showers.'],
+      qs: [
+        { t: 'mcq', q: 'Who needs water to live?', o: ['Only people', 'People, animals and plants', 'Only plants'], a: 1 },
+        { t: 'fill', q: 'Sea water is ___.', a: ['salty'] },
+        { t: 'fill', q: 'We get clean water from rivers, lakes and ___.', a: ['rain'] },
+        { t: 'mcq', q: 'In some countries, people ___ to find water.', o: ['drive a car', 'walk many kilometers', 'ask the teacher'], a: 1 },
+        { t: 'mcq', q: 'How can we save water?', o: ['Take long showers', 'Open the tap all day', 'Close the tap when we brush our teeth'], a: 2 }] },
+    { k: 'Teks akademik 3: A Healthy Breakfast', text: [
+        'Many doctors say breakfast is the most important meal of the day. A good breakfast gives you energy for school or work. Fruit, eggs, bread and milk are good choices.',
+        'Some people do not eat breakfast because they are in a hurry. This is not a good idea. They feel tired and hungry in the morning.',
+        'Try to wake up ten minutes earlier and eat something small.'],
+      qs: [
+        { t: 'tfng', q: 'Breakfast gives you energy.', a: 'TRUE', e: 'Teks: "A good breakfast gives you energy."' },
+        { t: 'tfng', q: 'Chocolate cake is a good breakfast.', a: 'NOT GIVEN', e: 'Teks tidak menyebut kue cokelat.' },
+        { t: 'tfng', q: 'People who do not eat breakfast feel happy.', a: 'FALSE', e: 'Teks: mereka merasa lelah dan lapar.' },
+        { t: 'fill', q: 'Try to wake up ___ minutes earlier.', a: ['ten', '10'] },
+        { t: 'mcq', q: 'Why do some people not eat breakfast?', o: ['They are in a hurry', 'They do not like fruit', 'They are doctors'], a: 0 }] }
+  ],
+  general: [
+    { k: 'Section 1: Pengumuman dan iklan', text: [
+        '#SWIMMING POOL',
+        'Open: Monday to Friday, 7 a.m. to 8 p.m. Saturday and Sunday, 9 a.m. to 5 p.m. Children under 10 must come with an adult. No food in the pool area.',
+        '#ROOM FOR RENT',
+        'One bedroom near the station. $300 a month. Kitchen and bathroom. No pets. Call Sara: 555 0142.'],
+      qs: [
+        { t: 'mcq', q: 'When does the pool close on Sunday?', o: ['At 8 p.m.', 'At 5 p.m.', 'At 9 a.m.'], a: 1 },
+        { t: 'tfng', q: 'An 8-year-old child can swim alone.', a: 'FALSE', e: 'Teks: anak di bawah 10 tahun harus bersama orang dewasa.' },
+        { t: 'fill', q: 'The room is $___ a month.', a: ['300', '300 dollars'] },
+        { t: 'tfng', q: 'You can have a pet in the room.', a: 'FALSE', e: 'Teks: "No pets."' },
+        { t: 'fill', q: 'You must call ___ about the room.', a: ['Sara'] }] },
+    { k: 'Section 2: Iklan pekerjaan', text: [
+        '#WAITER WANTED: Blue Sea Restaurant',
+        'We need a friendly waiter. Work: Tuesday to Saturday, 5 p.m. to 11 p.m. Pay: $12 an hour. You must speak a little English. You do not need to know this job.',
+        'Send your email to jobs@bluesea.example'],
+      qs: [
+        { t: 'mcq', q: 'What job is it?', o: ['Cook', 'Waiter', 'Driver'], a: 1 },
+        { t: 'fill', q: 'The pay is $___ an hour.', a: ['12', 'twelve'] },
+        { t: 'tfng', q: 'You must know this job already.', a: 'FALSE', e: 'Teks: "You do not need to know this job."' },
+        { t: 'tfng', q: 'The restaurant is open on Monday.', a: 'NOT GIVEN', e: 'Teks hanya menyebut jam kerja Selasa sampai Sabtu.' },
+        { t: 'fill', q: 'To apply, send an ___.', a: ['email'] }] },
+    { k: 'Section 3: Email dari seorang teman', text: [
+        'Hi Ben,',
+        'Thank you for your letter! I am very happy that you will visit me in July. My town is small but nice. There is a big park and a market near my house.',
+        'In July the weather is hot, so please bring a hat and sunglasses. You can sleep in my brother\'s room because he is at university. We can go to the beach on Saturday. My mother cooks very well, so you will love the food.',
+        'Please tell me the time of your train.',
+        'Best wishes, Lucy'],
+      qs: [
+        { t: 'mcq', q: 'When will Ben visit Lucy?', o: ['In June', 'In July', 'In August'], a: 1 },
+        { t: 'mcq', q: 'What should Ben bring?', o: ['A hat and sunglasses', 'A coat', 'A dictionary'], a: 0 },
+        { t: 'tfng', q: 'Lucy\'s mother cooks well.', a: 'TRUE', e: 'Teks: "My mother cooks very well."' },
+        { t: 'tfng', q: 'Lucy lives in a big city.', a: 'FALSE', e: 'Teks: "My town is small."' },
+        { t: 'fill', q: 'Lucy wants to know the time of his ___.', a: ['train'] }] }
+  ]
+};
+
+const WR = {
+  academic: {
+    t1: { min: 30, mins: 10, p: 'The chart shows the favourite fruit of 20 students. Write at least 30 words about the chart.',
+      chart: [['Apple', 8], ['Banana', 6], ['Orange', 4], ['Mango', 2]],
+      sample: 'The chart shows the favourite fruit of 20 students. Apple is the most popular fruit. Eight students like apples. Six students like bananas. Four students like oranges. Mango is the least popular. Only two students like mangoes.' },
+    t2: { min: 50, mins: 20, p: 'Some people like to study alone. Other people like to study with friends. Which do you prefer? Give reasons. Write at least 50 words.',
+      sample: 'I prefer to study with friends. First, friends can help me when I have a problem. For example, my friend is good at math, so she explains the difficult questions to me. Second, studying with friends is more fun, and I do not feel bored. However, sometimes we talk too much. Finally, I like studying with friends because it is useful and fun.' }
+  },
+  general: {
+    t1: { min: 30, mins: 10, p: 'Your English friend Sam asks you to visit his town. Write an email to Sam (at least 30 words). Say: when you can come; how you will travel; what you want to do there.',
+      sample: 'Hi Sam, Thank you for your email. I can come in August. I will travel by train because it is cheap. I want to visit the museum and the park. I also want to eat local food. Please send me your address. See you soon! Best wishes, Dina' },
+    t2: { min: 50, mins: 20, p: 'Do you prefer to live in a big city or in a small town? Why? Give reasons. Write at least 50 words.',
+      sample: 'I prefer to live in a small town. First, a small town is quiet and safe. I can sleep well at night. Second, the air is clean and there are many trees. Also, the food is cheaper than in a big city. However, there are fewer jobs in a small town. Finally, I like a small town because it is calm and healthy.' }
+  }
+};
+
+const SPK = [
+  { p: 1, title: 'Part 1: Introduction dan wawancara', q: 'What is your name?', sec: 20, s: 'My name is Rina. I am twenty years old.' },
+  { p: 1, title: 'Part 1: Introduction dan wawancara', q: 'Where do you live?', sec: 20, s: 'I live in Bandung. It is a big city. It is cool and green.' },
+  { p: 1, title: 'Part 1: Introduction dan wawancara', q: 'What do you like to do on the weekend?', sec: 20, s: 'I like to watch movies and meet my friends.' },
+  { p: 1, title: 'Part 1: Introduction dan wawancara', q: 'What food do you like?', sec: 20, s: 'I like fried rice. It is delicious and cheap.' },
+  { p: 2, title: 'Part 2: Kartu topik (bicara panjang)', q: 'Now, please look at the card. Describe your best friend. You have thirty seconds to think.', prep: 30, sec: 45,
+    cue: { h: 'Describe your best friend.', l: ['Who is he or she?', 'What do you do together?', 'Why do you like him or her?'] },
+    s: 'My best friend is Dewi. She is twenty years old. We study together and we play badminton on Saturday. I like her because she is kind and funny. She always helps me.' },
+  { p: 3, title: 'Part 3: Diskusi', q: 'Do you like to meet your friends often? Why?', sec: 25, s: 'Yes, I do. I meet my friends every weekend because it is fun.' },
+  { p: 3, title: 'Part 3: Diskusi', q: 'Is it good to have many friends? Why?', sec: 25, s: 'Yes, it is. Friends can help you when you have a problem.' }
+];
+
+const CRIT = {
+  W: [['ta', 'Menjawab tugas', 'Saya menjawab semua bagian pertanyaan dan cukup panjang.'],
+      ['cc', 'Kalimat nyambung', 'Saya memakai kata seperti and, but, because, so, then.'],
+      ['lr', 'Kosakata', 'Saya memakai kata sederhana yang tepat tanpa mengulang kata yang sama terus.'],
+      ['gr', 'Tata bahasa', 'Kalimat saya punya subjek dan kata kerja, huruf besar di awal, titik di akhir.']],
+  S: [['fc', 'Kelancaran', 'Saya terus berbicara tanpa terlalu lama diam.'],
+      ['lr', 'Kosakata', 'Saya memakai kata yang tepat dan tidak mengulang terus.'],
+      ['gr', 'Tata bahasa', 'Saya berbicara dengan kalimat lengkap, bukan satu kata saja.'],
+      ['pr', 'Pengucapan', 'Orang lain bisa memahami ucapan saya dengan jelas.']]
+};
+const TIPS = {
+  L: 'Ulangi Listening di mode latihan. Fokus pada angka, hari, jam, dan ejaan nama. Latih topik Angka dan Waktu di Diglosa.',
+  R: 'Baca pertanyaan dulu, lalu cari kata kunci di teks. Ingat: NOT GIVEN berarti informasinya tidak disebut sama sekali.',
+  W: 'Tulis kalimat pendek yang lengkap (subjek + kata kerja). Pakai and, but, because agar kalimat tersambung, lalu cek huruf besar dan titik.',
+  S: 'Jawab dengan kalimat lengkap dan satu alasan memakai because. Ucapkan jawabanmu dengan suara keras setiap hari.'
+};
+
+/* ================= STATE ================= */
+const KEY = 'hoot-ielts-a1-v1';
+const defaults = () => ({ type: 'academic', exam: true, mic: false, theme: 'auto', skin: 'petualangan', best: {}, hist: [] });
+let S = (() => { try { const r = localStorage.getItem(KEY); if (r) return Object.assign(defaults(), JSON.parse(r)); } catch (e) {} return defaults(); })();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+let view = 'home', R = null, exitArmed = false;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
+
+const sections = m => m === 'L' ? LIS : m === 'R' ? RD[S.type] : [];
+const qflat = m => { let n = 0; const out = []; sections(m).forEach((s, si) => s.qs.forEach(q => out.push({ n: ++n, si, q }))); return out; };
+const ansd = (m, n) => { const v = R.ans[m][n]; return v !== undefined && v !== null && v !== ''; };
+const isRight = (q, v) => {
+  if (v === undefined || v === null || v === '') return false;
+  if (q.t === 'mcq') return v === q.a;
+  if (q.t === 'tfng') return v === q.a;
+  return q.a.some(x => nk(x) === nk(v));
+};
+const corr = q => q.t === 'mcq' ? q.o[q.a] : q.t === 'tfng' ? q.a : q.a[0];
+const given = (q, v) => (v === undefined || v === null || v === '') ? '(kosong)' : q.t === 'mcq' ? q.o[v] : v;
+
+/* ================= AUDIO / SPEECH ================= */
+const hasTTS = 'speechSynthesis' in window;
+let enVoices = [], keep = [];
+const loadVoices = () => { if (hasTTS) enVoices = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)); };
+if (hasTTS) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function voices() {
+  const us = enVoices.filter(v => /en[-_]US/i.test(v.lang)), gb = enVoices.filter(v => /en[-_]GB/i.test(v.lang));
+  const a = us[0] || enVoices[0] || null;
+  return [a, us[1] || gb[0] || enVoices.find(v => v !== a) || a];
+}
+function speak(text, who, onend) {
+  if (!hasTTS) return;
+  const [a, b] = voices(), u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = .82;
+  const v = who === 'B' ? b : a; if (v) u.voice = v;
+  if (a === b) u.pitch = who === 'B' ? .75 : 1.15;
+  if (onend) u.onend = onend;
+  keep.push(u); if (keep.length > 40) keep.shift();
+  speechSynthesis.speak(u);
+}
+const stopSpeech = () => { try { if (hasTTS) speechSynthesis.cancel(); } catch (e) {} };
+function startRec() {
+  if (!SR || !S.mic) return;
+  try {
+    rec = new SR(); rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = true;
+    rec.onresult = e => { let t = ''; for (const r of e.results) t += r[0].transcript + ' '; R.sp.tr[R.sp.i] = t.trim(); const el = $('#tr'); if (el) el.textContent = t.trim() || '...'; };
+    rec.onerror = () => { const el = $('#tr'); if (el && !R.sp.tr[R.sp.i]) el.textContent = 'Mikrofon tidak tersedia di sini. Tetap bicara dengan suara keras, ya.'; };
+    rec.start();
+  } catch (e) {}
+}
+function stopRec() { try { if (rec) { rec.onend = null; rec.stop(); } } catch (e) {} rec = null; }
+let tt;
+function toast(m) {
+  let el = $('#toast');
+  if (!el) { el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = m; el.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ================= NAVIGATION ================= */
+function go(v) { view = v; render(); window.scrollTo(0, 0); }
+function render() {
+  ({ home: vHomeA, info: vInfo, brief: vBrief, test: vTest, modres: vModRes, final: vFinal })[view]();
+  const w = app.firstElementChild; if (w && view !== 'home') w.classList.add('g');
+}
+function reset() { if (R) { clearInterval(R.timer); } stopSpeech(); stopRec(); R = null; }
+
+function newRun(mods) {
+  reset();
+  R = { mods, i: 0, cur: mods[0], ans: { L: {}, R: {}, W: { 1: '', 2: '' }, S: {} }, res: {}, played: [], playing: null,
+        self: { W: {}, S: {} }, sp: { i: 0, phase: 'ask', left: 0, max: 0, answered: {}, tr: {}, asked: {} }, timer: null, deadline: 0 };
+  go('brief');
+}
+function beginModule() {
+  const m = R.cur;
+  if (S.exam && m !== 'S') { R.deadline = Date.now() + MODS[m].min * 60000; R.timer = setInterval(tick, 500); }
+  go('test');
+}
+function tick() {
+  const el = $('#timer'); if (!R || !R.deadline) return;
+  const r = Math.max(0, Math.round((R.deadline - Date.now()) / 1000));
+  if (el) { el.textContent = '⏱ ' + fmt(r); el.classList.toggle('warn', r <= 120); }
+  if (r <= 0) { toast('Waktu habis. Jawabanmu dikumpulkan otomatis.'); finishModule(); }
+}
+function grade(m) {
+  const items = qflat(m); let c = 0;
+  items.forEach(it => { if (isRight(it.q, R.ans[m][it.n])) c++; });
+  return { c, total: items.length, pct: Math.round(c / items.length * 100) };
+}
+function finishModule() {
+  clearInterval(R.timer); R.deadline = 0; stopSpeech(); stopRec(); R.playing = null; R.armed = false;
+  const m = R.cur;
+  if (m === 'L' || m === 'R') { R.res[m] = grade(m); setBest(m, R.res[m].pct); }
+  go('modres');
+}
+function nextModule() {
+  R.i++;
+  if (R.i < R.mods.length) { R.cur = R.mods[R.i]; go('brief'); } else finalize();
+}
+function finalize() {
+  const keys = R.mods.filter(m => R.res[m]);
+  if (R.mods.length === 4 && !R.saved) {
+    const avg = Math.round(keys.reduce((a, m) => a + R.res[m].pct, 0) / keys.length);
+    S.hist.unshift({ d: dstr(), type: S.type, avg, L: R.res.L.pct, R: R.res.R.pct, W: R.res.W.pct, S: R.res.S.pct });
+    S.hist = S.hist.slice(0, 6); save(); R.saved = true;
+  }
+  go('final');
+}
+const verdict = p => p >= 70 ? ['Lulus level A1', '🎉'] : p >= 50 ? ['Hampir lulus', '💪'] : ['Perlu latihan lagi', '📚'];
+
+/* ================= HOME (lobi) ================= */
+
+
+/* ================= HOME (tampilan Klasik) ================= */
+
+
+/* ================= INFO (dari artikel English Academy) ================= */
+function vInfo() {
+  app.innerHTML = `<div class="wrap info">
+    <div class="top"><button class="icon-btn" data-a="home">← Beranda</button><span class="pill">Sumber: artikel English Academy</span></div>
+    <section class="card"><h2>Apa itu IELTS?</h2>
+      <p>IELTS adalah singkatan dari <b>International English Language Testing System</b>, yaitu sistem pengujian bahasa Inggris internasional untuk kamu yang berencana kuliah, bekerja, atau menetap di luar negeri. Tes ini dikenal berbasis <b>British English</b> dan berasal dari Cambridge (Inggris) dan Australia.</p>
+      <p>Negara yang memakainya antara lain Inggris, Australia, Selandia Baru, Amerika Serikat, dan Kanada. Menurut ielts.org yang dikutip artikel, sekitar 3 juta orang mendaftar setiap tahun. Sertifikat resmi dikeluarkan oleh <b>British Council</b>, <b>Cambridge Assessment English</b>, dan <b>IDP</b>.</p></section>
+    <section class="card"><h2>Dua jenis tes</h2>
+      <div class="two"><div><h3>Academic</h3><p>Untuk studi di negara berbahasa pengantar Inggris atau bekerja di lembaga internasional. Materinya berkaitan dengan riset dan analisis.</p></div>
+      <div><h3>General Training</h3><p>Untuk meniti karier atau pindah dan menetap. Materinya lebih umum dan dekat dengan kehidupan sehari-hari.</p></div></div>
+      <p>Kedua jenis hampir sama. Perbedaannya ada pada <b>Reading</b> dan <b>Writing</b>.</p></section>
+    <section class="card"><h2>Empat keterampilan yang diuji</h2>
+      <div class="tw"><table><tr><th>Bagian</th><th>Tes asli</th><th>Simulasi A1 ini</th></tr>
+      <tr><td><b>Listening</b></td><td>30 menit, 4 section, 40 soal. Monolog dan dialog 2 sampai 4 orang, termasuk subjek akademis.</td><td>15 menit, 4 section, 20 soal</td></tr>
+      <tr><td><b>Reading</b></td><td>60 menit, 3 section, 40 soal*. Berbagai passage yang harus dipahami dan dianalisis.</td><td>30 menit, 3 section, 15 soal</td></tr>
+      <tr><td><b>Writing</b></td><td>60 menit: 20 menit untuk soal pertama (min. 150 kata) dan 40 menit untuk soal kedua (min. 250 kata).</td><td>30 menit: Task 1 (min. 30 kata) dan Task 2 (min. 50 kata)</td></tr>
+      <tr><td><b>Speaking</b></td><td>11 sampai 14 menit, tatap muka dengan examiner yang hampir pasti native speaker. Dilaksanakan sebelum atau sesudah tes lain.</td><td>sekitar 6 menit, 3 bagian dengan pewaktu</td></tr></table></div>
+      <p class="note">*Artikel menulis 60 soal untuk Reading. Sepengetahuan saya, format resmi IELTS Reading adalah 40 soal dalam 60 menit. Cek ielts.org untuk memastikan.</p></section>
+    <section class="card"><h2>Format tes: kertas atau komputer</h2>
+      <p>Jenis soal, alokasi waktu, dan materi sama saja. Bedanya ada di pengalaman hari ujian.</p>
+      <div class="tw"><table><tr><th></th><th>Paper test</th><th>Computer test</th></tr>
+      <tr><td><b>Jadwal</b></td><td>Hingga 48 hari per tahun, biasanya Kamis dan Sabtu</td><td>Setiap hari (7 hari seminggu)</td></tr>
+      <tr><td><b>Pendaftaran</b></td><td>Cek tanggal di situs penyelenggara resmi</td><td>Maksimal 6 hari sebelum tes, tergantung slot</td></tr>
+      <tr><td><b>Pengerjaan</b></td><td>Listening, Reading, Writing di hari yang sama tanpa jeda. Speaking tatap muka, waktunya tentatif.</td><td>Listening, Reading, Writing di komputer. Speaking tetap tatap muka.</td></tr>
+      <tr><td><b>Hasil</b></td><td>13 hari setelah tes (sertifikat dikirim ke alamat)</td><td>3 sampai 5 hari setelah tes</td></tr></table></div></section>
+    <section class="card"><h2>Cara skor di simulasi ini</h2>
+      <ul><li>Listening dan Reading dinilai otomatis. Ejaan jawaban harus benar.</li>
+      <li>Writing dan Speaking kamu nilai sendiri dengan daftar periksa, ditambah pemeriksaan otomatis (jumlah kata, kelengkapan jawaban).</li>
+      <li>Soal A1 jauh lebih mudah dari IELTS asli, jadi skornya <b>tidak dikonversi ke band IELTS</b>. Targetnya: 70% atau lebih berarti lulus level A1.</li></ul>
+      <div class="actions"><button class="btn mint" data-a="home">Kembali dan mulai</button></div></section>
+  </div>`;
+}
+
+/* ================= BRIEF ================= */
+const BRIEF = {
+  L: m => ['Ada 4 section dan 20 soal: isian singkat dan pilihan ganda.',
+    S.exam ? 'Audio diputar satu kali per section, seperti ujian asli. Jawab sambil mendengar.' : 'Mode latihan: audio boleh diputar ulang.',
+    hasTTS ? 'Audio memakai suara perangkatmu. Naikkan volume dan pakai headphone bila bisa.' : 'Perangkat ini tidak mendukung suara, jadi teks audio akan ditampilkan sebagai gantinya.',
+    'Tulis jawaban dengan huruf Inggris. Ejaan harus benar.'],
+  R: m => ['Ada 3 section dan 15 soal.', 'TRUE: sama dengan teks. FALSE: bertentangan dengan teks. NOT GIVEN: tidak disebut di teks.',
+    'Untuk soal isian, ambil kata dari teks. Ejaan harus benar.', `Jenis tes: ${S.type === 'academic' ? 'Academic (teks akademik sederhana)' : 'General Training (pengumuman, iklan, email)'}.`],
+  W: m => ['Ada 2 tugas. Task 1 sebaiknya dikerjakan sekitar 10 menit (minimal 30 kata). Task 2 sekitar 20 menit (minimal 50 kata).',
+    'Tes asli: 20 menit (150 kata) dan 40 menit (250 kata).', 'Setelah selesai, kamu melihat contoh jawaban dan menilai tulisanmu sendiri.',
+    `Jenis tes: ${S.type === 'academic' ? 'Academic (Task 1 menjelaskan grafik)' : 'General Training (Task 1 menulis email)'}.`],
+  S: m => ['Ada 3 bagian: wawancara, kartu topik, dan diskusi. Examiner (suara perangkat) mengajukan pertanyaan.',
+    'Bicaralah dengan suara keras dalam bahasa Inggris selama pewaktu berjalan, dengan kalimat lengkap.',
+    S.mic ? 'Transkrip suara aktif bila browser mendukung.' : 'Transkrip suara mati. Kamu bisa menyalakannya di beranda.',
+    'Di akhir, kamu membandingkan dengan contoh jawaban dan menilai diri sendiri.']
+};
+function vBrief() {
+  const m = R.cur, M = MODS[m];
+  app.innerHTML = `<div class="wrap"><div class="top"><button class="icon-btn" data-a="exit">✕ Keluar</button><span class="pill">Bagian ${R.i + 1} dari ${R.mods.length}</span><button class="icon-btn" data-a="gmenu" aria-label="Menu">☰</button></div>
+    <section class="card"><span class="chip" style="background:${M.c}">${M.e} ${M.name}</span>
+      <h2 style="margin:10px 0">Petunjuk ${M.name}</h2>
+      <div class="info"><ul>${BRIEF[m]().map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <p class="sub" style="margin-top:10px">${S.exam && m !== 'S' ? `Waktu simulasi: ${M.min} menit. Waktu tes asli: ${M.real}.` : `Waktu tes asli: ${M.real}.`}</p>
+      <div class="actions"><button class="btn mint" data-a="begin">Mulai ${M.name}</button></div></section></div>`;
+}
+
+/* ================= TEST ================= */
+const pal = m => `<div class="pal">${qflat(m).map(it => `<button class="pn ${ansd(m, it.n) ? 'on' : ''}" data-a="goq" data-n="${it.n}" aria-label="Soal ${it.n}">${it.n}</button>`).join('')}</div>`;
+const tbar = (title, m, withPal) => `<div class="tbar"><div class="trow"><button class="icon-btn" data-a="exit" aria-label="Keluar">✕</button><div class="gtt">${title}</div>
+  <span class="pill" id="timer">${S.exam && m !== 'S' ? '⏱ ' + fmt(Math.max(0, Math.round((R.deadline - Date.now()) / 1000))) : 'Tanpa timer'}</span><button class="icon-btn" data-a="gmenu" aria-label="Menu">☰</button></div>${withPal ? pal(m) : ''}</div>`;
+function qHTML(m, it) {
+  const { n, q } = it, v = R.ans[m][n]; let body;
+  if (q.t === 'mcq') body = `<div class="choices">${q.o.map((o, i) => `<button class="choice ${v === i ? 'on' : ''}" data-a="ans" data-n="${n}" data-v="${i}"><kbd>${'ABC'[i]}</kbd>${esc(o)}</button>`).join('')}</div>`;
+  else if (q.t === 'tfng') body = `<div class="choices tf">${['TRUE', 'FALSE', 'NOT GIVEN'].map(o => `<button class="choice ${v === o ? 'on' : ''}" data-a="ans" data-n="${n}" data-v="${o}">${o}</button>`).join('')}</div>`;
+  if (q.t === 'fill') {
+    const [pre, post] = q.q.split('___');
+    return `<div class="q" id="q-${n}"><span class="qn">${n}</span>${esc(pre)}<input class="fill" data-n="${n}" value="${esc(v || '')}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Jawaban soal ${n}">${esc(post)}</div>`;
+  }
+  return `<div class="q" id="q-${n}"><span class="qn">${n}</span>${esc(q.q)}${body}</div>`;
+}
+function vTest() { ({ L: tL, R: tR, W: tW, S: tS })[R.cur](); }
+
+function tL() {
+  const items = qflat('L');
+  const secs = LIS.map((s, si) => `<section class="card"><div class="sh"><span class="chip">Section ${si + 1}</span><b>${s.k}</b></div>
+    <div class="player"><button class="btn sky" data-a="play" data-i="${si}" id="pl${si}" ${hasTTS ? '' : 'disabled'}>▶ Putar audio</button><span class="sub" id="ps${si}">${hasTTS ? (S.exam ? 'Audio diputar satu kali.' : 'Audio boleh diulang.') : 'Suara tidak didukung di perangkat ini.'}</span></div>
+    ${hasTTS ? '' : `<div class="scriptbox"><b>Teks audio:</b><br>${s.script.map(l => esc(l[1])).join(' ')}</div>`}
+    ${items.filter(it => it.si === si).map(it => qHTML('L', it)).join('')}</section>`).join('');
+  app.innerHTML = `<div class="wrap">${tbar('Listening', 'L', true)}${secs}<div class="actions c"><button class="btn mint" data-a="submit">Kumpulkan jawaban</button></div></div>`;
+  LIS.forEach((s, si) => { if (R.played[si]) setPS(si, R.playing === si ? 'playing' : 'done'); });
+}
+function setPS(i, st) {
+  const b = $('#pl' + i), p = $('#ps' + i); if (!b) return;
+  if (st === 'playing') { b.disabled = true; b.textContent = '🔊 Sedang diputar...'; p.textContent = 'Dengarkan dan jawab sambil mendengar.'; }
+  else if (S.exam) { b.disabled = true; b.textContent = '✔ Audio selesai'; p.textContent = 'Dalam ujian asli, audio hanya diputar satu kali.'; }
+  else { b.disabled = false; b.textContent = '▶ Putar lagi'; p.textContent = 'Mode latihan: audio boleh diulang.'; }
+}
+function play(i) {
+  if (!hasTTS || R.playing !== null || (S.exam && R.played[i])) return;
+  R.played[i] = true; R.playing = i; stopSpeech(); setPS(i, 'playing');
+  const sc = LIS[i].script;
+  sc.forEach(([who, text], k) => speak(text, who, k === sc.length - 1 ? () => { if (R) { R.playing = null; setPS(i, 'done'); } } : null));
+}
+
+function tR() {
+  const items = qflat('R');
+  const secs = RD[S.type].map((s, si) => {
+    const passage = s.text.map(t => t.startsWith('#') ? `<h4>${esc(t.slice(1))}</h4>` : `<p>${esc(t)}</p>`).join('');
+    return `<section class="card"><div class="sh"><span class="chip">Section ${si + 1}</span><b>${s.k}</b></div>
+      <div class="rd"><div class="passage">${passage}</div><div>${items.filter(it => it.si === si).map(it => qHTML('R', it)).join('')}</div></div></section>`;
+  }).join('');
+  app.innerHTML = `<div class="wrap">${tbar('Reading', 'R', true)}${secs}<div class="actions c"><button class="btn mint" data-a="submit">Kumpulkan jawaban</button></div></div>`;
+}
+
+function tW() {
+  const w = WR[S.type];
+  const chart = w.t1.chart ? `<div class="chart">${w.t1.chart.map(([k, v]) => `<div class="br"><span>${k}</span><div class="bar" style="width:${v / 8 * 100}%"></div><b>${v}</b></div>`).join('')}<small>Number of students (total: 20)</small></div>` : '';
+  const task = (i, t) => `<section class="card"><span class="chip">Task ${i} (saran waktu ${t.mins} menit)</span>
+    <p style="margin-top:10px">${esc(t.p)}</p>${i === 1 ? chart : ''}
+    <textarea class="ta" data-w="${i}" placeholder="Write your answer here..." spellcheck="false">${esc(R.ans.W[i])}</textarea>
+    <div class="wcount" id="wc${i}"></div></section>`;
+  app.innerHTML = `<div class="wrap">${tbar('Writing', 'W', false)}${task(1, w.t1)}${task(2, w.t2)}<div class="actions c"><button class="btn mint" data-a="submit">Kumpulkan tulisan</button></div></div>`;
+  updWC(1); updWC(2);
+}
+function updWC(i) {
+  const el = $('#wc' + i); if (!el) return;
+  const n = wc(R.ans.W[i]), min = WR[S.type]['t' + i].min;
+  el.textContent = `${n} kata (minimal ${min})`; el.classList.toggle('ok', n >= min);
+}
+
+/* speaking */
+function tS() {
+  const sp = R.sp, st = SPK[sp.i], n = SPK.length;
+  const cue = st.cue ? `<div class="cue"><b>${esc(st.cue.h)}</b><ul>${st.cue.l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '';
+  let body = '';
+  if (sp.phase === 'ask') {
+    body = `<div class="bubble">🧑‍🏫 ${esc(st.q)}</div>${cue}
+      <div class="actions"><button class="btn sky" data-a="spask">🔊 Dengar pertanyaan lagi</button>
+      <button class="btn mint" data-a="spgo">${st.prep ? `Mulai persiapan (${st.prep} detik)` : `🎤 Mulai bicara (${st.sec} detik)`}</button>
+      <button class="btn ghost" data-a="spskip">Lewati</button></div>`;
+  } else if (sp.phase === 'prep') {
+    body = `<div class="bubble">Siapkan poin-poinmu.</div>${cue}<div class="timebar"><i id="spb" style="width:${sp.left / sp.max * 100}%"></i></div>
+      <div class="actions"><span class="pill">Persiapan: <span id="spt">${sp.left}</span> detik</span><button class="btn mint" data-a="spskipprep">Mulai bicara sekarang</button></div>`;
+  } else if (sp.phase === 'speak') {
+    body = `<div class="bubble">🧑‍🏫 ${esc(st.q)}</div>${cue}<div class="timebar"><i id="spb" style="width:${sp.left / sp.max * 100}%"></i></div>
+      <div class="actions"><span class="pill">🎤 Bicara: <span id="spt">${sp.left}</span> detik</span><button class="btn coral" data-a="spdone">Selesai</button></div>
+      ${S.mic ? `<div class="tr" id="tr">${esc(sp.tr[sp.i] || (SR ? 'Mendengarkan...' : 'Browser ini belum mendukung transkrip suara.'))}</div>` : ''}`;
+  } else {
+    body = `<div class="bubble">Jawabanmu tersimpan.</div>${S.mic && sp.tr[sp.i] ? `<div class="tr">${esc(sp.tr[sp.i])}</div>` : ''}
+      <div class="actions"><button class="btn mint" data-a="spnext">${sp.i + 1 >= n ? 'Selesai, lihat contoh jawaban' : 'Pertanyaan berikutnya'}</button></div>`;
+  }
+  app.innerHTML = `<div class="wrap">${tbar('Speaking', 'S', false)}<section class="card"><span class="chip">${st.title}</span>
+    <p class="sub" style="margin-top:8px">Pertanyaan ${sp.i + 1} dari ${n}</p>${body}</section></div>`;
+  if (sp.phase === 'ask' && !sp.asked[sp.i]) { sp.asked[sp.i] = true; setTimeout(() => { if (R && R.cur === 'S') speak(st.q, 'B'); }, 300); }
+}
+function spStart(phase, secs) {
+  const sp = R.sp; clearInterval(R.timer); sp.phase = phase; sp.left = secs; sp.max = secs; stopSpeech();
+  tS(); if (phase === 'speak') { sp.answered[sp.i] = true; startRec(); }
+  R.timer = setInterval(() => {
+    sp.left--; const t = $('#spt'), b = $('#spb');
+    if (t) t.textContent = Math.max(0, sp.left); if (b) b.style.width = Math.max(0, sp.left / sp.max * 100) + '%';
+    if (sp.left <= 0) { clearInterval(R.timer); spEnd(phase); }
+  }, 1000);
+}
+function spEnd(phase) {
+  const sp = R.sp, st = SPK[sp.i];
+  if (phase === 'prep') spStart('speak', st.sec); else { stopRec(); sp.phase = 'done'; tS(); }
+}
+
+/* ================= MODULE RESULT ================= */
+function selfHTML(m) {
+  return `<div class="crit">${CRIT[m].map(([k, t, d]) => `<div><div class="t">${t}</div><div class="sub" style="font-size:.9rem">${d}</div>
+    <div class="seg" style="margin-top:6px">${[['Belum', 0], ['Sebagian', 1], ['Ya', 2]].map(([l, v]) => `<button class="${R.self[m][k] === v ? 'on' : ''}" data-a="self" data-g="${m}" data-c="${k}" data-v="${v}">${l}</button>`).join('')}</div></div>`).join('')}</div>`;
+}
+function vModRes() {
+  const m = R.cur, M = MODS[m];
+  let html = '';
+  if (m === 'L' || m === 'R') {
+    const r = R.res[m], [vt, em] = verdict(r.pct);
+    const rows = qflat(m).map(it => { const v = R.ans[m][it.n], ok = isRight(it.q, v);
+      return `<div class="rv ${ok ? 'ok' : 'no'}"><span>${ok ? '✅' : '❌'}</span><div><b>Soal ${it.n}:</b> ${esc(it.q.q.replace('___', '____'))}<small>Jawabanmu: ${esc(given(it.q, v))}${ok ? '' : ` | Jawaban benar: ${esc(corr(it.q))}`}</small>${it.q.e ? `<small>${esc(it.q.e)}</small>` : ''}</div></div>`; }).join('');
+    const scripts = m === 'L' ? LIS.map((s, si) => `<details><summary>Teks audio Section ${si + 1}</summary><div class="scriptbox">${s.script.map(l => esc(l[1])).join('<br>')}</div></details>`).join('') : '';
+    html = `<section class="card" style="text-align:center"><span class="chip" style="background:${M.c}">${M.e} ${M.name}</span><div class="score">${r.c}/${r.total}</div><h2>${em} ${vt} (${r.pct}%)</h2></section>
+      <section class="card"><h3>Pembahasan</h3>${rows}${scripts}</section>
+      <div class="actions c"><button class="btn mint" data-a="nextmod">${R.i + 1 < R.mods.length ? 'Lanjut ke bagian berikutnya' : 'Lihat hasil akhir'}</button></div>`;
+  } else if (m === 'W') {
+    const w = WR[S.type], link = /\b(and|but|because|so|then|also|first|second|however|finally)\b/gi;
+    const card = (i, t) => { const txt = R.ans.W[i] || '', n = wc(txt), sent = (txt.match(/[^.!?]+[.!?]+/g) || []).length, lk = new Set((txt.match(link) || []).map(x => x.toLowerCase())).size;
+      return `<section class="card"><span class="chip">Task ${i}</span>
+        <div class="met"><span class="pill">${n} kata ${n >= t.min ? '✅' : '❌ (min. ' + t.min + ')'}</span><span class="pill">${sent} kalimat</span><span class="pill">${lk} kata penghubung</span></div>
+        <p class="sub">Tulisanmu:</p><div class="tr" style="white-space:pre-wrap;color:inherit">${esc(txt) || '(kosong)'}</div>
+        <details><summary>Lihat contoh jawaban</summary><div class="scriptbox">${esc(t.sample)}</div></details></section>`; };
+    const copy = `Please give feedback on my IELTS Writing practice (A1 level). Use the 4 IELTS criteria: Task Response, Coherence and Cohesion, Lexical Resource, Grammar. Explain simply in Indonesian and correct my mistakes.\n\nTask 1: ${w.t1.p}\nMy answer: ${R.ans.W[1] || '(empty)'}\n\nTask 2: ${w.t2.p}\nMy answer: ${R.ans.W[2] || '(empty)'}`;
+    html = `${card(1, w.t1)}${card(2, w.t2)}
+      <section class="card"><h3>Nilai tulisanmu sendiri</h3><p class="sub">Bandingkan dengan contoh jawaban, lalu pilih yang paling sesuai.</p>${selfHTML('W')}
+        <details><summary>Minta Claude mengoreksi tulisanmu</summary><p class="note">Salin teks ini lalu tempel ke obrolan Claude.</p><textarea class="copybox" id="cp" readonly>${esc(copy)}</textarea>
+        <div class="actions"><button class="btn sm sky" data-a="copy">Salin teks</button></div></details></section>
+      <div class="actions c"><button class="btn mint" data-a="savew">Simpan skor dan lanjut</button></div>`;
+  } else {
+    const rows = SPK.map((st, i) => `<div class="rv ${R.sp.answered[i] ? 'ok' : 'no'}"><span>${R.sp.answered[i] ? '✅' : '⏭️'}</span><div><b>${esc(st.q)}</b>
+      ${R.sp.tr[i] ? `<small>Transkrip: ${esc(R.sp.tr[i])}</small>` : ''}<small>Contoh jawaban: ${esc(st.s)}</small></div></div>`).join('');
+    html = `<section class="card"><h3>Pertanyaan dan contoh jawaban</h3>${rows}</section>
+      <section class="card"><h3>Nilai ucapanmu sendiri</h3><p class="sub">Jujur saja, ini hanya untuk melihat kemajuanmu.</p>${selfHTML('S')}</section>
+      <div class="actions c"><button class="btn mint" data-a="saves">Simpan skor dan lanjut</button></div>`;
+  }
+  app.innerHTML = `<div class="wrap"><div class="top"><span class="brand" style="font-size:1.3rem">Hasil ${M.name}</span></div>${html}</div>`;
+}
+
+/* ================= FINAL ================= */
+function vFinal() {
+  const keys = R.mods.filter(m => R.res[m]);
+  const avg = Math.round(keys.reduce((a, m) => a + R.res[m].pct, 0) / keys.length), [vt, em] = verdict(avg);
+  const low = keys.slice().sort((a, b) => R.res[a].pct - R.res[b].pct)[0];
+  const cards = keys.map(m => `<div class="rc" style="--c:${MODS[m].c}"><div style="font-size:1.8rem">${MODS[m].e}</div><b>${MODS[m].name}</b><div class="score">${R.res[m].pct}%</div><small>${verdict(R.res[m].pct)[0]}</small></div>`).join('');
+  const nextLine = avg >= 70 ? 'Kamu siap naik ke A2. Lanjutkan dengan kosakata dan latihan yang lebih menantang.' : 'Ulangi simulasi setelah berlatih. Fokus pada bagian yang paling rendah.';
+  app.innerHTML = `<div class="wrap"><div class="top"><span class="brand">Hasil akhir</span><span class="pill">${S.type === 'academic' ? 'Academic' : 'General Training'}</span></div>
+    <section class="card" style="text-align:center"><div style="font-size:3.5rem">${em}</div><div class="score">${avg}%</div><h2>${vt}</h2><p class="sub">${nextLine}</p></section>
+    <h2 class="sec">Skor per bagian</h2><div class="res4">${cards}</div>
+    <section class="card" style="margin-top:18px"><h3>Saran untuk bagian ${MODS[low].name}</h3><p>${TIPS[low]}</p>
+      <p class="note">Skor Writing dan Speaking berasal dari penilaian dirimu sendiri, jadi anggap sebagai perkiraan. Skor tidak dikonversi ke band IELTS.</p>
+      <div class="actions"><button class="btn mint" data-a="full">Ulangi simulasi penuh</button><a class="btn sky" href="${HOOT}" target="_blank" rel="noopener">Latih kosakata di Hoot A1</a><button class="btn ghost" data-a="home">Kembali ke peta</button><button class="btn ghost" data-a="gtitle">🏠 Menu depan</button></div></section></div>`;
+}
+
+/* ================= ACTIONS ================= */
+const A = {
+  home() { reset(); go('home'); },
+  gmenu() { HOST.pauseMenu({ note: R ? 'Ujian yang sedang berjalan akan dihentikan dan tidak dinilai.' : '', mapLabel: 'Kembali ke Istana', toMap: () => A.home(), toTitle: () => A.gtitle() }); },
+  gtitle() { reset(); go('home'); HOST.showTitle(); },
+  info() { go('info'); },
+  exit() {
+    if (!exitArmed) { exitArmed = true; toast('Ketuk sekali lagi untuk keluar. Progres bagian ini akan hilang.'); setTimeout(() => exitArmed = false, 3000); }
+    else { exitArmed = false; A.home(); }
+  },
+  type(el) { S.type = el.dataset.v; save(); render(); },
+  exam(el) { S.exam = el.dataset.v === '1'; save(); render(); },
+  mic(el) { S.mic = el.dataset.v === '1'; save(); render(); },
+  full() { newRun(['L', 'R', 'W', 'S']); },
+  single(el) { newRun([el.dataset.m]); },
+  begin() { beginModule(); },
+  play(el) { play(+el.dataset.i); },
+  goq(el) { const t = $('#q-' + el.dataset.n); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); },
+  ans(el) {
+    const v = el.dataset.v, m = R.cur; R.ans[m][+el.dataset.n] = /^\d+$/.test(v) ? +v : v;
+    el.parentElement.querySelectorAll('.choice').forEach(b => b.classList.toggle('on', b === el)); updPal();
+  },
+  submit(el) {
+    const m = R.cur;
+    if (m === 'W' || R.armed) { finishModule(); return; }
+    const missing = qflat(m).filter(it => !ansd(m, it.n)).length;
+    if (missing > 0) { R.armed = true; el.textContent = `Masih ${missing} soal kosong. Ketuk lagi untuk kumpulkan`; setTimeout(() => { R.armed = false; if (el.isConnected) el.textContent = 'Kumpulkan jawaban'; }, 4000); }
+    else finishModule();
+  },
+  self(el) {
+    const g = el.dataset.g; R.self[g][el.dataset.c] = +el.dataset.v;
+    el.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el));
+  },
+  copy() {
+    const t = $('#cp'); t.focus(); t.select();
+    try { navigator.clipboard.writeText(t.value).then(() => toast('Teks disalin'), () => { document.execCommand('copy'); toast('Teks disalin'); }); }
+    catch (e) { try { document.execCommand('copy'); toast('Teks disalin'); } catch (e2) { toast('Pilih teks lalu salin manual'); } }
+  },
+  savew() {
+    const w = WR[S.type], pts = (wc(R.ans.W[1]) >= w.t1.min ? 2 : 0) + (wc(R.ans.W[2]) >= w.t2.min ? 2 : 0);
+    const self = Object.values(R.self.W).reduce((a, b) => a + b, 0);
+    R.res.W = { pct: Math.round((pts + self) / 12 * 100) }; setBest('W', R.res.W.pct); nextModule();
+  },
+  saves() {
+    const done = Object.keys(R.sp.answered).length, self = Object.values(R.self.S).reduce((a, b) => a + b, 0);
+    R.res.S = { pct: Math.round((done / SPK.length * 8 + self) / 16 * 100) }; setBest('S', R.res.S.pct); nextModule();
+  },
+  nextmod() { nextModule(); },
+  /* speaking */
+  spask() { speak(SPK[R.sp.i].q, 'B'); },
+  spgo() { const st = SPK[R.sp.i]; st.prep ? spStart('prep', st.prep) : spStart('speak', st.sec); },
+  spskipprep() { clearInterval(R.timer); spStart('speak', SPK[R.sp.i].sec); },
+  spdone() { clearInterval(R.timer); stopRec(); R.sp.phase = 'done'; tS(); },
+  spnext() { stopSpeech(); const sp = R.sp; if (sp.i + 1 >= SPK.length) { finishModule(); return; } sp.i++; sp.phase = 'ask'; tS(); },
+  spskip() { A.spnext(); }
+};
+function updPal() { document.querySelectorAll('.pn').forEach(b => b.classList.toggle('on', ansd(R.cur, +b.dataset.n))); }
+
+/* ================= PETUALANGAN: Akademi IELTS ================= */
+const EX = [
+  { id: 'L', mod: 'L', name: 'Aula Dengar', e: '🎧', npc: { n: 'Sera si Pendengar', e: '🧝‍♀️', x: 722, y: 222 }, go: [722, 280],
+    say: [['Shh... listen carefully. The bell rings only once!', 'Sst... dengarkan baik-baik. Lonceng hanya berbunyi sekali!'], ['Can you hear the words and write the answers?', 'Bisakah kamu mendengar kata-katanya dan menulis jawabannya?']] },
+  { id: 'R', mod: 'R', name: 'Perpustakaan', e: '📖', npc: { n: 'Pustakawan Bima', e: '👨‍🏫', x: 273, y: 222 }, go: [273, 280],
+    say: [['Welcome to the library. Please read the texts slowly.', 'Selamat datang di perpustakaan. Tolong baca teksnya pelan-pelan.'], ['Is it TRUE, FALSE or NOT GIVEN? Look for the key words.', 'Apakah TRUE, FALSE, atau NOT GIVEN? Cari kata kuncinya.']] },
+  { id: 'W', mod: 'W', name: 'Meja Juru Tulis', e: '✍️', npc: { n: 'Juru Tulis Ayu', e: '🧑‍🎨', x: 226, y: 474 }, go: [285, 440],
+    say: [['Hello! I have paper and ink for you.', 'Halo! Aku punya kertas dan tinta untukmu.'], ['Write short sentences. Check the capital letters and full stops.', 'Tulis kalimat pendek. Periksa huruf besar dan titiknya.']] },
+  { id: 'S', mod: 'S', name: 'Panggung Bicara', e: '🗣️', npc: { n: 'Rangga si Penyair', e: '🧑‍🎤', x: 758, y: 474 }, go: [735, 525],
+    say: [['Good day! Please speak loudly and clearly.', 'Selamat siang! Tolong bicara dengan keras dan jelas.'], ['Answer with full sentences and give one reason.', 'Jawab dengan kalimat lengkap dan beri satu alasan.']] },
+  { id: 'full', mod: 'full', name: 'Gerbang Akademi', e: '🏰', npc: { n: 'Raja Penguji', e: '🤴', x: 503, y: 186 }, go: [503, 244],
+    say: [['Welcome to the IELTS Academy, traveler!', 'Selamat datang di Akademi IELTS, pengelana!'], ['Listening, Reading, Writing and Speaking. Are you ready for the full test?', 'Listening, Reading, Writing, dan Speaking. Siapkah kamu untuk ujian penuh?']] },
+  { id: 'portal', mod: 'portal', name: 'Portal Pulang', e: '🔮', npc: { n: 'Penjaga Portal', e: '🧙‍♀️', x: 350, y: 492 }, go: [350, 440],
+    say: [['This portal goes back to the Word Forest.', 'Portal ini menuju kembali ke Hutan Kata.'], ['Learn more words there, then come back to the Academy.', 'Pelajari lebih banyak kata di sana, lalu kembali ke Akademi.']] }
+];
+const ADV = { px: 503, py: 517, tx: null, ty: null, cb: null, face: 1, keys: new Set(), dlg: null, more: false, panel: null, near: -1, raf: 0, last: 0, stuck: 0, walk: 0 };
+/* tata letak Istana mengikuti gambar latar (src/castle.webp): satuan dunia 1000 x 640 */
+const CB = { x0: 40, x1: 960, y0: 125, y1: 590 };   /* batas area jalan karakter */
+const OBST = [
+  [40, 70, 60], [100, 100, 62], [160, 120, 55], [195, 165, 26], [90, 222, 26], [248, 45, 42], [30, 240, 45],                              /* perpustakaan */
+  [960, 40, 55], [930, 100, 75], [900, 170, 60], [880, 232, 38], [780, 87, 45], [765, 30, 25], [773, 135, 22], [962, 248, 25],           /* aula lonceng */
+  [364, 50, 55], [619, 44, 55], [430, 30, 40], [560, 25, 40], [403, 118, 22], [612, 118, 22], [372, 135, 10], [641, 135, 10],           /* aula utama dan menara */
+  [470, 325, 50], [540, 325, 50], [505, 320, 52], [380, 325, 22], [630, 325, 22], [432, 380, 20], [578, 380, 20], [399, 272, 10], [607, 272, 10],   /* air mancur */
+  [60, 330, 70], [130, 340, 55], [35, 395, 45], [110, 395, 40], [200, 313, 38], [140, 265, 30], [210, 395, 24], [245, 385, 20], [211, 408, 14], [255, 360, 12],   /* paviliun */
+  [930, 350, 60], [900, 420, 55], [940, 470, 45], [850, 470, 28], [1000, 440, 40], [897, 320, 40], [820, 313, 22], [977, 306, 32], [769, 360, 12],   /* panggung */
+  [255, 560, 34], [299, 575, 40], [348, 560, 34], [237, 565, 15], [361, 565, 15],                                                       /* lengkung portal */
+  [44, 532, 45], [36, 598, 45], [168, 569, 34], [90, 545, 40], [150, 512, 25], [135, 505, 22], [100, 455, 10],                           /* kiri bawah */
+  [430, 555, 20], [583, 555, 20], [440, 590, 22], [575, 590, 22], [802, 545, 12], [870, 560, 40], [915, 555, 40], [740, 590, 45], [965, 530, 45], [960, 590, 40]   /* tembok bawah */
+];
+const SOLID = OBST.concat(EX.map(e => [e.npc.x, e.npc.y, 28]));
+function setBest(m, p) { S.best = S.best || {}; if (p > (S.best[m] || 0)) { S.best[m] = p; save(); } }
+const bestAvg = () => S.hist.length ? Math.max(...S.hist.map(h => h.avg)) : 0;
+const exBest = e => e.id === 'full' ? bestAvg() : e.id === 'portal' ? 0 : ((S.best || {})[e.mod] || 0);
+const exTodo = e => e.id !== 'portal' && exBest(e) < 70;
+function questList() {
+  const b = S.best || {}, q = [];
+  ['L', 'R', 'W', 'S'].forEach(m => q.push({ t: `Lulus ${MODS[m].name} (70% atau lebih)`, d: `Terbaik: ${b[m] || 0}%`, p: (b[m] || 0) / 70, done: (b[m] || 0) >= 70, id: m }));
+  q.push({ t: 'Selesaikan satu simulasi penuh', d: S.hist.length ? `${S.hist.length} kali` : 'Belum pernah', p: S.hist.length ? 1 : 0, done: S.hist.length > 0, id: 'full' });
+  q.push({ t: 'Capai rata-rata 70% di simulasi penuh', d: `Terbaik: ${bestAvg()}%`, p: bestAvg() / 70, done: bestAvg() >= 70, id: 'full' });
+  return q.sort((a, b2) => a.done - b2.done);
+}
+
+/* --- gambar dunia --- */
+function npcSVG(a, i) {
+  const { x, y, e } = a.npc, todo = exTodo(a);
+  return `<g class="npc" id="npc-${i}" data-a="npc" data-i="${i}" transform="translate(${x} ${y})" role="button" aria-label="Bicara dengan ${a.npc.n}"><circle r="54" cy="-28" fill="transparent"/><ellipse cy="4" rx="22" ry="7" fill="rgba(0,0,0,.28)"/><g class="em"><text y="-8" font-size="46" text-anchor="middle">${e}</text></g>${todo ? `<g transform="translate(0 -76)"><g class="mk"><circle r="11" fill="#ffd24a" stroke="#7a2a0a" stroke-width="3"/><text y="5" text-anchor="middle" font-size="15" font-weight="800" fill="#7a2a0a" font-family="Nunito,sans-serif">!</text></g></g>` : ''}<g transform="translate(0 26)"><rect x="-56" y="-11" width="112" height="21" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/><text y="4" font-size="12" text-anchor="middle" fill="#fff3d0" font-family="'Lilita One',sans-serif">${a.name}</text></g></g>`;
+}
+const ISTANA_IMG = '<image href="data:image/webp;base64,__ISTANA_B64__" x="0" y="0" width="1000" height="640" preserveAspectRatio="none"/>';   /* lukisan latar: src/castle.webp */
+function worldSVG() {
+  return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Akademi IELTS">
+    ${ISTANA_IMG}
+    <g class="npc door" data-a="npc" data-i="5" transform="translate(299 580)" role="button" aria-label="Portal ke Hutan Kata"><circle r="62" cy="-24" fill="transparent"/><ellipse cy="-12" rx="30" ry="36" fill="rgba(190,120,255,.20)" class="portal"/><g transform="translate(-130 -6)"><rect x="-84" y="-12" width="168" height="22" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/><text y="4" font-size="12" text-anchor="middle" fill="#fff3d0" font-family="'Lilita One',sans-serif">🌲 Portal ke Hutan Kata</text></g></g>
+    ${EX.map(npcSVG).join('')}
+    <g id="pl" transform="translate(${ADV.px} ${ADV.py})" pointer-events="none">${heroBody}</g></svg>`;
+}
+
+/* --- tampilan utama peta --- */
+function vHomeA() {
+  const qOpen = questList().filter(q => !q.done).length, ba = bestAvg();
+  const cards = EX.filter(e => e.id !== 'portal').map(e => { const i = EX.indexOf(e), b = exBest(e);
+    return `<button class="acard" data-a="goarea" data-i="${i}"><span class="ae">${e.e}</span><b>${e.name}</b><small>${e.id === 'full' ? 'Simulasi penuh' : MODS[e.mod].desc}. Terbaik: ${b ? b + '%' : 'belum ada'}</small><div class="bar mini"><span class="m" style="width:${Math.min(100, b)}%"></span></div></button>`; }).join('');
+  const compact = compactNow(); ADV.compact = compact;
+  const scene = `<div class="advwrap${compact ? ' full' : ''}${HOST.S().ctrl === 'off' ? '' : ' hasctl'}"><div class="adv">${worldSVG()}
+      <div class="hudL"><div class="ahud"><div class="aav">${heroHead()}</div><div class="aname">Peserta Ujian</div></div>
+      <div class="alv">Terbaik ${ba}%<i><b style="width:${Math.min(100, ba)}%"></b></i></div></div>
+      <div class="abtns">
+        <button class="abtn" data-a="panel" data-p="hist" aria-label="Riwayat"><span class="ic">🏆</span><span class="lb">Riwayat</span></button>
+        <button class="abtn" data-a="info" aria-label="Info IELTS"><span class="ic">📜</span><span class="lb">Info</span></button>
+        <button class="abtn" data-a="panel" data-p="quest" aria-label="Misi"><span class="ic">❗</span><span class="lb">Misi</span>${qOpen ? `<span class="bdg">${qOpen}</span>` : ''}</button>
+        <button class="abtn" data-a="panel" data-p="opt" aria-label="Opsi"><span class="ic">⚙️</span><span class="lb">Opsi</span></button>
+      </div>
+      ${controlsHTML(HOST.S())}
+      <button class="talk" id="talk" data-a="talk" hidden>Bicara</button></div>
+    <div class="ovl" id="ovl"></div></div>`;
+  const more = `
+    <div class="advbar">${EX.map((e, i) => `<button class="btn sm" data-a="goarea" data-i="${i}">${e.e} ${e.name}</button>`).join('')}</div>
+    <p class="advhelp">Ketuk tanah untuk berjalan dan ketuk penguji bertanda ❗ untuk bicara.<span class="kbhint"> Di komputer: panah atau WASD, lalu Enter untuk bicara.</span></p>
+    <div class="advlist">${cards}</div>`;
+  app.innerHTML = `<div class="wrap">${scene}${compact ? '' : more}</div>`;
+  document.documentElement.classList.toggle('adv-full', compact);
+  ADV.near = -1; renderOverlay(); updateCam(ADV, 0, true); bindControls(ADV, advBusy); startLoop();
+}
+function renderOverlay() {
+  const o = $('#ovl'); if (!o) return;
+  if (ADV.panel) { o.className = 'ovl modal'; o.innerHTML = panelHTML(ADV.panel); }
+  else if (ADV.dlg != null) { o.className = 'ovl modal'; o.innerHTML = dlgHTML(); }
+  else { o.className = 'ovl'; o.innerHTML = ''; }
+  const t = $('#talk'); if (t) t.hidden = advBusy() || ADV.near < 0;
+  const wr = $('.advwrap'); if (wr) wr.classList.toggle('busy', advBusy());
+  if (advBusy()) resetJoy(ADV);
+}
+function dlgHTML() {
+  const e = EX[ADV.dlg], b = exBest(e), portal = e.id === 'portal', on = c => c ? 'on' : '';
+  const accept = portal
+    ? `<a class="acc" href="${HOOT}" target="_blank" rel="noopener">Terima: Kembali ke Hutan Kata</a>`
+    : `<button class="acc" data-a="accept">Terima: ${e.id === 'full' ? 'Simulasi Penuh' : 'Ujian ' + MODS[e.mod].name}</button>`;
+  const stat = portal ? '' : `<div class="dlgstat">Skor terbaikmu: ${b ? b + '%' : 'belum ada'}. ${S.type === 'academic' ? 'Academic' : 'General Training'}, ${S.exam ? 'mode ujian' : 'mode latihan'}.</div>`;
+  const more = portal ? '' : `<div class="dlgmore"><button data-a="more">${ADV.more ? 'Sembunyikan pengaturan' : 'Atur jenis tes dan mode'}</button>${ADV.more ? `
+    <button class="${on(S.type === 'academic')}" data-a="type" data-v="academic">Academic</button><button class="${on(S.type === 'general')}" data-a="type" data-v="general">General Training</button>
+    <button class="${on(S.exam)}" data-a="exam" data-v="1">Mode ujian</button><button class="${on(!S.exam)}" data-a="exam" data-v="0">Latihan santai</button>` : ''}</div>`;
+  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${e.npc.n}"><div class="enchead"><div class="dlgav">${e.npc.e}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${e.e} ${e.name}</div></div></div>
+    <div class="dlglines">${e.say.map(l => `<div class="dlgline"><div class="en">${l[0]}</div><div class="id">${l[1]}</div></div>`).join('')}</div>${stat}
+    <div class="dlgacts">${accept}<button class="ign" data-a="ignore">Abaikan</button></div>${more}</div>`;
+}
+function panelHTML(p) {
+  const head = t => `<div class="mpanel" role="dialog" aria-label="${t}"><div class="mhead"><h3>${t}</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody">`;
+  let body = '';
+  if (p === 'hist') {
+    const b = S.best || {};
+    body = head('Riwayat Ujian') + `<h4 style="margin-bottom:8px">Skor terbaik per bagian</h4>` + ['L', 'R', 'W', 'S'].map(m => `<div class="qrow ${(b[m] || 0) >= 70 ? 'done' : ''}"><div><b>${MODS[m].e} ${MODS[m].name}</b></div><span>${b[m] || 0}%</span><div class="bar mini"><span class="m" style="width:${Math.min(100, b[m] || 0)}%"></span></div></div>`).join('')
+      + `<h4 style="margin:16px 0 8px">Simulasi penuh</h4>` + (S.hist.length ? S.hist.map(h => `<div class="hrow"><span>${h.avg >= 70 ? '🥇' : h.avg >= 50 ? '🥈' : '🥉'}</span><span><b>${h.d}</b><br><small class="sub">${h.type === 'academic' ? 'Academic' : 'General'}: L ${h.L}%, R ${h.R}%, W ${h.W}%, S ${h.S}%</small></span><b>${h.avg}%</b></div>`).join('') : '<p class="sub">Belum ada simulasi penuh. Bicaralah dengan Raja Penguji di gerbang akademi.</p>');
+  } else if (p === 'quest') {
+    body = head('Daftar Misi') + questList().map(q => `<div class="qrow ${q.done ? 'done' : ''}"><div><b>${q.t}</b><br><small class="sub">${q.d}</small></div>${!q.done ? `<button class="btn sm" data-a="goquest" data-id="${q.id}">Pergi</button>` : '<span></span>'}<div class="bar mini"><span class="m" style="width:${Math.min(100, q.p * 100)}%"></span></div></div>`).join('');
+  } else {
+    const on = c => c ? '' : 'ghost';
+    body = head('Opsi') + HOST.menuBtn() + `<h4 style="margin-bottom:8px">Jenis tes</h4><div class="actions" style="margin-top:0"><button class="btn sm ${on(S.type === 'academic')}" data-a="type" data-v="academic">Academic</button><button class="btn sm ${on(S.type === 'general')}" data-a="type" data-v="general">General Training</button></div>
+      <h4 style="margin:16px 0 8px">Mode</h4><div class="actions" style="margin-top:0"><button class="btn sm ${on(S.exam)}" data-a="exam" data-v="1">Ujian (timer, audio sekali)</button><button class="btn sm ${on(!S.exam)}" data-a="exam" data-v="0">Latihan santai</button></div>
+      <h4 style="margin:16px 0 8px">Transkrip suara (Speaking)</h4><div class="actions" style="margin-top:0"><button class="btn sm ${on(S.mic)}" data-a="mic" data-v="1">Nyala</button><button class="btn sm ${on(!S.mic)}" data-a="mic" data-v="0">Mati</button></div>`;
+  }
+  return body + '</div></div>';
+}
+
+/* --- gerak dan interaksi --- */
+const KM = { ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowUp: 'u', w: 'u', W: 'u', ArrowDown: 'd', s: 'd', S: 'd' };
+const advBusy = () => ADV.dlg != null || !!ADV.panel;
+function walkTo(x, y, cb) { ADV.path = planPath(ADV.px, ADV.py, x, y, SOLID, [CB.x0, CB.x1, CB.y0, CB.y1]); ADV.tx = x; ADV.ty = y; ADV.cb = cb || null; ADV.stuck = 0; }
+function toNpc(i) {
+  const a = EX[i];
+  if (Math.hypot(ADV.px - a.npc.x, ADV.py - a.npc.y) < 95) { openDlg(i); return; }
+  walkTo(a.go[0], a.go[1], () => openDlg(i));
+}
+function openDlg(i) { ADV.dlg = i; ADV.more = false; ADV.tx = null; ADV.cb = null; renderOverlay(); }
+function startLoop() { if (ADV.raf) return; ADV.last = performance.now(); ADV.raf = requestAnimationFrame(frame); }
+function frame(ts) {
+  if (!(view === 'home' && document.getElementById('pl'))) { ADV.raf = 0; return; }
+  const raw = (ts - ADV.last) / 1000 || 0, dt = Math.min(.1, raw); ADV.last = ts;
+  const busy = advBusy(); let dx = 0, dy = 0, mag = 1;
+  if (!busy) {
+    const k = ADV.keys;
+    if (k.size) { dx = (k.has('r') ? 1 : 0) - (k.has('l') ? 1 : 0); dy = (k.has('d') ? 1 : 0) - (k.has('u') ? 1 : 0); if (dx || dy) { ADV.tx = null; ADV.cb = null; } }
+    const jm = Math.hypot(ADV.joy.x, ADV.joy.y);
+    if (!dx && !dy && jm > .12) { dx = ADV.joy.x; dy = ADV.joy.y; mag = Math.min(1, (jm - .12) / .7); ADV.tx = null; ADV.cb = null; }
+    if (!dx && !dy && ADV.tx != null) {
+      const wp = ADV.path && ADV.path.length ? ADV.path[0] : [ADV.tx, ADV.ty];
+      const vx = wp[0] - ADV.px, vy = wp[1] - ADV.py, d = Math.hypot(vx, vy);
+      if (d < 8) { if (ADV.path && ADV.path.length > 1) ADV.path.shift(); else { ADV.path = null; ADV.tx = null; const cb = ADV.cb; ADV.cb = null; if (cb) cb(); } } else { dx = vx / d; dy = vy / d; }
+    }
+  }
+  let moving = false;
+  if (dx || dy) {
+    const n = Math.hypot(dx, dy), sp = 240 * dt * mag;
+    let nx = Math.max(CB.x0, Math.min(CB.x1, ADV.px + dx / n * sp)), ny = Math.max(CB.y0, Math.min(CB.y1, ADV.py + dy / n * sp));
+    const hit = (x, y) => SOLID.some(o => Math.hypot(x - o[0], y - o[1]) < o[2]);
+    if (hit(nx, ny)) {
+      const o = SOLID.find(c => Math.hypot(nx - c[0], ny - c[1]) < c[2]);
+      let rx = ADV.px - o[0], ry = ADV.py - o[1]; const rl = Math.hypot(rx, ry) || 1; rx /= rl; ry /= rl;
+      let tx = -ry, ty = rx; if (tx * dx + ty * dy < 0) { tx = -tx; ty = -ty; }
+      nx = ADV.px + tx * sp; ny = ADV.py + ty * sp;
+      const d2 = Math.hypot(nx - o[0], ny - o[1]);
+      if (d2 < o[2] + 1) { nx = o[0] + (nx - o[0]) / d2 * (o[2] + 1); ny = o[1] + (ny - o[1]) / d2 * (o[2] + 1); }
+      nx = Math.max(CB.x0, Math.min(CB.x1, nx)); ny = Math.max(CB.y0, Math.min(CB.y1, ny));
+      if (hit(nx, ny)) { nx = ADV.px; ny = ADV.py; }
+    }
+    const moved = Math.hypot(nx - ADV.px, ny - ADV.py);
+    if (moved < sp * .2) { if (++ADV.stuck > 20) { ADV.tx = null; ADV.cb = null; ADV.stuck = 0; } } else ADV.stuck = 0;
+    ADV.px = nx; ADV.py = ny; moving = moved > .01; ADV.wd = (ADV.wd || 0) + moved; if (dx) ADV.face = dx > 0 ? 1 : -1;
+  }
+  ADV.walk = moving ? ADV.walk + dt * 14 : 0; if (!moving) ADV.wd = 0;
+  const pl = $('#pl'), pin = $('#plin');
+  if (pl && pin) {
+    pl.setAttribute('transform', `translate(${ADV.px.toFixed(1)} ${ADV.py.toFixed(1)})`);
+    pl.classList.toggle('mv', moving);
+    pin.setAttribute('transform', `scale(${ADV.face} 1)`);
+    heroPose(pl, moving ? Math.floor(ADV.wd * HERO_STEP) % 6 : -1);
+  }
+  let near = -1, bd = 95;
+  EX.forEach((a, i) => { const d = Math.hypot(ADV.px - a.npc.x, ADV.py - a.npc.y); if (d < bd) { bd = d; near = i; } });
+  const ab = $('#act');
+  if (ab) {
+    ab.classList.toggle('ready', near >= 0 && !busy);
+    if (near >= 0 && near !== ADV.near) { const door = EX[near].id === 'portal'; ab.querySelector('.actic').textContent = door ? '🔮' : '💬'; ab.querySelector('.actlb').textContent = door ? 'Masuk' : 'Bicara'; ab.querySelector('.actnm').textContent = EX[near].npc.n; }
+  }
+  if (near !== ADV.near) { ADV.near = near; const t = $('#talk'); if (t) { t.hidden = near < 0 || busy; if (near >= 0) t.textContent = 'Bicara: ' + EX[near].npc.n; } }
+  ADV.raf = requestAnimationFrame(frame);
+}
+function advKey(e, down) {
+  const t = e.target.tagName; if (t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA') return false;
+  const k = KM[e.key];
+  if (k) { if (down) { if (!advBusy()) ADV.keys.add(k); } else ADV.keys.delete(k); e.preventDefault(); return true; }
+  if (!down) return false;
+  if (e.key === 'Enter' || e.key === 'e' || e.key === 'E') {
+    if (ADV.dlg != null) { if (EX[ADV.dlg].id !== 'portal') A.accept(); e.preventDefault(); return true; }
+    if (!ADV.panel && ADV.near >= 0) { openDlg(ADV.near); e.preventDefault(); return true; }
+  }
+  if (e.key === 'Escape') { if (ADV.panel) { A.closep(); return true; } if (ADV.dlg != null) { A.ignore(); return true; } }
+  return false;
+}
+Object.assign(A, {
+  ground(el, e) {
+    if (advBusy() || !e || e.clientX == null || performance.now() - ADV.sup < 350) return;
+    const r = $('#world').getBoundingClientRect(); if (!r.width) return;
+    const c = ADV.cam; walkTo(Math.max(CB.x0, Math.min(CB.x1, c.x + (e.clientX - r.left) / r.width * c.w)), Math.max(CB.y0, Math.min(CB.y1, c.y + (e.clientY - r.top) / r.height * c.h)));
+  },
+  npc(el) { if (!advBusy() && performance.now() - ADV.sup > 350) toNpc(+el.dataset.i); },
+  goarea(el) { if (!advBusy()) toNpc(+el.dataset.i); },
+  talk() { if (ADV.near >= 0 && !advBusy()) openDlg(ADV.near); },
+  accept() {
+    if (ADV.dlg == null) return; const e = EX[ADV.dlg]; if (e.id === 'portal') return;
+    ADV.dlg = null; ADV.keys.clear(); newRun(e.id === 'full' ? ['L', 'R', 'W', 'S'] : [e.mod]);
+  },
+  ignore() { ADV.dlg = null; renderOverlay(); },
+  more() { ADV.more = !ADV.more; renderOverlay(); },
+  panel(el) { ADV.panel = el.dataset.p; ADV.keys.clear(); ADV.tx = null; ADV.cb = null; renderOverlay(); },
+  closep() { const p = ADV.panel; ADV.panel = null; if (p === 'quest') render(); else renderOverlay(); },
+  goquest(el) { ADV.panel = null; render(); toNpc(EX.findIndex(e => e.id === el.dataset.id)); },
+});
+document.addEventListener('keydown', e => { if (view === 'home') advKey(e, true); });
+document.addEventListener('keyup', e => { if (view === 'home') advKey(e, false); });
+window.addEventListener('blur', () => ADV.keys.clear());
+
+document.addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (el && A[el.dataset.a]) A[el.dataset.a](el, e); });
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (!R) return;
+  if (t.classList.contains('fill')) { R.ans[R.cur][+t.dataset.n] = t.value; updPal(); }
+  if (t.dataset && t.dataset.w) { R.ans.W[+t.dataset.w] = t.value; updWC(+t.dataset.w); }
+});
+render();
+})();
+</script>
+</body>
+</html>

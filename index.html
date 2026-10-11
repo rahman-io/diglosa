@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="dg-pwa" content="6b9a870a16" data-mb="5.5">
+<meta name="dg-pwa" content="f3d61509c2" data-mb="5.5">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="fonts/fonts.css">
@@ -423,6 +423,10 @@ html[data-skin="petualangan"] #owlfly{position:fixed;left:0;top:0;font-size:64px
 html[data-skin="petualangan"] .owlletter{position:fixed;z-index:94;font-size:28px;pointer-events:none}
 html[data-skin="petualangan"] .owlskip{position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top,0px));z-index:96}
 html[data-skin="petualangan"] .pwa-bar{height:18px;border-radius:99px;background:rgba(0,0,0,.2);border:3px solid var(--wood3);overflow:hidden;margin:10px 0 6px}
+html[data-skin="petualangan"] .pwa-rec{border-left:5px solid #f08a2e;background:rgba(240,138,46,.14);border-radius:8px;padding:8px 12px;margin:0 0 6px}
+html[data-skin="petualangan"] .pwa-rec p{margin:0 0 4px}
+html[data-skin="petualangan"] .pwa-rec ul{margin:0;padding-left:20px}
+html[data-skin="petualangan"] .pwa-rec li{margin:2px 0}
 html[data-skin="petualangan"] .pwa-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5fd06a,#98e88a);transition:width .2s linear}
 html[data-skin="petualangan"] #xapp .wrap.g{max-width:900px}
 html[data-skin="petualangan"] #xapp .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 18px;flex-wrap:wrap}
@@ -4267,15 +4271,15 @@ const PWA = {
     try {
       const ls = await (await fetch('precache.json', { cache: 'no-store', signal: ctl.signal })).json();
       await navigator.serviceWorker.register('sw.js');
-      const cache = await caches.open(this.CACHE), total = ls.files.reduce((a, f) => a + (f.s || 0), 0); let done = 0; if (on) on(0, total);
+      const cache = await caches.open(this.CACHE), total = ls.files.reduce((a, f) => a + (f.s || 0), 0), hs = {}; let done = 0; if (on) on(0, total);
       for (const f of ls.files) {
         const res = await fetch(f.u, { cache: 'no-cache', signal: ctl.signal }); if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + f.u);
         const chunks = []; if (res.body && res.body.getReader) { const rd = res.body.getReader(); for (;;) { const r = await rd.read(); if (r.done) break; chunks.push(r.value); done += r.value.length; if (on) on(done, total); } }
         else { const b = await res.blob(); chunks.push(b); done += b.size; if (on) on(done, total); }
-        await cache.put(new URL(f.u, location.href).href, new Response(new Blob(chunks), { status: 200, headers: { 'Content-Type': res.headers.get('Content-Type') || 'application/octet-stream' } }));
+        await cache.put(new URL(f.u, location.href).href, new Response(new Blob(chunks), { status: 200, headers: { 'Content-Type': res.headers.get('Content-Type') || 'application/octet-stream' } })); hs[f.u] = f.h || '';
       }
       await navigator.serviceWorker.ready;
-      this.set(Object.assign(this.get(), { choice: this.get().choice === 'online' ? 'online' : 'offline', build: ls.v, bytes: total, at: Date.now() }));   /* 'online' (mainkan dulu) tetap 'online'; selain itu 'offline' */
+      this.set(Object.assign(this.get(), { choice: this.get().choice === 'online' ? 'online' : 'offline', build: ls.v, bytes: total, h: hs, at: Date.now() }));   /* 'online' (mainkan dulu) tetap 'online'; selain itu 'offline' */
       return total;
     } finally { clearTimeout(guard); this.ctl = null; }
   },
@@ -4298,6 +4302,56 @@ const PWA = {
   },
   saveData() { try { return !!(navigator.connection && navigator.connection.saveData); } catch (e) { return false; } },
   background() { if (!this.eligible() || this.saveData() || this.get().at || this.bgTried) return; this.bgTried = true; this.run(true); },   /* sekali per kunjungan, dan tidak bila Penghemat Data aktif */
+  /* ---- Pembaruan otomatis di latar belakang ----
+     Setiap kunjungan, saat game dibuka kembali dari latar belakang, saat internet kembali, dan tiap 15 menit, halaman membandingkan versi yang sedang berjalan
+     dengan precache.json di server. Kalau ada versi baru: (1) bila game tersimpan di HP, berkas yang berubah diunduh diam-diam ke simpanan;
+     (2) halaman dimuat ulang sendiri di saat aman (menu depan, tidak sedang main), lalu muncul pesan "sudah diperbarui".
+     Pemain yang belum memasang juga ikut: mereka tidak punya simpanan, jadi cukup dimuat ulang. */
+  running() { const m = this.meta(); return m ? m.getAttribute('content') : ''; },
+  stored() { const g = this.get(); return (g.choice === 'offline' || g.choice === 'online') && !!g.at; },
+  async check(force) {
+    if (!this.eligible() || this.checking || this.ui.phase === 'busy') return;
+    const t = Date.now(); if (!force && this.lastCheck && t - this.lastCheck < 120000) return; this.lastCheck = t; this.checking = true;
+    const ctl = new AbortController(), guard = setTimeout(() => ctl.abort(), 20000);
+    try {
+      const ls = await (await fetch('precache.json', { cache: 'no-store', signal: ctl.signal })).json(); if (!ls || !ls.v || !ls.files) return;
+      if (this.stored() && this.get().build !== ls.v) await this.sync(ls, ctl.signal);
+      try { const r = await navigator.serviceWorker.getRegistration(); if (r && r.update) r.update().catch(() => {}); } catch (e) {}   /* sw.js sendiri juga dicek */
+      if (ls.v !== this.running()) { this.pending = ls.v; this.watch(); }
+    } catch (e) {} finally { clearTimeout(guard); this.checking = false; }
+  },
+  /* Unduh hanya berkas yang berubah (bandingkan sidik), taruh di simpanan sekaligus supaya tidak setengah-setengah. */
+  async sync(ls, signal) {
+    const g = this.get(), old = g.h || {}, todo = ls.files.filter(f => !f.h || old[f.u] !== f.h), got = [];
+    for (const f of todo) {
+      const res = await fetch(f.u, { cache: 'no-cache', signal }); if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + f.u);
+      got.push([f, await res.blob(), res.headers.get('Content-Type') || 'application/octet-stream']);
+    }
+    if (!(await caches.has(this.CACHE)) || this.get().choice === 'removed') return;   /* dihapus pemain selagi mengunduh */
+    const cache = await caches.open(this.CACHE), hs = {};
+    for (const [f, b, ty] of got) await cache.put(new URL(f.u, location.href).href, new Response(b, { status: 200, headers: { 'Content-Type': ty } }));
+    ls.files.forEach(f => { hs[f.u] = f.h || ''; });
+    this.set(Object.assign(this.get(), { build: ls.v, bytes: ls.files.reduce((a, f) => a + (f.s || 0), 0), h: hs, upd: Date.now() }));
+    track('pembaruan-diunduh', 'Versi baru diunduh di latar belakang');
+  },
+  watch() { if (!this.wt) this.wt = setInterval(() => this.apply(), 2500); this.apply(); },
+  /* Saat aman = di menu depan tanpa jendela terbuka. Sedang main: tunggu sampai pemain kembali ke menu depan. */
+  async apply() {
+    if (!this.pending || this.applying || this.ui.phase === 'busy' || !(TITLE.on && !TITLE.modal)) return;
+    let ok = false; try { if (sessionStorage.getItem('dg-upd') !== this.pending) { sessionStorage.setItem('dg-upd', this.pending); ok = true; } } catch (e) {}   /* sekali per versi, supaya tidak mengulang tanpa henti */
+    if (!ok) { clearInterval(this.wt); this.wt = 0; return; }
+    this.applying = true;
+    try { await fetch('index.html', { cache: 'reload' }); } catch (e) { this.applying = false; return; }   /* pastikan salinan terbaru, bukan salinan lama dari memori peramban */
+    try { sessionStorage.setItem('dg-upd-ok', this.pending); } catch (e) {}
+    location.reload();
+  },
+  afterReload() { let v = null; try { v = sessionStorage.getItem('dg-upd-ok'); sessionStorage.removeItem('dg-upd-ok'); } catch (e) {} if (v && v === this.running()) setTimeout(() => { toast('✨ Diglosa sudah diperbarui ke versi terbaru'); track('pembaruan-dimuat', 'Versi baru dimuat otomatis'); }, 1500); },
+  startUpdates() {
+    this.afterReload(); setTimeout(() => this.check(true), 2500);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) this.check(); });
+    window.addEventListener('online', () => this.check(true));
+    setInterval(() => this.check(true), 900000);
+  },
   prompt() { const p = this.bip; this.bip = null; if (p && p.prompt) { try { p.prompt(); } catch (e) {} } return !!p; },
   act(v) {
     if (v === 'now') {   /* mainkan dulu: game langsung jalan, unduhan tetap berjalan diam-diam di latar belakang (offline lebih dulu) */
@@ -4315,6 +4369,7 @@ const PWA = {
     try {
       window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); this.bip = ev; });
       if (!this.eligible()) return;
+      this.startUpdates();
       const g = this.get();
       if (g.choice === 'offline' || g.choice === 'online') { navigator.serviceWorker.register('sw.js').catch(() => {}); if (!g.at) this.background(); }   /* belum sempat selesai (internet putus, tab ditutup): lanjutkan diam-diam */
       else if (!g.choice && this.standalone()) { this.set({ choice: 'offline' }); this.run(true); }   /* sudah dipasang lewat peramban: simpan diam-diam */
@@ -4336,11 +4391,13 @@ const pwaHTML = () => {
 };
 const pwaPanelHTML = () => {
   if (!PWA.eligible()) return '';
-  const g = PWA.get(), u = PWA.ui, h = '<h4 style="margin:16px 0 8px">Main tanpa internet</h4>';
-  if (u.phase === 'busy') return h + pwaBar();
-  if (u.phase === 'done') return h + `<p class="note">✅ Sudah tersimpan di HP ini.</p>${pwaHow()}<div class="actions" style="margin-top:6px"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>`;
-  if ((g.choice === 'offline' || g.choice === 'online') && g.at) return h + `<p class="note">✅ Tersimpan di HP ini (${((g.bytes || 0) / 1048576).toFixed(1)} MB). Game bisa dibuka tanpa internet, dan versi baru otomatis diperbarui saat ada internet.</p><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>`;
-  return h + `<p class="note">Simpan game di HP ini supaya bisa dimainkan tanpa internet (sekitar ${PWA.mb()} MB).${u.phase === 'fail' ? ' Terakhir gagal: ' + PWA.failText(u) : ''}${PWA.saveData() ? ' Penghemat Data aktif, jadi unduhan otomatis ditunda.' : ''}</p><div class="actions" style="margin-top:0"><button class="btn sm" data-a="pwainstall">⬇️ Pasang di HP</button></div>`;
+  const g = PWA.get(), u = PWA.ui, h = '<h4 style="margin:16px 0 8px">Main tanpa internet</h4>', ver = `<p class="note" style="opacity:.7">Versi game: ${String(PWA.running()).slice(0, 7)}${PWA.pending ? ' (versi baru siap, dimuat saat kamu kembali ke menu depan)' : ''}</p>`;
+  if (u.phase === 'busy') return h + `<p class="note">⏳ Game sedang disimpan di HP ini...</p>` + pwaBar();
+  if (u.phase === 'done') return h + `<p class="note">✅ Sudah tersimpan di HP ini.</p>${pwaHow()}<div class="actions" style="margin-top:6px"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>${ver}`;
+  if (PWA.stored()) return h + `<p class="note">✅ Tersimpan di HP ini (${((g.bytes || 0) / 1048576).toFixed(1)} MB). Game bisa dibuka tanpa internet. Versi baru, ikon, dan data lain diperbarui otomatis di latar belakang saat ada internet.</p><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="pwaremove">Hapus unduhan</button></div>${ver}`;
+  /* belum tersimpan (belum memilih, "Mainkan dulu" yang belum selesai, gagal, Penghemat Data, atau sudah dihapus): selalu sarankan memasang */
+  const why = u.phase === 'fail' ? `<p class="note">Terakhir gagal: ${PWA.failText(u)}</p>` : PWA.saveData() ? '<p class="note">Penghemat Data aktif, jadi unduhan otomatis ditunda. Ketuk tombol di bawah untuk memasang sekarang.</p>' : (g.choice === 'online' || g.choice === 'offline') ? '<p class="note">Unduhan belum selesai. Ia dilanjutkan diam-diam saat ada internet, atau ketuk tombol di bawah.</p>' : '';
+  return h + `<div class="pwa-rec"><p><b>⚠️ Game ini belum tersimpan di HP-mu.</b> Kami menyarankan memasangnya (sekitar ${PWA.mb()} MB, sekali saja):</p><ul><li>Bisa dimainkan <b>tanpa internet</b></li><li>Dibuka lebih cepat dan lebih lancar</li><li>Versi baru, ikon, dan data lain <b>diperbarui otomatis</b> di latar belakang</li></ul></div>${why}<div class="actions" style="margin-top:6px"><button class="btn sm" data-a="pwainstall">⬇️ Pasang di HP</button></div>${ver}`;
 };
 
 /* ---------- menu depan ---------- */

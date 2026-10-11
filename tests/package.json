@@ -1,0 +1,11 @@
+{
+  "name": "hoot-quest-tests",
+  "private": true,
+  "scripts": {
+    "test": "node run_all.js"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.2",
+    "postcss": "8.5.29"
+  }
+}

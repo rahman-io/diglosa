@@ -1,0 +1,124 @@
+/* ===== Menu depan (selalu bergaya Petualangan; html[data-skin] dipaksa saat menu tampil) ===== */
+html.titling,html.titling body{overflow:hidden;height:100%;overscroll-behavior:none}
+html.titling #app,html.titling #xapp{display:none!important}
+#title[hidden]{display:none}
+#title{--u:min(1cqmin,5px);position:fixed;inset:0;z-index:40;overflow:hidden;container-type:size;background:#2a1a08;color:#fff3d0;font-family:'Nunito','Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+#title button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#title button:focus-visible{outline:calc(var(--u)*.9) solid #fff;outline-offset:calc(var(--u)*.6)}
+
+/* tema tunggal: senja */
+#title.t-dusk{--tb-l:#d46f70;--tb-c:#e7725e;--tb-r:#db716c}
+
+@keyframes tFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(10px,-16px)}}
+
+/* bilah atas: nyawa, berlian, XP */
+#title .t-top{position:absolute;left:0;right:0;top:calc(var(--u)*2 + env(safe-area-inset-top,0px));display:flex;justify-content:center;gap:calc(var(--u)*5.5);padding:0 calc(var(--u)*6) 0 calc(var(--u)*7);z-index:3}
+#title .t-pill{position:relative;flex:1 1 0;max-width:calc(var(--u)*31);min-width:0;height:calc(var(--u)*9);display:flex;align-items:center;justify-content:center;border:calc(var(--u)*.8) solid #4b2a0e;border-radius:99px;background:linear-gradient(180deg,#b06a22,#7a3e12);box-shadow:0 calc(var(--u)*.9) 0 rgba(50,25,6,.55),inset 0 calc(var(--u)*.7) 0 rgba(255,216,150,.35);padding:0 calc(var(--u)*5.2) 0 calc(var(--u)*7);font:400 calc(var(--u)*4.7) 'Lilita One','Fredoka','Trebuchet MS',sans-serif;color:#fff3d0;text-shadow:0 calc(var(--u)*.45) 0 #4b2a0e;white-space:nowrap}
+#title .t-pill .ti{position:absolute;left:calc(var(--u)*-1.6);top:50%;transform:translateY(-50%);width:calc(var(--u)*11.2);height:calc(var(--u)*11.2);display:grid;place-items:center;font-size:calc(var(--u)*6.4);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8e4,#efca83);border:calc(var(--u)*.8) solid #4b2a0e;box-shadow:0 calc(var(--u)*.7) 0 rgba(50,25,6,.5);text-shadow:none}
+#title .t-pill small{font-size:.62em;opacity:.8;margin-left:.2em}
+#title .tplus{position:absolute;right:calc(var(--u)*-1.4);top:50%;transform:translateY(-50%);width:calc(var(--u)*8.6);height:calc(var(--u)*8.6);display:grid;place-items:center;padding:0;border-radius:calc(var(--u)*2.4);border:calc(var(--u)*.8) solid #8a4b1c;background:linear-gradient(180deg,#ffe27a,#f5a53a);color:#fff;font:400 calc(var(--u)*7) 'Lilita One',sans-serif;line-height:1;text-shadow:0 calc(var(--u)*.45) 0 #8a4b1c;box-shadow:0 calc(var(--u)*.7) 0 #6a3a10}
+#title .tplus::after{content:'';position:absolute;inset:calc(var(--u)*-2)}
+#title .tplus:active{transform:translateY(-46%)}
+
+/* tombol samping */
+#title .t-side{position:absolute;top:calc(var(--u)*17 + env(safe-area-inset-top,0px));display:grid;gap:calc(var(--u)*3.6);z-index:3}
+#title .t-left{left:calc(var(--u)*2.4)}
+#title .t-right{right:calc(var(--u)*2.4)}
+#title .t-sq{position:relative;width:calc(var(--u)*14);display:grid;justify-items:center;gap:calc(var(--u)*.9);padding:0;background:none;border:0;color:#fff3d0}
+#title .t-sq .ic{width:calc(var(--u)*14);height:calc(var(--u)*14);display:grid;place-items:center;font-size:calc(var(--u)*7.8);border-radius:calc(var(--u)*3.2);border:calc(var(--u)*.9) solid #4b2a0e;background:linear-gradient(180deg,#fff0c4,#efc064);box-shadow:0 calc(var(--u)*1) 0 #6a3a10,inset 0 0 0 calc(var(--u)*.7) rgba(255,255,255,.4);line-height:1}
+#title .t-sq .ic svg{width:84%;height:84%}
+#title .t-sq:active .ic{transform:translateY(calc(var(--u)*.7))}
+#title .lb{padding:calc(var(--u)*.1) calc(var(--u)*1.8);background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:calc(var(--u)*.6) solid #4b2a0e;border-radius:calc(var(--u)*1.3);color:#fff3d0;font:400 calc(var(--u)*3.3) 'Lilita One','Fredoka',sans-serif;text-shadow:0 calc(var(--u)*.4) 0 #4b2a0e;white-space:nowrap;line-height:1.35}
+#title .t-sq .bdg{position:absolute;top:calc(var(--u)*-1.6);right:calc(var(--u)*-1.4);min-width:calc(var(--u)*5.6);height:calc(var(--u)*5.6);padding:0 calc(var(--u)*1.1);display:grid;place-items:center;border-radius:99px;background:#ff4f6a;border:calc(var(--u)*.55) solid #fff;color:#fff;font:800 calc(var(--u)*3.3) 'Nunito',sans-serif;font-style:normal}
+
+/* logo */
+#title .t-logo{position:absolute;left:50%;top:calc(var(--u)*16.5 + env(safe-area-inset-top,0px));transform:translateX(-50%);width:min(62cqw,calc(var(--u)*96));z-index:2;pointer-events:none;display:grid;justify-items:center;gap:calc(var(--u)*1)}
+#title .t-logosvg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 calc(var(--u)*1) 0 rgba(60,30,6,.35));animation:tLogo 3.6s ease-in-out infinite}
+#title .t-sub{padding:calc(var(--u)*.6) calc(var(--u)*4.2);background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:calc(var(--u)*.8) solid #4b2a0e;border-radius:calc(var(--u)*2);color:#fff3d0;font:400 calc(var(--u)*3.7) 'Lilita One','Fredoka',sans-serif;letter-spacing:.04em;text-shadow:0 calc(var(--u)*.45) 0 #4b2a0e;box-shadow:0 calc(var(--u)*.9) 0 rgba(50,25,6,.5);white-space:nowrap}
+@keyframes tLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--u)*-1.2))}}
+
+/* tombol bawah: Opsi, Mulai, Cara Main */
+#title .t-bottom{position:absolute;left:0;right:0;bottom:calc(var(--u)*3 + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:calc(var(--u)*2.4);z-index:3}
+#title .t-resume{padding:calc(var(--u)*.7) calc(var(--u)*3.6);border-radius:99px;background:rgba(60,32,8,.72);border:calc(var(--u)*.5) solid rgba(255,230,170,.55);color:#fff3d0;font:800 calc(var(--u)*3.2) 'Nunito',sans-serif;white-space:nowrap}
+#title .t-brow{display:flex;align-items:flex-end;justify-content:space-between;width:min(94cqw,calc(var(--u)*92));padding:0 calc(var(--u)*3)}
+#title .t-b{display:grid;justify-items:center;gap:calc(var(--u)*1.4)}
+#title .t-round{display:grid;place-items:center;padding:0;border-radius:50%;border:calc(var(--u)*1.1) solid #4b2a0e;background:radial-gradient(circle at 35% 28%,#ffdc92,#d98a2b 58%,#a85d17);box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28);color:#fff;font:400 calc(var(--u)*9) 'Lilita One',sans-serif;text-shadow:0 calc(var(--u)*.6) 0 #5a300c;line-height:1}
+#title .t-round.t-opt,#title .t-round.t-help{width:calc(var(--u)*17);height:calc(var(--u)*17)}
+#title .t-round.t-opt span{font-size:calc(var(--u)*9.5);text-shadow:none}
+#title .t-round.play{width:calc(var(--u)*27);height:calc(var(--u)*27);background:radial-gradient(circle at 35% 26%,#ffd27a,#ff9a2e 52%,#e2620f);border-width:calc(var(--u)*1.3);animation:tPulse 2.2s ease-in-out infinite}
+#title .t-round.play svg{width:46%;height:46%;margin-left:6%;filter:drop-shadow(0 calc(var(--u)*.6) 0 rgba(120,50,0,.6))}
+#title .t-round:active{transform:translateY(calc(var(--u)*.9))}
+#title .t-b.main .lb{font-size:calc(var(--u)*4.4);padding:calc(var(--u)*.3) calc(var(--u)*3.2)}
+@keyframes tPulse{0%,100%{box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),0 0 0 0 rgba(255,214,110,.75),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28)}60%{box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),0 0 0 calc(var(--u)*4.5) rgba(255,214,110,0),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28)}}
+
+/* jendela (memakai gaya panel Petualangan) */
+#title #tovl{position:absolute;inset:0;z-index:20;display:none;background:rgba(25,12,2,.58)}
+#title #tovl.show{display:block}
+#title #tovl .mpanel{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(580px,calc(100% - 20px));max-height:calc(100% - 26px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0}
+#title #tovl .mbody{min-height:0}
+#title #tovl .t-mini{width:90px;height:12px;border-radius:99px;background:#3a2a1a;border:3px solid #4b2a0e;overflow:hidden}
+#title #tovl .t-mini i{display:block;height:100%;background:linear-gradient(90deg,#5fd06a,#98e88a)}
+#title #tovl .t-prof{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+#title #tovl .t-pav{flex:none;width:76px;height:76px;border-radius:18px;border:4px solid #4b2a0e;background:linear-gradient(180deg,#fff0c4,#efc064);display:grid;place-items:center}
+#title #tovl .t-pav svg{width:88%;height:88%}
+#title #tovl .t-prof h3{font-size:1.4rem;color:#8a4b1c}
+#title #tovl .t-prof .bar{margin:6px 0 4px}
+#title #tovl .t-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+#title #tovl .t-stat{display:flex;gap:10px;align-items:center;padding:10px 12px;border:3px solid #8a4b1c;border-radius:14px;background:#fffaf0}
+#title #tovl .t-stat span{font-size:1.7rem;line-height:1}
+#title #tovl .t-stat b{display:block;font-size:1.15rem;color:#4a2a0e}
+#title #tovl .t-stat small{color:#8a6a45;font-weight:800}
+
+@media (orientation:portrait) and (max-height:700px){
+  #title .t-resume{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  #title *{animation:none!important}
+}
+
+/* menu jeda */
+#gmenu{position:fixed;inset:0;z-index:150;display:none;background:rgba(25,12,2,.6)}
+#gmenu.show{display:block}
+#gmenu .mpanel{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(420px,calc(100% - 24px));min-height:0}
+#gmenu .pmlist{display:grid;gap:12px}
+#gmenu .pmlist .btn{width:100%;text-align:center;padding:14px 18px;font-size:1.15rem}
+#gmenu .note{margin-top:12px}
+
+/* pemain bernapas saat diam: dada naik sedikit, berpusat di kaki; berhenti saat berjalan */
+.hbreath{transform-box:fill-box;transform-origin:50% 100%;animation:hBreathe 3.6s ease-in-out infinite}
+#pl.mv .hbreath{animation:none}
+@keyframes hBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.992,1.018)}}
+@media (prefers-reduced-motion:reduce){.hbreath{animation:none}}
+
+/* kedipan acak: lapisan mata tertutup menyala sekitar 0,15 detik; dua irama berbeda untuk pose diam dan berjalan */
+.hblink{opacity:0}
+.hb1{animation:hBlinkA 8.6s linear infinite}
+.hb2{animation:hBlinkB 7.3s linear infinite -2.1s}
+@keyframes hBlinkA{0%,29.9%{opacity:0}30%,31.8%{opacity:1}31.9%,73.9%{opacity:0}74%,75.8%{opacity:1}75.9%,78.9%{opacity:0}79%,80.8%{opacity:1}80.9%,100%{opacity:0}}
+@keyframes hBlinkB{0%,19.9%{opacity:0}20%,22.1%{opacity:1}22.2%,61.9%{opacity:0}62%,64.1%{opacity:1}64.2%,89.9%{opacity:0}90%,92.1%{opacity:1}92.2%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.hblink{animation:none}}
+
+/* lukisan halaman depan (1536 x 1024, lebar), selalu memenuhi seluruh layar seperti peta hutan dan Istana:
+   --iw, --ih = lebar dan tinggi lukisan yang tampil; --il, --it = tepi kiri dan atasnya (boleh negatif, berarti terpotong).
+   Letak pemain dan matahari dihitung dari pecahan lukisan lewat nilai-nilai ini.
+   - layar tegak: lukisan setinggi min(155cqw, 77cqh), ditempel di dasar dan digeser agar kastil, matahari, dan jalan terlihat;
+     langit di atasnya diperpanjang dengan warna tepi lukisan (--tb-*).
+   - layar lebar: lukisan menutupi seluruh layar (cover) dengan titik fokus vertikal 60 persen. */
+#title .t-stage{--ih:min(155cqw,77cqh);--iw:calc(1.5 * var(--ih));--il:calc(50% - .78 * var(--ih));--it:calc(100cqh - var(--ih));position:absolute;inset:0;container-type:size;overflow:hidden;background:linear-gradient(to right,var(--tb-l),var(--tb-c),var(--tb-r))}
+#title .t-bg{position:absolute;left:var(--il);top:var(--it);width:var(--iw);height:var(--ih);max-width:none;display:block;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 9%);mask-image:linear-gradient(to bottom,transparent 0,#000 9%);user-select:none}
+#title .t-sunglow{position:absolute;left:calc(var(--il) + .5 * var(--iw));top:calc(var(--it) + .25 * var(--ih));width:calc(.55 * var(--ih));height:calc(.55 * var(--ih));transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,244,190,.5),rgba(255,244,190,0) 62%);mix-blend-mode:screen;pointer-events:none;animation:tGlow 6.5s ease-in-out infinite}
+#title .t-flies{position:absolute;inset:0;pointer-events:none}
+#title .t-fly{position:absolute;width:calc(var(--u)*1.1);height:calc(var(--u)*1.1);border-radius:50%;background:#fff6a8;box-shadow:0 0 calc(var(--u)*2.6) calc(var(--u)*.9) rgba(255,240,150,.85);opacity:.85;animation:tFloat 6s ease-in-out infinite}
+#title .t-hero{position:absolute;left:calc(var(--il) + .5 * var(--iw));top:calc(var(--it) + .4616 * var(--ih));height:calc(.231 * var(--ih));width:auto;aspect-ratio:60/110;transform:translateX(-50%);overflow:visible;pointer-events:none;z-index:1}
+@keyframes tGlow{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#title .t-sunglow,#title .t-fly{animation:none}}
+@media (min-aspect-ratio:1/1){
+  #title .t-stage{--iw:max(100cqw,150cqh);--ih:calc(var(--iw) / 1.5);--il:calc((100cqw - var(--iw)) * .5);--it:calc((100cqh - var(--ih)) * .6)}
+  #title .t-bg{-webkit-mask-image:none;mask-image:none}
+  #title .t-logo{left:calc(var(--u)*17 + 0px);transform:none;top:calc(var(--u)*12);width:min(30cqw,calc(var(--u)*72))}
+  #title .t-bottom{left:auto;right:calc(var(--u)*5);width:min(46cqw,calc(var(--u)*92))}
+  #title .t-brow{width:100%;padding:0}
+}
+@media (min-aspect-ratio:1/1) and (max-height:430px){
+  #title .t-sub,#title .t-resume{display:none}
+}

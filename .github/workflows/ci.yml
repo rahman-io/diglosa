@@ -1,0 +1,32 @@
+name: Uji
+on:
+  push:
+    branches: ['**']
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bangun diglosa.html
+        run: python build.py
+      - name: Pasang alat uji
+        run: npm ci
+        working-directory: tests
+      - name: Jalankan semua uji
+        run: npm test
+        working-directory: tests
+      - name: Simpan hasil bangunan
+        uses: actions/upload-artifact@v4
+        with:
+          name: diglosa-html
+          path: |
+            dist/diglosa.html
+            dist/preview.jpg
