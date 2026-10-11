@@ -3,7 +3,7 @@ Pakai:  python3 tools/make_npc.py <lembar.png> <nama> <x0,y0,x1,y1>
   lembar.png  empat pose berjajar kiri ke kanan: diam (idle), kedip (mata tertutup), minta tolong (help), senang (happy)
   nama        nama berkas, mis. kakek  ->  src/npc/kakek-idle.webp, kakek-help.webp, kakek-happy.webp, kakek-blink.webp, kakek-head.webp, kakek.json
   x0,y0,x1,y1 kotak mata pada pose diam, dalam piksel kanvas penuh (--info menyimpan gambar kanvasnya untuk diukur); hanya kotak ini yang dipakai untuk kedipan
-  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan), top=170 (y puncak kepala pada kanvas bila ada benda lebih tinggi dari kepala, mis. tombak), hcx=185 (x tengah kepala untuk gambar wajah dialog, bersama top=)
+  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan), glass=1 (ubah merah muda di kaca tembus, mis. jam pasir, jadi kuning hangat), top=170 (y puncak kepala pada kanvas bila ada benda lebih tinggi dari kepala, mis. tombak), hcx=185 (x tengah kepala untuk gambar wajah dialog, bersama top=)
 Langkah: buang latar magenta (matte lembut + buang sisa merah muda di tepi), pisahkan pose, samakan garis tanah dan sepatu kiri (titik pijak),
 pakai satu kanvas untuk semua pose, kecilkan, simpan WebP. Kedipan hanya tambalan kecil di sekitar mata (seperti kedipan Hoot), bukan gambar penuh."""
 import sys, os, json
@@ -16,7 +16,7 @@ NAMES = ['idle', 'blink', 'help', 'happy']
 SCALE = 0.5          # ukuran akhir terhadap gambar asli
 BODY_UNITS = 86      # tinggi badan (topi sampai sepatu, pose diam) dalam satuan dunia game
 
-def key(path):
+def key(path, glass=False):
     """Buang latar rata. Piksel dekat latar (cincin 5 px di tepi tokoh) dipisahkan dengan memproyeksikan warnanya ke garis latar-tokoh, memakai warna tokoh terdekat dari bagian dalam sebagai acuan; hasilnya tepi tanpa lingkaran merah muda, juga pada bulu oranye."""
     from scipy import ndimage as ndi
     im = np.array(Image.open(path).convert('RGB')).astype(np.float32)
@@ -35,6 +35,12 @@ def key(path):
     spill = edge & (color[..., 2] > color[..., 1]) & (color[..., 0] > color[..., 1])
     color[..., 2] = np.where(spill, np.minimum(color[..., 2], color[..., 1]), color[..., 2])
     color[..., 0] = np.where(spill, np.minimum(color[..., 0], color[..., 1] + (color[..., 0] - color[..., 1]) * 0.5 + 0), color[..., 0])
+    if glass:       # kaca tembus (jam pasir) memantulkan latar magenta jadi merah muda di dalam tokoh: ubah ke kuning kaca hangat
+        m = np.minimum(color[..., 0], color[..., 2]) - color[..., 1]
+        w = np.clip((m - 10) / 45.0, 0, 1) * (color[..., 0] > 130) * (color[..., 2] > 100)
+        g2 = color[..., 1] + w * (color[..., 0] * 0.86 - color[..., 1])
+        color[..., 2] = np.where(w > 0, color[..., 2] - w * (color[..., 2] - np.minimum(color[..., 2], g2 * 0.55)), color[..., 2])
+        color[..., 1] = g2
     return np.dstack([np.clip(color, 0, 255), alpha * 255]).astype(np.uint8)
 
 def split(rgba):
@@ -48,7 +54,7 @@ def split(rgba):
 
 def build(sheet, name, eyes, info=False, opts=None):
     opts = opts or {}; body_units = float(opts.get('body', BODY_UNITS))
-    rgba = key(sheet); runs = split(rgba)
+    rgba = key(sheet, bool(float(opts.get('glass', 0)))); runs = split(rgba)
     assert len(runs) == 4, 'butuh tepat 4 pose terpisah, ditemukan %d: %s' % (len(runs), runs)
     subs, meta = [], []
     for x0, x1 in runs:
