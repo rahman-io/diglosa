@@ -1,0 +1,57 @@
+{
+ "v": "9a6e2c35cf",
+ "files": [
+  {
+   "u": "index.html",
+   "s": 5613923
+  },
+  {
+   "u": "manifest.webmanifest",
+   "s": 675
+  },
+  {
+   "u": "fonts/fonts.css",
+   "s": 1414
+  },
+  {
+   "u": "fonts/cinzel-latin-600-normal.woff2",
+   "s": 15204
+  },
+  {
+   "u": "fonts/cinzel-latin-700-normal.woff2",
+   "s": 15184
+  },
+  {
+   "u": "fonts/cinzel-latin-800-normal.woff2",
+   "s": 15260
+  },
+  {
+   "u": "fonts/fredoka-latin-500-normal.woff2",
+   "s": 16248
+  },
+  {
+   "u": "fonts/fredoka-latin-600-normal.woff2",
+   "s": 16468
+  },
+  {
+   "u": "fonts/fredoka-latin-700-normal.woff2",
+   "s": 15900
+  },
+  {
+   "u": "fonts/lilita-one-latin-400-normal.woff2",
+   "s": 10672
+  },
+  {
+   "u": "fonts/nunito-latin-600-normal.woff2",
+   "s": 16556
+  },
+  {
+   "u": "fonts/nunito-latin-700-normal.woff2",
+   "s": 16228
+  },
+  {
+   "u": "fonts/nunito-latin-800-normal.woff2",
+   "s": 16520
+  }
+ ]
+}
