@@ -128,13 +128,13 @@ select.inp{font-size:1rem;padding:10px 14px}
 .nsp .gh,.nsp .gp,.nsp .nbl,.nsp .nbub{opacity:0}
 .nsp .nbr{transform-box:fill-box;transform-origin:50% 100%;animation:nBreathe 3.8s ease-in-out infinite;animation-delay:var(--nd,0s)}
 .nsp .nbl{animation:nBlink 6.3s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=call] .gi{animation:nIdleF 11s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=call] .gh{animation:nHelpF 11s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=call] .nbob{animation:nHop 11s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=call] .nbub{transform-box:fill-box;transform-origin:0 100%;animation:nBub 11s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=done] .gi{animation:nIdleF 9s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=done] .gp{animation:nHelpF 9s linear infinite;animation-delay:var(--nd,0s)}
-.nsp[data-s=done] .nbob{animation:nHopDone 9s linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .gi{animation:nIdleF var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .gh{animation:nHelpF var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .nbob{animation:nHop var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=call] .nbub{transform-box:fill-box;transform-origin:0 100%;animation:nBub var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .gi{animation:nIdleF var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .gp{animation:nHelpF var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
+.nsp[data-s=done] .nbob{animation:nHopDone var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
 .npc.near .nsp .gi,.npc.near .nsp .gh,.npc.near .nsp .nbub{animation:none;opacity:0}
 .npc.near .nsp .gp{animation:none;opacity:1}
 .npc.near .nsp .nbob{animation:nHopNear 1.2s ease-in-out infinite}
@@ -142,9 +142,9 @@ select.inp{font-size:1rem;padding:10px 14px}
 @keyframes nBlink{0%,41.9%{opacity:0}42%,44.5%{opacity:1}44.6%,81.9%{opacity:0}82%,84.5%{opacity:1}84.6%,100%{opacity:0}}
 @keyframes nIdleF{0%,77.9%{opacity:1}78%,92%{opacity:0}92.1%,100%{opacity:1}}
 @keyframes nHelpF{0%,77.9%{opacity:0}78%,92%{opacity:1}92.1%,100%{opacity:0}}
-@keyframes nHop{0%,77.9%{transform:translateY(0)}80%{transform:translateY(-11px)}82%{transform:translateY(0)}84%{transform:translateY(-11px)}86%{transform:translateY(0)}88%{transform:translateY(-7px)}90%,100%{transform:translateY(0)}}
-@keyframes nHopDone{0%,77.9%{transform:translateY(0)}83%{transform:translateY(-8px)}88%,100%{transform:translateY(0)}}
-@keyframes nHopNear{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px)}62%{transform:translateY(0)}}
+@keyframes nHop{0%,77.9%{transform:translateY(0)}80%{transform:translateY(calc(-11px * var(--hop,1)))}82%{transform:translateY(0)}84%{transform:translateY(calc(-11px * var(--hop,1)))}86%{transform:translateY(0)}88%{transform:translateY(calc(-7px * var(--hop,1)))}90%,100%{transform:translateY(0)}}
+@keyframes nHopDone{0%,77.9%{transform:translateY(0)}83%{transform:translateY(calc(-8px * var(--hop,1)))}88%,100%{transform:translateY(0)}}
+@keyframes nHopNear{0%,100%{transform:translateY(0)}35%{transform:translateY(calc(-8px * var(--hop,1)))}62%{transform:translateY(0)}}
 @keyframes nBub{0%,77%{opacity:0;transform:scale(.55)}80%{opacity:1;transform:scale(1.1)}82%,91%{opacity:1;transform:scale(1)}93%,100%{opacity:0;transform:scale(.8)}}
 .nsp.fx-lite .nbob,.nsp.fx-lite .nbr{animation:none}
 .nsp.fx-off *{animation:none!important}

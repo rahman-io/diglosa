@@ -2,7 +2,8 @@
 Pakai:  python3 tools/make_npc.py <lembar.png> <nama> <x0,y0,x1,y1>
   lembar.png  empat pose berjajar kiri ke kanan: diam (idle), kedip (mata tertutup), minta tolong (help), senang (happy)
   nama        nama berkas, mis. kakek  ->  src/npc/kakek-idle.webp, kakek-help.webp, kakek-happy.webp, kakek-blink.webp, kakek-head.webp, kakek.json
-  x0,y0,x1,y1 kotak mata pada pose diam, dalam piksel kanvas penuh (cetak dengan opsi --info); hanya kotak ini yang dipakai untuk kedipan
+  x0,y0,x1,y1 kotak mata pada pose diam, dalam piksel kanvas penuh (--info menyimpan gambar kanvasnya untuk diukur); hanya kotak ini yang dipakai untuk kedipan
+  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan)
 Langkah: buang latar magenta (matte lembut + buang sisa merah muda di tepi), pisahkan pose, samakan garis tanah dan sepatu kiri (titik pijak),
 pakai satu kanvas untuk semua pose, kecilkan, simpan WebP. Kedipan hanya tambalan kecil di sekitar mata (seperti kedipan Hoot), bukan gambar penuh."""
 import sys, os, json
@@ -38,7 +39,8 @@ def split(rgba):
     runs.append((s, p))
     return runs
 
-def build(sheet, name, eyes, info=False):
+def build(sheet, name, eyes, info=False, opts=None):
+    opts = opts or {}; body_units = float(opts.get('body', BODY_UNITS))
     rgba = key(sheet); runs = split(rgba)
     assert len(runs) == 4, 'butuh tepat 4 pose terpisah, ditemukan %d: %s' % (len(runs), runs)
     subs, meta = [], []
@@ -73,7 +75,9 @@ def build(sheet, name, eyes, info=False):
     idle_m = fr['idle'][..., 3] > 128; iy = np.where(idle_m.any(1))[0]; body_h = iy.max() - iy.min() + 1
     if info:
         print('kanvas penuh %dx%d, potong x %d..%d y %d..%d, tinggi badan pose diam %d, titik pijak x=%.1f, garis tanah y=%d' % (Wc, Hc, cx0, cx1, cy0, cy1, body_h, ax, BY))
-        print('kotak kepala pose diam (kasar): y %d..%d' % (iy.min(), iy.min() + 260)); return
+        print('kotak kepala pose diam (kasar): y %d..%d' % (iy.min(), iy.min() + 260))
+        for n in ('idle', 'blink'): Image.fromarray(fr[n]).save(os.path.join(os.environ.get('TMPDIR', '/tmp'), '%s-%s-canvas.png' % (name, n)))
+        print('kanvas pose diam dan kedip disimpan di %s/ (%s-idle-canvas.png): ukur kotak mata dari gambar itu' % (os.environ.get('TMPDIR', '/tmp'), name)); return
     os.makedirs(OUT, exist_ok=True)
     sc = SCALE; out = {}
     def save(arr, fn, q=84):
@@ -103,13 +107,16 @@ def build(sheet, name, eyes, info=False):
     hcx = (hx.min() + hx.max()) // 2; side = max(hh, hx.max() - hx.min() + 1); side = int(side * 1.0)
     hx0 = max(0, hcx - side // 2); head = fr['idle'][hy0:hy0 + side, hx0:hx0 + side]
     Image.fromarray(head).resize((128, 128), Image.LANCZOS).save(os.path.join(OUT, '%s-head.webp' % name), 'WEBP', quality=86, method=6)
-    u = BODY_UNITS / (body_h * sc)                                                # satuan dunia per piksel akhir
-    meta = {'w': round(float(sz[0] * u), 2), 'h': round(float(sz[1] * u), 2), 'ax': round(float((ax - cx0) * sc * u), 2), 'gy': round(float((BY - cy0) * sc * u), 2), 'body': BODY_UNITS,
+    u = body_units / (body_h * sc)                                                # satuan dunia per piksel akhir
+    meta = {'w': round(float(sz[0] * u), 2), 'h': round(float(sz[1] * u), 2), 'ax': round(float((ax - cx0) * sc * u), 2), 'gy': round(float((BY - cy0) * sc * u), 2), 'body': round(body_units),
             'blink': {'x': round(float((ex0 + dx - cx0) * sc * u), 2), 'y': round(float((ey0 + dy - cy0) * sc * u), 2), 'w': round(float(pw * u), 2), 'h': round(float(ph * u), 2)}}
+    for k in ('call', 'done', 'hop'):          # watak gerak (opsional): detik antar panggilan, detik antar pose senang, pengali tinggi lompatan
+        if k in opts: meta[k] = float(opts[k])
     json.dump(meta, open(os.path.join(OUT, name + '.json'), 'w'), indent=1)
     print('selesai', name, meta, 'geser kulit', (dx, dy))
 
 if __name__ == '__main__':
     a = sys.argv[1:]
-    if len(a) >= 2 and a[-1] == '--info': build(a[0], a[1], (0, 0, 0, 0), True)
-    else: build(a[0], a[1], tuple(int(v) for v in a[2].split(',')))
+    kv = dict(x.split('=', 1) for x in a if '=' in x and not x.startswith('-')); a = [x for x in a if '=' not in x or x.startswith('-')]
+    if len(a) >= 2 and a[-1] == '--info': build(a[0], a[1], (0, 0, 0, 0), True, kv)
+    else: build(a[0], a[1], tuple(int(v) for v in a[2].split(',')), False, kv)
