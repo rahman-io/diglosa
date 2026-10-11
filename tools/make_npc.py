@@ -3,7 +3,7 @@ Pakai:  python3 tools/make_npc.py <lembar.png> <nama> <x0,y0,x1,y1>
   lembar.png  empat pose berjajar kiri ke kanan: diam (idle), kedip (mata tertutup), minta tolong (help), senang (happy)
   nama        nama berkas, mis. kakek  ->  src/npc/kakek-idle.webp, kakek-help.webp, kakek-happy.webp, kakek-blink.webp, kakek-head.webp, kakek.json
   x0,y0,x1,y1 kotak mata pada pose diam, dalam piksel kanvas penuh (--info menyimpan gambar kanvasnya untuk diukur); hanya kotak ini yang dipakai untuk kedipan
-  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan), glass=1 (ubah merah muda di kaca tembus, mis. jam pasir, jadi kuning hangat), top=170 (y puncak kepala pada kanvas bila ada benda lebih tinggi dari kepala, mis. tombak), hcx=185 (x tengah kepala untuk gambar wajah dialog, bersama top=)
+  opsional: body=80 (tinggi badan di dunia game, bawaan 86), call=8 (detik antar panggilan minta tolong, bawaan 11), done=9 (detik antar pose senang), hop=1.4 (pengali tinggi lompatan), cuts=372,709,1020 (batas kolom antar pose bila pose saling menyentuh), bgd=130 (jarak warna dari latar yang dianggap latar, bawaan 70; naikkan bila cahaya/sinar tokoh memudar ke warna latar), spill=0 (matikan pembuangan sisa magenta di tepi, bila tokoh punya cahaya ungu atau merah muda yang ikut terhapus), glass=1 (ubah merah muda di kaca tembus, mis. jam pasir, jadi kuning hangat), top=170 (y puncak kepala pada kanvas bila ada benda lebih tinggi dari kepala, mis. tombak), hcx=185 (x tengah kepala untuk gambar wajah dialog, bersama top=)
 Langkah: buang latar magenta (matte lembut + buang sisa merah muda di tepi), pisahkan pose, samakan garis tanah dan sepatu kiri (titik pijak),
 pakai satu kanvas untuk semua pose, kecilkan, simpan WebP. Kedipan hanya tambalan kecil di sekitar mata (seperti kedipan Hoot), bukan gambar penuh."""
 import sys, os, json
@@ -16,13 +16,13 @@ NAMES = ['idle', 'blink', 'help', 'happy']
 SCALE = 0.5          # ukuran akhir terhadap gambar asli
 BODY_UNITS = 86      # tinggi badan (topi sampai sepatu, pose diam) dalam satuan dunia game
 
-def key(path, glass=False):
+def key(path, glass=False, bgd=70, despill=True):
     """Buang latar rata. Piksel dekat latar (cincin 5 px di tepi tokoh) dipisahkan dengan memproyeksikan warnanya ke garis latar-tokoh, memakai warna tokoh terdekat dari bagian dalam sebagai acuan; hasilnya tepi tanpa lingkaran merah muda, juga pada bulu oranye."""
     from scipy import ndimage as ndi
     im = np.array(Image.open(path).convert('RGB')).astype(np.float32)
     border = np.concatenate([im[:6].reshape(-1, 3), im[-6:].reshape(-1, 3), im[:, :6].reshape(-1, 3), im[:, -6:].reshape(-1, 3)])
     BG = np.median(border, axis=0)
-    bgm = np.sqrt(((im - BG) ** 2).sum(-1)) < 70                 # pasti latar
+    bgm = np.sqrt(((im - BG) ** 2).sum(-1)) < bgd                 # pasti latar
     bgm = ndi.binary_opening(bgm, iterations=1) | (bgm & ~ndi.binary_dilation(~bgm, iterations=2))   # buang bintik latar palsu di dalam tokoh
     zone_out = ndi.binary_dilation(bgm, iterations=5)
     solid = ~zone_out                                             # pasti tokoh (bagian dalam)
@@ -32,7 +32,7 @@ def key(path, glass=False):
     alpha = np.where(solid, 1.0, np.where(bgm, 0.0, a))
     color = np.where(solid[..., None], im, Fn)
     edge = ndi.binary_dilation(alpha < 0.5, iterations=9)                 # dekat tepi: buang sisa magenta (biru lebih tinggi dari hijau tidak ada pada bulu, kulit, kain, kulit sepatu)
-    spill = edge & (color[..., 2] > color[..., 1]) & (color[..., 0] > color[..., 1])
+    spill = edge & (color[..., 2] > color[..., 1]) & (color[..., 0] > color[..., 1]) & despill
     color[..., 2] = np.where(spill, np.minimum(color[..., 2], color[..., 1]), color[..., 2])
     color[..., 0] = np.where(spill, np.minimum(color[..., 0], color[..., 1] + (color[..., 0] - color[..., 1]) * 0.5 + 0), color[..., 0])
     if glass:       # kaca tembus (jam pasir) memantulkan latar magenta jadi merah muda di dalam tokoh: ubah ke kuning kaca hangat
@@ -54,11 +54,19 @@ def split(rgba):
 
 def build(sheet, name, eyes, info=False, opts=None):
     opts = opts or {}; body_units = float(opts.get('body', BODY_UNITS))
-    rgba = key(sheet, bool(float(opts.get('glass', 0)))); runs = split(rgba)
+    rgba = key(sheet, bool(float(opts.get('glass', 0))), float(opts.get('bgd', 70)), bool(float(opts.get('spill', 1)))); cuts = None
+    if 'cuts' in opts:      # cuts=x1,x2,x3: batas kolom antar pose bila pose saling menyentuh (mis. cahaya bola sihir menyentuh pose di sebelahnya)
+        cuts = [0] + [int(v) for v in str(opts['cuts']).split(',')] + [rgba.shape[1]]; runs = []
+        for lo, hi in zip(cuts[:-1], cuts[1:]):
+            cols = np.where((rgba[:, lo:hi, 3] > 128).any(0))[0]; runs.append((lo + cols.min(), lo + cols.max()))
+    else: runs = split(rgba)
     assert len(runs) == 4, 'butuh tepat 4 pose terpisah, ditemukan %d: %s' % (len(runs), runs)
     subs, meta = [], []
     for x0, x1 in runs:
-        xs = max(0, x0 - 6); s = rgba[:, xs:x1 + 7].copy(); m = s[..., 3] > 128
+        xs = max(0, x0 - 6); s = rgba[:, xs:x1 + 7].copy()
+        if cuts:
+            lo, hi = cuts[len(subs)], cuts[len(subs) + 1]; cx = np.arange(xs, xs + s.shape[1]); s[:, (cx < lo) | (cx >= hi), 3] = 0
+        m = s[..., 3] > 128
         ys = np.where(m.any(1))[0]; bot = ys.max()
         band = m[bot - 40:bot + 1].any(0); cols = np.where(band)[0]; run = [cols[0]]
         for c in cols[1:]:
@@ -107,8 +115,8 @@ def build(sheet, name, eyes, info=False, opts=None):
     rx0, ry0, rx1, ry1 = ex0 - 40, ey0 - 25, ex1 + 40, ey1 + 40; ref = np.ones((ry1 - ry0, rx1 - rx0), bool)
     ref[ey0 - ry0 - 6:ey1 - ry0 + 6, ex0 - rx0 - 6:ex1 - rx0 + 6] = False        # abaikan mata sendiri saat mencocokkan kulit
     bs = (1e18, 0, 0)
-    for dy in range(-10, 11):
-        for dx in range(-10, 11):
+    for dy in range(-14, 15):
+        for dx in range(-24, 25):
             blk = b[ry0 + dy:ry1 + dy, rx0 + dx:rx1 + dx]; d = ((a[ry0:ry1, rx0:rx1] - blk) ** 2)[ref].mean()
             if d < bs[0]: bs = (d, dx, dy)
     dx, dy = bs[1], bs[2]
@@ -125,7 +133,7 @@ def build(sheet, name, eyes, info=False, opts=None):
     Image.fromarray(head).resize((128, 128), Image.LANCZOS).save(os.path.join(OUT, '%s-head.webp' % name), 'WEBP', quality=86, method=6)
     u = body_units / (body_h * sc)                                                # satuan dunia per piksel akhir
     meta = {'w': round(float(sz[0] * u), 2), 'h': round(float(sz[1] * u), 2), 'ax': round(float((ax - cx0) * sc * u), 2), 'gy': round(float((BY - cy0) * sc * u), 2), 'body': round(body_units),
-            'blink': {'x': round(float((ex0 + dx - cx0) * sc * u), 2), 'y': round(float((ey0 + dy - cy0) * sc * u), 2), 'w': round(float(pw * u), 2), 'h': round(float(ph * u), 2)}}
+            'blink': {'x': round(float((ex0 - cx0) * sc * u), 2), 'y': round(float((ey0 - cy0) * sc * u), 2), 'w': round(float(pw * u), 2), 'h': round(float(ph * u), 2)}}
     for k in ('call', 'done', 'hop'):          # watak gerak (opsional): detik antar panggilan, detik antar pose senang, pengali tinggi lompatan
         if k in opts: meta[k] = float(opts[k])
     json.dump(meta, open(os.path.join(OUT, name + '.json'), 'w'), indent=1)

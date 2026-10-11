@@ -5,7 +5,7 @@ const bodies=[...html.matchAll(/const OBST = \[([\s\S]*?)\n\];/g)]; const obst=[
 const [x0,x1,y0,y1]=html.match(/const CB = \{ x0: (\d+), x1: (\d+), y0: (\d+), y1: (\d+) \}/).slice(1).map(Number);
 const inObst=(x,y,pad=0)=>obst.find(o=>Math.hypot(x-o[0],y-o[1])<o[2]+pad);
 const CASTLE=html.slice(html.indexOf('const EX = ['));
-const exs=[...CASTLE.matchAll(/id: '(\w+)', mod: '\w+', name: '[^']+', e: '[^']*', npc: \{ n: '([^']+)', e: '[^']*', x: (\d+), y: (\d+) \}, go: \[(\d+), (\d+)\]/g)].map(m=>({id:m[1],n:m[2],x:+m[3],y:+m[4],gx:+m[5],gy:+m[6]}));
+const exs=[...CASTLE.matchAll(/id: '(\w+)', mod: '\w+', name: '[^']+', e: '[^']*', npc: \{ n: '([^']+)', e: '[^']*',(?: spr: '\w+',)? x: (\d+), y: (\d+) \}, go: \[(\d+), (\d+)\]/g)].map(m=>({id:m[1],n:m[2],x:+m[3],y:+m[4],gx:+m[5],gy:+m[6]}));
 (async()=>{
  const b64=(CASTLE.match(/<image href="data:image\/webp;base64,([A-Za-z0-9+\/=]+)" x="0" y="0" width="1000" height="640"/)||[])[1]; must(b64&&b64.length>100000,'painted castle is embedded'); must(/^RIFF.{4}WEBP$/s.test(Buffer.from(b64||'','base64').slice(0,12).toString('latin1')),'it is a real WebP image');
  must(!CASTLE.includes('id="aCob"')&&!CASTLE.includes('fill="url(#aGr)"'),'the old drawn courtyard is gone');

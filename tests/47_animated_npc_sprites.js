@@ -5,7 +5,7 @@ const {JSDOM}=require('jsdom');const fs=require('fs'),path=require('path');
 const root=path.join(__dirname,'..'); const html=fs.readFileSync(path.join(root,'dist','diglosa.html'),'utf8');
 const errs=[]; const wait=ms=>new Promise(r=>setTimeout(r,ms)); const must=(c,m)=>{if(!c)errs.push('FAIL '+m)};
 // ---- files ----
-const GUARDS={kakek:86,mimi:80,rimba:82,gerbang:84,waktu:88};   // name -> body height in world units
+const GUARDS={kakek:86,mimi:80,rimba:82,gerbang:84,waktu:88,portal:84};   // name -> body height in world units
 for(const [nm,body] of Object.entries(GUARDS)){ const d=path.join(root,'src','npc'); const j=JSON.parse(fs.readFileSync(path.join(d,nm+'.json'),'utf8'));
   for(const k of ['idle','help','happy','head','blink']) must(fs.existsSync(path.join(d,nm+'-'+k+'.webp')),nm+': sprite file '+k+' exists');
   const sz=k=>fs.statSync(path.join(d,nm+'-'+k+'.webp')).size; must(sz('blink')<4000,nm+': the blink is a small patch ('+sz('blink')+' bytes), not a whole picture'); must(['idle','help','happy'].every(k=>sz(k)<40000)&&sz('head')<20000,nm+': every pose stays small');
@@ -22,11 +22,11 @@ function open(seed,url){
 }
 (async()=>{
  // ---- the forest ----
- { const t=open({}); await wait(700); const d=t.d; const sp=d.querySelectorAll('.nsp'); must(sp.length===5,'Kakek Sapa, Koki Mimi, Rimba, Penjaga Gerbang and Penjaga Waktu have sprites so far: '+sp.length);
+ { const t=open({}); await wait(700); const d=t.d; const sp=d.querySelectorAll('.nsp'); must(sp.length===6,'all six guards have sprites: '+sp.length);
    const g=[...sp].find(x=>x.parentNode.getAttribute('aria-label')==='Bicara dengan Kakek Sapa'); must(!!g&&[...sp].some(x=>x.parentNode.getAttribute('aria-label')==='Bicara dengan Koki Mimi'),'Koki Mimi\'s sprite is in the forest too'); must(g&&g.parentNode.getAttribute('aria-label')==='Bicara dengan Kakek Sapa','the sprite sits in Kakek Sapa\'s place'); must(g.dataset.s==='call','the open mission makes him call for help');
    must(g.querySelectorAll('image').length===4&&!!g.querySelector('.gi .nbl')&&!!g.querySelector('.gh')&&!!g.querySelector('.gp')&&!!g.querySelector('.nbub'),'idle, blink patch, help and happy pictures and the bubble exist');
    must(/Help!/.test(g.textContent)&&/Tolong!/.test(g.textContent),'the bubble says Help! with Tolong! under it');
-   const emo=[...d.querySelectorAll('.npc')].filter(n=>n.querySelector('.em')).length; must(emo>=1,'the other guards keep their emoji for now ('+emo+')');
+   const emo=[...d.querySelectorAll('.npc')].filter(n=>n.querySelector('.em')).length; must(emo===0,'no emoji guard is left in the forest ('+emo+')');
    must(g.classList.contains('fx-full'),'effects are on by default');
    // near: the player walks close, frame() adds .near, and leaving removes it
    const A=t.w.__DG.A(); const npc=[...d.querySelectorAll('.npc')].find(n=>n.querySelector('.nsp')); const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const nx=+m[1],ny=+m[2];
@@ -63,7 +63,12 @@ function open(seed,url){
    const npc=g.parentNode; const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const A=t.w.__DG.A(); A.px=+m[1]+40; A.py=+m[2]+70; await wait(300); must(npc.classList.contains('near'),'near pose in the tower too');
    t.click(npc); await wait(300); must(!!d.querySelector('.dlgav img'),'his face is the avatar in the dialog'); t.w.close(); }
  { const t=open({map:'waktu',wkt:{d:{},boss:1}}); await wait(900); const g=t.d.querySelector('.nsp'); must(!!g&&g.dataset.s==='done','the Time Keeper is happy once the tower is saved'); t.w.close(); }
- // ---- the other guards still work with emoji, and their dialog avatar too ----
- { const t=open({}); await wait(600); const npcs=[...t.d.querySelectorAll('.npc')].filter(n=>!n.querySelector('.nsp')&&n.querySelector('.em')); must(npcs.length>=1,'emoji guards remain ('+npcs.length+')'); t.w.close(); }
+ { const t=open({map:'gua',cave:{d:{},boss:0}}); await wait(900); const d=t.d; const g=d.querySelector('.nsp'); must(!!g&&g.dataset.s==='call'&&d.querySelectorAll('.nsp').length===1,'Nyonya Portal calls for help in the cave while it is not saved');
+   must(/--cd:11s/.test(g.getAttribute('style'))&&/--hop:0\.9/.test(g.getAttribute('style')),'with a graceful rhythm: '+g.getAttribute('style'));
+   const npc=g.parentNode; const m=npc.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/); const A=t.w.__DG.A(); A.px=+m[1]+40; A.py=+m[2]+70; await wait(300); must(npc.classList.contains('near'),'near pose in the cave too');
+   t.click(npc); await wait(300); must(!!d.querySelector('.dlgav img'),'her face is the avatar in the dialog'); t.w.close(); }
+ { const t=open({map:'gua',cave:{d:{},boss:1}}); await wait(900); const g=t.d.querySelector('.nsp'); must(!!g&&g.dataset.s==='done','Nyonya Portal is happy once the cave is saved'); t.w.close(); }
+ // ---- all six guards are painted sprites now ----
+ { const t=open({}); await wait(600); const npcs=[...t.d.querySelectorAll('.npc')].filter(n=>!n.querySelector('.nsp')&&n.querySelector('.em')); must(npcs.length===0,'no guard is left with only an emoji ('+npcs.length+')'); t.w.close(); }
  console.log(errs.length?errs.join('\n'):'ANIMATED NPC SPRITES TESTS PASSED'); process.exit(0);
 })().catch(e=>{console.log('EXC',e.stack,errs);process.exit(1)});

@@ -806,7 +806,7 @@ const AREA_DEF = [
     say: [['Time is very important here.', 'Waktu sangat penting di sini.'],
           ['Learn the days, months, verbs, adjectives and adverbs.', 'Pelajari hari, bulan, kata kerja, kata sifat, dan kata keterangan.']] },
   { id: 'portal', name: 'Gua Portal', e: '🔮', cats: ['Tanya, Depan & Sambung', 'Kata Ganti & Penentu', 'Kata Bantu & Dasar Tambahan', 'Pelengkap Topik A1', 'Persiapan IELTS A1'],
-    npc: { n: 'Nyonya Portal', e: '🧙‍♀️', x: 523, y: 160 }, go: [523, 218],
+    npc: { n: 'Nyonya Portal', e: '🧙‍♀️', spr: 'portal', x: 523, y: 160 }, go: [523, 218],
     say: [['I feel something strange about this portal.', 'Aku merasakan sesuatu yang aneh pada portal ini.'],
           ['Can you help me? Learn the small words that connect every sentence.', 'Bisakah kamu membantuku? Pelajari kata-kata kecil yang menyambung setiap kalimat.']] }
 ];
@@ -1477,7 +1477,7 @@ const inPoly = (x, y, P) => { let c = false; for (let i = 0, j = P.length - 1; i
 const CAVE_OBST = (() => { const o = []; for (let x = 0; x <= 1000; x += 28) for (let y = 0; y <= 640; y += 28) if (!inPoly(x, y, CAVE_POLY)) o.push([x, y, 24]); return o; })();   /* penghalang di luar lantai */
 const CAVE_START = [500, 540];
 const CAVE_ENT = [
-  { id: 'npc', t: 'npc', av: '🧙‍♀️', npc: { n: 'Nyonya Portal', e: '🧙‍♀️', x: 500, y: 345 }, go: [500, 405] },
+  { id: 'npc', t: 'npc', av: '🧙‍♀️', npc: { n: 'Nyonya Portal', e: '🧙‍♀️', spr: 'portal', x: 500, y: 375 }, go: [500, 433] },
   { id: 'kolam', t: 'door', mode: 'cards', av: '💧', npc: { n: 'Kolam Ingatan', e: '💧', x: 262, y: 392 }, go: [318, 398] },
   { id: 'kilat', t: 'door', mode: 'duel', av: '⚡', npc: { n: 'Lorong Kilat', e: '⚡', x: 195, y: 205 }, go: [205, 262] },
   { id: 'gema', t: 'door', mode: 'listen', av: '🔔', npc: { n: 'Lorong Gema', e: '🔔', x: 830, y: 205 }, go: [830, 262] },
