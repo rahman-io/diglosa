@@ -119,6 +119,12 @@ for _jf in sorted(glob.glob(os.path.join(SRC, 'npc', '*.json'))):
     _n = os.path.basename(_jf)[:-5]; _m = json.load(open(_jf)); _m['u'] = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'npc', '%s-%s.webp' % (_n, k)), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'help', 'happy', 'head')}; _spr[_n] = _m
 assert '/*__NPC_SPRITES__*/' in tpl
 tpl=tpl.replace('/*__NPC_SPRITES__*/', 'const NPC_SPR = ' + json.dumps(_spr, separators=(',', ':')) + ';')
+_portraits = {}
+for _pf in sorted(glob.glob(os.path.join(SRC, 'portraits', '*.webp'))):
+    _pn = os.path.basename(_pf)[:-5]
+    _portraits[_pn] = 'data:image/webp;base64,' + base64.b64encode(open(_pf, 'rb').read()).decode('ascii')
+assert '/*__NPC_PORTRAITS__*/' in tpl
+tpl=tpl.replace('/*__NPC_PORTRAITS__*/', 'const NPC_PORTRAITS = ' + json.dumps(_portraits, separators=(',', ':')) + ';')
 _owl = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'owl', k + '.webp'), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'up', 'out', 'down', 'land', 'talk', 'happy', 'head')}
 tpl=tpl.replace('/*__OWL_SPRITES__*/', 'const OWL_SPR = ' + json.dumps(_owl, separators=(',', ':')) + ';')
 travel_css="""

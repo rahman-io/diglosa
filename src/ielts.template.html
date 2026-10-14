@@ -586,17 +586,17 @@ function updPal() { document.querySelectorAll('.pn').forEach(b => b.classList.to
 
 /* ================= PETUALANGAN: Akademi IELTS ================= */
 const EX = [
-  { id: 'L', mod: 'L', name: 'Aula Dengar', e: '🎧', npc: { n: 'Sera si Pendengar', e: '🧝‍♀️', x: 722, y: 222 }, go: [722, 280],
+  { id: 'L', mod: 'L', name: 'Aula Dengar', e: '🎧', npc: { n: 'Sera si Pendengar', e: '🧝‍♀️', portrait: 'sera', x: 722, y: 222 }, go: [722, 280],
     say: [['Shh... listen carefully. The bell rings only once!', 'Sst... dengarkan baik-baik. Lonceng hanya berbunyi sekali!'], ['Can you hear the words and write the answers?', 'Bisakah kamu mendengar kata-katanya dan menulis jawabannya?']] },
-  { id: 'R', mod: 'R', name: 'Perpustakaan', e: '📖', npc: { n: 'Pustakawan Bima', e: '👨‍🏫', x: 273, y: 222 }, go: [273, 280],
+  { id: 'R', mod: 'R', name: 'Perpustakaan', e: '📖', npc: { n: 'Pustakawan Bima', e: '👨‍🏫', portrait: 'bima', x: 273, y: 222 }, go: [273, 280],
     say: [['Welcome to the library. Please read the texts slowly.', 'Selamat datang di perpustakaan. Tolong baca teksnya pelan-pelan.'], ['Is it TRUE, FALSE or NOT GIVEN? Look for the key words.', 'Apakah TRUE, FALSE, atau NOT GIVEN? Cari kata kuncinya.']] },
-  { id: 'W', mod: 'W', name: 'Meja Juru Tulis', e: '✍️', npc: { n: 'Juru Tulis Ayu', e: '🧑‍🎨', x: 226, y: 474 }, go: [285, 440],
+  { id: 'W', mod: 'W', name: 'Meja Juru Tulis', e: '✍️', npc: { n: 'Juru Tulis Ayu', e: '🧑‍🎨', portrait: 'ayu', x: 226, y: 474 }, go: [285, 440],
     say: [['Hello! I have paper and ink for you.', 'Halo! Aku punya kertas dan tinta untukmu.'], ['Write short sentences. Check the capital letters and full stops.', 'Tulis kalimat pendek. Periksa huruf besar dan titiknya.']] },
-  { id: 'S', mod: 'S', name: 'Panggung Bicara', e: '🗣️', npc: { n: 'Rangga si Penyair', e: '🧑‍🎤', x: 758, y: 474 }, go: [735, 525],
+  { id: 'S', mod: 'S', name: 'Panggung Bicara', e: '🗣️', npc: { n: 'Rangga si Penyair', e: '🧑‍🎤', portrait: 'rangga', x: 758, y: 474 }, go: [735, 525],
     say: [['Good day! Please speak loudly and clearly.', 'Selamat siang! Tolong bicara dengan keras dan jelas.'], ['Answer with full sentences and give one reason.', 'Jawab dengan kalimat lengkap dan beri satu alasan.']] },
   { id: 'full', mod: 'full', name: 'Gerbang Akademi', e: '🏰', npc: { n: 'Raja Penguji', spr: 'raja', e: '', x: 503, y: 186 }, go: [503, 244],
     say: [['Welcome to the IELTS Academy, traveler!', 'Selamat datang di Akademi IELTS, pengelana!'], ['Listening, Reading, Writing and Speaking. Are you ready for the full test?', 'Listening, Reading, Writing, dan Speaking. Siapkah kamu untuk ujian penuh?']] },
-  { id: 'portal', mod: 'portal', name: 'Portal Pulang', e: '🔮', npc: { n: 'Penjaga Portal', e: '🧙‍♀️', x: 350, y: 492 }, go: [350, 440],
+  { id: 'portal', mod: 'portal', name: 'Portal Pulang', e: '🔮', npc: { n: 'Penjaga Portal', spr: 'portal', e: '🧙‍♀️', x: 350, y: 492 }, go: [350, 440],
     say: [['This portal goes back to the Word Forest.', 'Portal ini menuju kembali ke Hutan Kata.'], ['Learn more words there, then come back to the Academy.', 'Pelajari lebih banyak kata di sana, lalu kembali ke Akademi.']] }
 ];
 const ADV = { px: 503, py: 517, tx: null, ty: null, cb: null, face: 1, keys: new Set(), dlg: null, more: false, panel: null, near: -1, raf: 0, last: 0, stuck: 0, walk: 0 };

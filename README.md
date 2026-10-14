@@ -213,3 +213,6 @@ Raja memakai empat pose dari `src/npc/raja-*`: diam, kedip, meminta tolong, dan 
 Burung hantu pembawa surat dan pemberi petunjuk memakai delapan pose transparan di `src/owl/`: diam, kedip, tiga posisi sayap, mendarat, berbicara, dan senang. Kepakan memakai urutan naik–terbuka–turun–terbuka, tanpa efek meremas badan yang lama. Saat kembali memberi petunjuk, burung hantu membuka kaki sebelum diam di dekat pemain. Dialog bantuan menggunakan pose berbicara; hasil latihan memakai pose senang. Efek Mati dan reduced motion menampilkan pose diam serta melewati perjalanan terbang. Ikon menu dan dekorasi emoji yang bukan tokoh cerita tetap terpisah.
 
 Sumber: `art_source/owl-poses-v1.png`; ekstraksi dan penyelarasan frame: `python3 tools/make_owl.py` (Pillow, numpy, scipy). `build.py` menyematkan sprite agar tetap dapat dimainkan offline. Uji: `node tests/51_owl_animation.js`.
+
+## Potret NPC Istana IELTS
+Dialog Sera si Pendengar, Pustakawan Bima, Juru Tulis Ayu, Rangga si Penyair, dan Penjaga Portal memakai potret karakter WebP. Empat potret baru berasal dari `art_source/ielts-npc-portraits-v1.png` dan diekstrak ke `src/portraits/` oleh `tools/make_ielts_portraits.py`; Penjaga Portal memakai kepala sprite Portal yang sudah ada. Ikon pada pintu dan benda ujian tetap menjadi ikon. Uji: `node tests/52_dialog_portraits.js`.

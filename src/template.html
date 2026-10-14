@@ -2221,7 +2221,8 @@ function npcSprite(key, state, seed) {   /* state: call, done, atau calm */
   const bub = state === 'call' ? `<g class="nbub"><g transform="translate(42 ${top - 46})"><path d="M7 0H62a7 7 0 0 1 7 7V27a7 7 0 0 1-7 7H24L8 44 12 34H7a7 7 0 0 1-7-7V7a7 7 0 0 1 7-7Z" fill="#fffaf0" stroke="#7a2a0a" stroke-width="2.5"/><text x="34" y="17" text-anchor="middle" font-size="15" fill="#7a2a0a" font-family="'Lilita One',sans-serif">Help!</text><text x="34" y="29" text-anchor="middle" font-size="9" font-weight="800" fill="#a1521b" font-family="Nunito,sans-serif">Tolong!</text></g></g>` : '';
   return `<g class="nsp fx-${fxMode()}" data-s="${state}" style="--nd:-${((seed * 3.7) % 9).toFixed(1)}s;--cd:${s.call || 11}s;--dd:${s.done || 9}s;--hop:${s.hop || 1}"><ellipse cy="3" rx="24" ry="7" fill="rgba(0,0,0,.28)"/><g class="nbob"><g class="nbr"><g class="gi">${f('idle')}${im('blink', x0 + b.x, y0 + b.y, b.w, b.h, 'nbl')}</g><g class="gh">${f('help')}</g><g class="gp">${f('happy')}</g></g></g>${bub}</g>`;
 }
-const npcAv = (a, em) => { const sp = sprOf(a); return sp ? `<img src="${sp.u.head}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">` : em; };
+/*__NPC_PORTRAITS__*/
+const npcAv = (a, em) => { const sp = sprOf(a), portrait = a && a.npc && a.npc.portrait && NPC_PORTRAITS[a.npc.portrait]; return sp ? `<img src="${sp.u.head}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">` : portrait ? `<img src="${portrait}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">` : em; };
 
 /* --- gambar dunia (SVG buatan sendiri) --- */
 function npcSVG(a, i) {
