@@ -1056,7 +1056,7 @@ function makeEngine(cfg) {
   const has = k => !!(cfg.items && cfg.items()[k]);
   const takeSec = () => (TUNE.take[st().diff] || TUNE.take.petualang) + (has('sepatu') ? 1 : 0);   /* Sepatu Angin: +1 detik */
   const guessP = () => TUNE.guess[st().diff] != null ? TUNE.guess[st().diff] : .6;
-  const mHearts = e => '💜'.repeat(Math.max(0, e.mh)) + '🤍'.repeat(Math.max(0, e.mmax - e.mh));
+  const mHearts = e => Array.from({ length: Math.max(0, e.mh) }, () => monsterHeart(true)).join('') + Array.from({ length: Math.max(0, e.mmax - e.mh) }, () => monsterHeart(false)).join('');
   function nextQ(e) {   /* Jam Pasir Liar: tiap dua soal baru, soal sebelumnya diputar ulang */
     if (e.rewind && e.lastQ && (e.fresh || 0) >= 2) { e.fresh = 0; e.rewound = true; return e.lastQ; }
     e.rewound = false; const q = cfg.question(e.m, e); e.lastQ = q; e.fresh = e.rewind ? (e.fresh || 0) + 1 : 0; return q;   /* hitungan putar ulang hanya berjalan saat mekanik itu aktif (fase 2 ke atas) */
@@ -1292,6 +1292,7 @@ function makeEngine(cfg) {
 
 /* ---------- layar penuh dan kamera (HP, tablet, layar kecil) ---------- */
 const compactNow = () => window.innerWidth <= 900 || window.innerHeight <= 560;
+const arenaCompactNow = () => true;
 // perangkat tanpa keyboard (HP, tablet, layar kecil): petunjuk khusus keyboard disembunyikan lewat kelas no-kb pada <html>
 const noKeyboard = () => compactNow() || !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 const syncKb = () => document.documentElement.classList.toggle('no-kb', noKeyboard());
@@ -2237,7 +2238,8 @@ const forestInnerIcon = (map, id) => ({
   gerbang: { npc: 'city', peta: 'map', bus: 'bus', stasiun: 'train', layang: 'bridge', sekolah: 'school', portal: 'portal', exit: 'exit' },
   waktu: { npc: 'clock', permukaan: 'clock', roda: 'lightning', lonceng: 'bell', bandul: 'hourglass', pintujam: 'door', portal: 'portal', exit: 'exit' }
 }[map]?.[id] || (id === 'portal' ? 'portal' : id === 'exit' ? 'exit' : 'door'));
-const forestHeart = full => `<svg class="life-icon ${full ? 'full' : 'empty'}" viewBox="-22 -26 44 48" aria-hidden="true"><path d="M0 17C-8 9-19 1-19-10c0-8 10-12 19-3 9-9 19-5 19 3 0 11-11 19-19 27Z"/></svg>`;
+const forestHeart = full => `<svg class="life-icon ${full ? 'full' : 'empty-life'}" viewBox="-22 -26 44 48" aria-hidden="true"><path d="M0 17C-8 9-19 1-19-10c0-8 10-12 19-3 9-9 19-5 19 3 0 11-11 19-19 27Z"/></svg>`;
+const monsterHeart = full => `<svg class="life-icon monster-life ${full ? 'full' : 'empty-life'}" viewBox="-22 -26 44 48" aria-hidden="true"><title>${full ? '💜' : '🤍'}</title><path d="M0 17C-8 9-19 1-19-10c0-8 10-12 19-3 9-9 19-5 19 3 0 11-11 19-19 27Z"/></svg>`;
 const forestGem = () => `<svg class="gem-icon" viewBox="-20 -25 40 50" aria-hidden="true"><path d="M0-21 16-7 0 19-16-7Z"/><path d="M0-21 16-7-16-7Z" class="shine"/><path d="M-5-7 0 16 5-7" class="facet"/></svg>`;
 function npcSprite(key, state, seed) {   /* state: call, done, atau calm */
   const s = NPC_SPR[key]; if (!s) return '';
@@ -2291,7 +2293,7 @@ function vHomeA() {
   const lv = level(), unread = S.adv.msgDay !== dstr() ? 1 : 0, qOpen = questList().filter(q => !q.done).length;
   const cards = AREAS.map((a, i) => { const s = areaStats(a);
     return `<button class="acard" data-a="goarea" data-i="${i}"><span class="ae">${forestIcon(forestAreaIcon(a.id))}</span><b>${a.name}${areaDone(a.id) ? ' ✓' : ''}</b><small>${s.seen}/${s.n} dipelajari, ${s.mast} dikuasai</small><div class="bar mini"><span class="s" style="width:${s.seen / s.n * 100}%"></span><span class="m" style="width:${s.mast / s.n * 100}%"></span></div></button>`; }).join('');
-  const compact = compactNow(); ADV.compact = compact;
+  const compact = arenaCompactNow(); ADV.compact = compact;
   const scene = `<div class="advwrap${compact ? ' full' : ''}${S.ctrl === 'off' ? '' : ' hasctl'}"><div class="adv">${worldSVG()}${mistHTML()}
       <div class="hudL"><div class="ahud"><div class="aav">${heroHead()}</div><div class="aname">Pengelana Hoot</div></div>
       <div class="alv">Lv. ${String(lv.n).padStart(2, '0')}<i><b style="width:${lv.pct}%"></b></i></div>
@@ -2732,7 +2734,7 @@ Object.assign(A, {
 });
 document.addEventListener('keyup', e => { if (!IX.active && !TITLE.on && view === 'home') advKey(e, false); });
 window.addEventListener('blur', () => ADV.keys.clear());
-window.addEventListener('resize', () => { if (!IX.active && view === 'home' && ADV.compact !== compactNow()) render(); });
+window.addEventListener('resize', () => { if (!IX.active && view === 'home' && ADV.compact !== arenaCompactNow()) render(); });
 
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-a]');

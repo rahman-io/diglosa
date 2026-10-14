@@ -54,7 +54,7 @@ function boot(seed,W,H){
  t=boot({skin:'petualangan',diff:'santai'},375,667); await wait(250); w0=t.world(); t.ptr(w0,'pointerdown',200,300); await wait(250); t.ptr(w0,'pointermove',264,300); await wait(450); t.ptr(w0,'pointerup',264,300); await wait(200);
  must(!t.d.querySelector('#act').classList.contains('ready')&&t.w.getComputedStyle(t.d.querySelector('#act')).display==='none','talk button hidden when nobody is nearby');
  t.click('[data-p=world]'); t.click('.mpanel [data-a=goquest][data-i="6"]'); await wait(3200); must(t.d.querySelector('.dlg')&&t.txt().includes('Portal Ungu'),'walked to the portal'); t.click('[data-a=ignore]'); await wait(200);
- must(t.d.querySelector('#act').classList.contains('ready')&&t.d.querySelector('#act .actlb').textContent==='Masuk'&&t.d.querySelector('#act .actic').textContent==='🔮','next to the portal the button says Masuk');
+ must(t.d.querySelector('#act').classList.contains('ready')&&t.d.querySelector('#act .actlb').textContent==='Masuk'&&t.d.querySelector('#act .actic .fui'),'next to the portal the button says Masuk');
  t.click('#act'); must(t.d.querySelector('.dlg'),'talk button opens the portal dialog'); t.click('[data-a=ignore]');
  // ---------- d-pad + off ----------
  t.click('[data-p=opt]'); must(t.txt().includes('Kontrol di layar')&&t.txt().includes('muncul tepat di titik sentuhan')&&t.d.querySelectorAll('[data-a=setctrl]').length===3,'options explain the floating joystick'); t.click('[data-a=setctrl][data-v=dpad]'); t.click('[data-a=closep]');
@@ -64,7 +64,7 @@ function boot(seed,W,H){
  w0=t.world(); [x0]=t.pos(); t.ptr(w0,'pointerdown',200,300); await wait(300); must(!t.shown(),'no floating joystick when controls are off'); t.ptr(w0,'pointerup',200,300);
  t.click('[data-p=world]'); t.click('.mpanel [data-a=goquest][data-i="0"]'); await wait(3200); t.click('[data-a=ignore]'); await wait(200); { const T=t.d.querySelector('#talk'); must(!T.hidden&&t.w.getComputedStyle(T).display!=='none','with controls off, the name plaque is back'); }
  // ---------- laptop (mouse) ----------
- t=boot({skin:'petualangan',diff:'santai'},1280,800); await wait(200); w0=t.world(); must(t.fj()&&!t.d.querySelector('.advwrap.full'),'laptop: boxed map with the floating joystick'); [x0]=t.pos();
+ t=boot({skin:'petualangan',diff:'santai'},1280,800); await wait(200); w0=t.world(); must(t.fj()&&t.d.querySelector('.advwrap.full'),'laptop: full-screen map with the floating joystick'); [x0]=t.pos();
  t.ptr(w0,'pointerdown',500,400); await wait(250); must(t.shown(),'laptop: holding the mouse button shows the joystick'); t.ptr(w0,'pointermove',564,400); await wait(500); t.ptr(w0,'pointerup',564,400); must(t.pos()[0]>x0+60&&!t.shown(),'laptop: dragging with the mouse moves the player, joystick hides on release');
  // ---------- academy ----------
  t=boot({skin:'petualangan',diff:'santai',map:'akademi'},375,667); await wait(250); w0=t.world(); must(t.d.querySelector('#xapp #fjoy')&&t.d.querySelector('#xapp #act'),'academy has the floating joystick and the talk button'); [x0]=t.pos();

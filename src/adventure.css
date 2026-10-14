@@ -215,7 +215,9 @@ select.inp{font-size:1rem;padding:10px 14px}
 .hh{display:inline-flex;align-items:center;gap:.18em;line-height:1}
 .life-icon{width:1.18em;height:1.18em;display:block;overflow:visible;filter:drop-shadow(0 .08em .05em rgba(0,0,0,.35))}
 .life-icon path{fill:#ff4f6a;stroke:#8a1030;stroke-width:3;stroke-linejoin:round}
-.life-icon.empty path{fill:#f4f1e8;stroke:#b8b0a0}
+.life-icon.empty-life path{fill:#f4f1e8;stroke:#b8b0a0}
+.life-icon.monster-life path{fill:#7c3aed;stroke:#4c1d95}
+.life-icon.monster-life.empty-life path{fill:#f4f1e8;stroke:#b8b0a0}
 .gem-icon{width:1.18em;height:1.18em;display:inline-block;vertical-align:middle;overflow:visible;filter:drop-shadow(0 .08em .05em rgba(0,0,0,.35))}
 .gem-icon>path:first-child{fill:#5be0ff;stroke:#0a5a7a;stroke-width:3;stroke-linejoin:round}
 .gem-icon .shine{fill:#c4f6ff}
@@ -329,7 +331,7 @@ select.inp{font-size:1rem;padding:10px 14px}
 .duel .dside{display:grid;gap:2px;min-width:0}
 .duel .dside.r{text-align:right}
 .duel .dside b{font:400 1.1rem var(--font-h);color:var(--wood3)}
-.duel .dh{font-size:1.15rem;white-space:nowrap}
+.duel .dh{display:flex;align-items:center;gap:.18em;font-size:1.15rem;white-space:nowrap}
 .duel .dvs{font:400 1.7rem var(--font-h);color:#c0392b;text-shadow:0 2px 0 rgba(0,0,0,.15)}
 .duel .darena{display:flex;align-items:flex-end;justify-content:space-between;margin:8px 0 4px;padding:6px 14px 0;border:3px solid var(--wood2);border-radius:16px;background:linear-gradient(180deg,#ffe3a6 0,#ffc95e 62%,#8fc650 62%,#6fae3d 100%);overflow:hidden}
 .duel .dhero{height:104px;width:auto;flex:none;overflow:visible}

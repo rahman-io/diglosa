@@ -36,15 +36,15 @@ function boot(seed,W,H){
  t.click('.npc[data-i="0"]'); await wait(2800); t.click('[data-a=more]'); t.click('[data-a=mode][data-m=cards]'); must(t.d.querySelector('#fc'),'mission opens'); must(!t.d.documentElement.classList.contains('adv-full'),'full-screen class removed on game screens');
  t.click('[data-a=home]'); must(t.d.querySelector('.advwrap.full')&&t.d.documentElement.classList.contains('adv-full'),'back to full-screen map');
  // ---------- resize: laptop and back ----------
- t.size(1280,800); must(t.d.querySelector('.advwrap')&&!t.d.querySelector('.advwrap.full')&&t.d.querySelector('.advbar')&&t.d.querySelector('.advlist'),'laptop size: boxed map with guide below'); must(!t.d.documentElement.classList.contains('adv-full'),'no full-screen class on laptop');
- t.layout(1120,717); await wait(150); must(t.vb()[2]===1000&&t.vb()[3]===640,'laptop camera shows whole world');
+ t.size(1280,800); must(t.d.querySelector('.advwrap.full')&&!t.d.querySelector('.advbar')&&!t.d.querySelector('.advlist'),'laptop size: full-screen map without guide below'); must(t.d.documentElement.classList.contains('adv-full'),'full-screen class on laptop');
+ t.layout(1280,800); await wait(150); must(Math.abs(t.vb()[2]-860)<1&&Math.abs(t.vb()[3]-537.5)<1,'laptop camera uses the full-screen viewport');
  t.size(375,667); must(t.d.querySelector('.advwrap.full')&&!t.d.querySelector('.advbar'),'shrinking the window switches to full-screen');
  // ---------- phone landscape ----------
  t=boot({skin:'petualangan',diff:'santai'},667,375); must(t.d.querySelector('.advwrap.full'),'landscape phone: full-screen map'); t.layout(667,375); await wait(250);
  v=t.vb(); must(Math.abs(v[2]-860)<1&&Math.abs(v[3]-860*375/667)<1,'landscape camera: wider view: '+v.map(Math.round)); must(v[1]>=0&&v[1]+v[3]<=640.5,'landscape camera stays inside the world');
  t.key('ArrowDown'); await wait(900); t.key('ArrowDown','keyup'); const v2=t.vb(); must(v2[1]>v[1]+5||t.pos()[1]>=605,'landscape camera follows vertical movement');
  // ---------- tablet + wide landscape phone + laptop ----------
- must(boot({skin:'petualangan'},768,1024).d.querySelector('.advwrap.full'),'tablet portrait is full-screen'); must(boot({skin:'petualangan'},932,430).d.querySelector('.advwrap.full'),'wide landscape phone is full-screen'); must(!boot({skin:'petualangan'},1280,800).d.querySelector('.advwrap.full'),'laptop is not full-screen');
+ must(boot({skin:'petualangan'},768,1024).d.querySelector('.advwrap.full'),'tablet portrait is full-screen'); must(boot({skin:'petualangan'},932,430).d.querySelector('.advwrap.full'),'wide landscape phone is full-screen'); must(boot({skin:'petualangan'},1280,800).d.querySelector('.advwrap.full'),'laptop is full-screen');
  // ---------- academy on phone ----------
  t=boot({skin:'petualangan',diff:'santai',map:'akademi'},375,667); must(t.d.querySelector('#xapp .advwrap.full')&&!t.d.querySelector('#xapp .advbar')&&!t.d.querySelector('#xapp .advlist'),'academy on phone: full-screen, no guide below');
  t.layout(375,667); await wait(250); v=t.vb(); must(Math.abs(v[3]-640)<1&&Math.abs(v[2]-640*375/667)<1,'academy portrait camera'); 

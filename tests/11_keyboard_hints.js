@@ -31,14 +31,14 @@ function boot(seed,W,H,coarse=false){
  if(found){ must(t.d.querySelectorAll('.encopt kbd').length>0||t.d.querySelector('.encfill input'),'monster panel shows options or a typing field'); must(!t.shown('.encopt kbd'),'phone: monster answer number badges are hidden'); }
  // ---------- laptop keeps everything ----------
  t=boot({skin:'petualangan',diff:'santai'},1280,800); await wait(200); must(!t.kb(),'laptop: keyboard hints stay enabled');
- must(t.d.querySelector('.advhelp .kbhint')&&t.shown('.advhelp .kbhint')&&/WASD/.test(t.d.querySelector('.advhelp').textContent),'laptop: the keyboard sentence is visible under the map');
+ must(!t.d.querySelector('.advhelp'),'laptop: the guide below the full-screen map is removed');
  t.click('#act'); t.click('[data-a=more]'); t.click('.dlgmore [data-a=mode][data-m=cards]'); must(t.shown('.kb')&&/Spasi/.test(t.d.querySelector('.kb').textContent),'laptop: flashcard shortcut hint is visible'); t.click('[data-a=home]'); await wait(250);
  t.click('#act'); t.click('[data-a=more]'); t.click('.dlgmore [data-a=mode][data-m=quiz]'); must(t.shown('.opt kbd'),'laptop: quiz number badges are visible'); t.click('[data-a=home]');
  t.click('[data-p=world]'); must(t.shown('.mpanel .kbhint'),'laptop: keyboard guide line is visible in the menu'); t.click('[data-a=closep]');
  // ---------- resizing flips it ----------
  t.size(375,667); must(t.kb()&&t.d.querySelector('.advwrap.full'),'shrinking the window hides keyboard hints'); t.size(1280,800); must(!t.kb(),'enlarging it brings them back');
  // ---------- touch screen detected even on a big window ----------
- t=boot({skin:'petualangan',diff:'santai'},1280,800,true); await wait(150); must(t.kb()&&!t.d.querySelector('.advwrap.full'),'coarse pointer on a big screen: hints hidden while the map stays boxed (tablet-like)'); must(!t.shown('.advhelp .kbhint'),'coarse pointer: the keyboard sentence under the map is hidden');
+ t=boot({skin:'petualangan',diff:'santai'},1280,800,true); await wait(150); must(t.kb()&&t.d.querySelector('.advwrap.full'),'coarse pointer on a big screen: hints hidden while the map stays full-screen'); must(!t.shown('.advhelp .kbhint'),'coarse pointer: the keyboard sentence under the map is hidden');
  // ---------- academy + IELTS exam + vocab quiz ----------
  t=boot({skin:'petualangan',diff:'santai',map:'akademi'},375,667); await wait(200); t.click('[data-p=world]'); must(t.d.querySelector('#xapp .mpanel .kbhint')&&!t.shown('.mpanel .kbhint'),'phone academy: keyboard guide line hidden'); t.click('[data-a=closep]');
  t=boot({skin:'petualangan',diff:'santai',map:'akademi'},1280,800); await wait(200); must(t.shown('#xapp .advhelp .kbhint'),'laptop academy: keyboard sentence visible');

@@ -14,7 +14,7 @@ const plx=()=>{const m=d.querySelector('#pl').getAttribute('transform').match(/t
  must(d.querySelector('.adv')&&d.querySelector('#world'),'world rendered');
  must(d.querySelectorAll('.npc').length===7,'6 npcs + portal door');
  must(d.querySelectorAll('.abtn').length===5,'5 hud buttons');
- must(d.querySelectorAll('.acard').length===6,'6 area cards');
+ click('[data-p=world]'); must(d.querySelectorAll('.mpanel [data-a=goquest]').length===7,'7 area cards in the world menu'); click('[data-a=closep]');
  must(d.querySelectorAll('.mk').length>=6,'quest markers');
  // keyboard walking
  const x0=plx()[0];
@@ -52,7 +52,7 @@ const plx=()=>{const m=d.querySelector('#pl').getAttribute('transform').match(/t
  must(JSON.parse(w.localStorage.getItem('hoot-a1-v1')).adv.portal===1,'portal count');
  must(d.querySelector('.res [data-a=home]')&&!d.querySelector('.res [data-a=again]')&&!d.querySelector('.res [data-a=gtitle]'),'the result offers a single finishing button (no replay, no title)'); click('[data-a=home]');
  // go via area chip, then Menu depan from options
- click('.advbar [data-a=goarea][data-i="3"]'); await wait(2500); must(txt().includes('Penjaga Gerbang'),'goarea chip walks to npc'); click('[data-a=ignore]');
+ click('[data-p=world]'); click('.mpanel [data-a=goquest][data-i="3"]'); await wait(2500); must(txt().includes('Penjaga Gerbang'),'world menu area card walks to npc'); click('[data-a=ignore]');
  click('[data-p=opt]'); click('[data-a=totitle]'); must(d.querySelector('#title')&&!d.querySelector('#title').hidden&&root.classList.contains('titling'),'Opsi > Menu depan shows the title');
  click('#tplay'); must(d.querySelector('#title').hidden&&d.querySelector('.adv')&&d.querySelector('#world'),'title resumes on the forest map');
  console.log(errs.length?errs.join('\n'):'ADVENTURE TESTS PASSED'); process.exit(0);
