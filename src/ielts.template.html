@@ -594,7 +594,7 @@ const EX = [
     say: [['Hello! I have paper and ink for you.', 'Halo! Aku punya kertas dan tinta untukmu.'], ['Write short sentences. Check the capital letters and full stops.', 'Tulis kalimat pendek. Periksa huruf besar dan titiknya.']] },
   { id: 'S', mod: 'S', name: 'Panggung Bicara', e: '🗣️', npc: { n: 'Rangga si Penyair', e: '🧑‍🎤', x: 758, y: 474 }, go: [735, 525],
     say: [['Good day! Please speak loudly and clearly.', 'Selamat siang! Tolong bicara dengan keras dan jelas.'], ['Answer with full sentences and give one reason.', 'Jawab dengan kalimat lengkap dan beri satu alasan.']] },
-  { id: 'full', mod: 'full', name: 'Gerbang Akademi', e: '🏰', npc: { n: 'Raja Penguji', e: '🤴', x: 503, y: 186 }, go: [503, 244],
+  { id: 'full', mod: 'full', name: 'Gerbang Akademi', e: '🏰', npc: { n: 'Raja Penguji', spr: 'raja', e: '', x: 503, y: 186 }, go: [503, 244],
     say: [['Welcome to the IELTS Academy, traveler!', 'Selamat datang di Akademi IELTS, pengelana!'], ['Listening, Reading, Writing and Speaking. Are you ready for the full test?', 'Listening, Reading, Writing, dan Speaking. Siapkah kamu untuk ujian penuh?']] },
   { id: 'portal', mod: 'portal', name: 'Portal Pulang', e: '🔮', npc: { n: 'Penjaga Portal', e: '🧙‍♀️', x: 350, y: 492 }, go: [350, 440],
     say: [['This portal goes back to the Word Forest.', 'Portal ini menuju kembali ke Hutan Kata.'], ['Learn more words there, then come back to the Academy.', 'Pelajari lebih banyak kata di sana, lalu kembali ke Akademi.']] }
@@ -628,8 +628,8 @@ function questList() {
 
 /* --- gambar dunia --- */
 function npcSVG(a, i) {
-  const { x, y, e } = a.npc, todo = exTodo(a);
-  return `<g class="npc" id="npc-${i}" data-a="npc" data-i="${i}" transform="translate(${x} ${y})" role="button" aria-label="Bicara dengan ${a.npc.n}"><circle r="54" cy="-28" fill="transparent"/><ellipse cy="4" rx="22" ry="7" fill="rgba(0,0,0,.28)"/><g class="em"><text y="-8" font-size="46" text-anchor="middle">${e}</text></g>${todo ? `<g transform="translate(0 -76)"><g class="mk"><circle r="11" fill="#ffd24a" stroke="#7a2a0a" stroke-width="3"/><text y="5" text-anchor="middle" font-size="15" font-weight="800" fill="#7a2a0a" font-family="Nunito,sans-serif">!</text></g></g>` : ''}<g transform="translate(0 26)"><rect x="-56" y="-11" width="112" height="21" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/><text y="4" font-size="12" text-anchor="middle" fill="#fff3d0" font-family="'Lilita One',sans-serif">${a.name}</text></g></g>`;
+  const { x, y, e } = a.npc, todo = exTodo(a), sp = sprOf(a);
+  return `<g class="npc" id="npc-${i}" data-a="npc" data-i="${i}" transform="translate(${x} ${y})" role="button" aria-label="Bicara dengan ${a.npc.n}"><circle r="54" cy="${sp ? -44 : -28}" fill="transparent"/>${sp ? npcSprite(a.npc.spr, todo ? 'call' : 'done', i) : `<ellipse cy="4" rx="22" ry="7" fill="rgba(0,0,0,.28)"/><g class="em"><text y="-8" font-size="46" text-anchor="middle">${e}</text></g>`}${todo ? `<g transform="translate(0 ${sp ? -(sp.body + 14) : -76})"><g class="mk"><circle r="11" fill="#ffd24a" stroke="#7a2a0a" stroke-width="3"/><text y="5" text-anchor="middle" font-size="15" font-weight="800" fill="#7a2a0a" font-family="Nunito,sans-serif">!</text></g></g>` : ''}<g transform="translate(0 26)"><rect x="-56" y="-11" width="112" height="21" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/><text y="4" font-size="12" text-anchor="middle" fill="#fff3d0" font-family="'Lilita One',sans-serif">${a.name}</text></g></g>`;
 }
 const ISTANA_IMG = '<image href="data:image/webp;base64,__ISTANA_B64__" x="0" y="0" width="1000" height="640" preserveAspectRatio="none"/>';   /* lukisan latar: src/castle.webp */
 function worldSVG() {
@@ -684,7 +684,7 @@ function dlgHTML() {
   const more = portal ? '' : `<div class="dlgmore"><button data-a="more">${ADV.more ? 'Sembunyikan pengaturan' : 'Atur jenis tes dan mode'}</button>${ADV.more ? `
     <button class="${on(S.type === 'academic')}" data-a="type" data-v="academic">Academic</button><button class="${on(S.type === 'general')}" data-a="type" data-v="general">General Training</button>
     <button class="${on(S.exam)}" data-a="exam" data-v="1">Mode ujian</button><button class="${on(!S.exam)}" data-a="exam" data-v="0">Latihan santai</button>` : ''}</div>`;
-  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${e.npc.n}"><div class="enchead"><div class="dlgav">${e.npc.e}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${e.e} ${e.name}</div></div></div>
+  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${e.npc.n}"><div class="enchead"><div class="dlgav">${npcAv(e, e.npc.e)}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${e.e} ${e.name}</div></div></div>
     <div class="dlglines">${e.say.map(l => `<div class="dlgline"><div class="en">${l[0]}</div><div class="id">${l[1]}</div></div>`).join('')}</div>${stat}
     <div class="dlgacts">${accept}<button class="ign" data-a="ignore">Abaikan</button></div>${more}</div>`;
 }
@@ -766,6 +766,7 @@ function frame(ts) {
     ab.classList.toggle('ready', near >= 0 && !busy);
     if (near >= 0 && near !== ADV.near) { const door = EX[near].id === 'portal'; ab.querySelector('.actic').textContent = door ? '🔮' : '💬'; ab.querySelector('.actlb').textContent = door ? 'Masuk' : 'Bicara'; ab.querySelector('.actnm').textContent = EX[near].npc.n; }
   }
+  app.querySelectorAll('.npc').forEach(n => n.classList.toggle('near', Number(n.dataset.i) === near && !busy));
   if (near !== ADV.near) { ADV.near = near; const t = $('#talk'); if (t) { t.hidden = near < 0 || busy; if (near >= 0) t.textContent = 'Bicara: ' + EX[near].npc.n; } }
   ADV.raf = requestAnimationFrame(frame);
 }

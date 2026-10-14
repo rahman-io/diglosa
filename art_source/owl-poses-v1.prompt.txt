@@ -1,0 +1,6 @@
+Approved design: cute golden-brown owl, cream heart-shaped face and belly, large amber-brown eyes, tiny golden beak, short ear tufts, soft 3D storybook rendering. Eight poses, ordered idle, blink, wings up, wings out, wings down, landing, talking, happy.
+
+Built-in image_gen transparency preparation prompt:
+Prepare the approved owl sprite sheet for game integration. Preserve the exact cute golden-brown and cream owl design, all eight poses and facial expressions, and their ordering. Remove the ivory backdrop completely to genuine transparent alpha, preserving all cream feathers as opaque. Arrange in exactly 4 columns by 2 rows with generous transparent gutters and margin, each full owl including all wing tips and feet fully isolated within its cell, no overlapping cells, no shadows. Same character size and rendering style. Top row idle, blink, wings up, wings horizontal; bottom row wings down, landing feet forward, talking one wing up, happy both wings up. No text or additional elements.
+
+Sprite preparation: python3 tools/make_owl.py (Pillow, numpy, scipy).

@@ -642,7 +642,7 @@ function vResult() {
       <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan">🔊</button></div>`).join('');
   const extra = G.m === 'match' ? `<span class="pill">⏱ ${fmt(G.sec)}</span><span class="pill">🖱 ${G.moves} langkah</span>${G.timedOut ? '<span class="pill">⏰ Waktu habis</span>' : ''}` : '';
   app.innerHTML = `<div class="wrap"><div class="card res">
-      <div class="owl">🦉</div>
+      <div class="owl">${owlGraphic('happy')}</div>
       <h2>${title}</h2>
       <div class="stars" aria-label="${r.stars} bintang">${'⭐'.repeat(r.stars)}${'☆'.repeat(3 - r.stars)}</div>
       <div class="score">${r.score}/${r.total}</div>
@@ -2352,7 +2352,7 @@ function panelHTML(p) {
   } else if (p === 'msg') {
     const wi = wotd(), w = WORDS[wi], st = stats();
     body = head('Pesan') + `<div class="msg"><div><h4>Kata hari ini</h4><div class="big" style="font-size:1.8rem">${w[1]}</div><span class="sub">${w[2]}</span></div><button class="speak" data-a="say" data-w="${wi}" aria-label="Dengarkan">🔊</button></div>
-      <div class="msg"><div><h4>Pesan dari Hoot</h4><span>${owlMsg(st)}</span></div><span class="owl" style="font-size:2.4rem">🦉</span></div>
+      <div class="msg"><div><h4>Pesan dari Hoot</h4><span>${owlMsg(st)}</span></div><span class="owl">${owlGraphic()}</span></div>
       <div class="msg"><div><h4>Petunjuk</h4><span>Bicara dengan penduduk bertanda ❗ untuk menerima misi. Misi memakai kata dari wilayah mereka.</span></div></div>`;
   } else if (p === 'quest') {
     body = head('Daftar Misi') + questList().map(q => `<div class="qrow ${q.done ? 'done' : ''}"><div><b>${q.t}</b><br><small class="sub">${q.d}</small></div>${q.i != null && !q.done ? `<button class="btn sm" data-a="goquest" data-i="${q.i}">Pergi</button>` : '<span></span>'}<div class="bar mini"><span class="m" style="width:${Math.min(100, q.p * 100)}%"></span></div></div>`).join('');
@@ -2381,7 +2381,7 @@ const RPG_TXT = {
   portal: { intro: [['Help me, please! The portal cave is full of shadows.', 'Tolong aku! Gua portal penuh bayangan.'], ['A ghost keeps the purple door closed. We cannot go to the castle.', 'Hantu menjaga pintu ungu tetap tertutup. Kami tidak bisa ke istana.'], ['I need a brave helper. Will you help me?', 'Aku butuh penolong pemberani. Maukah kamu membantuku?'], ['Tip: the ghost is strong. Answer quickly and shoot the small monsters.', 'Petunjuk: hantu itu kuat. Jawab cepat dan tembak monster kecil.']],
     win: [['The cave is bright again! You are wonderful.', 'Gua terang lagi! Kamu luar biasa.'], ['The purple door opens. The castle waits for you.', 'Pintu ungu terbuka. Istana menunggumu.'], ['Thank you, my friend. I will never forget you.', 'Terima kasih, Temanku. Aku tidak akan melupakanmu.']] }
 };
-const RPG_WHO = { lila: { n: 'Lila', spr: 'lila', e: '' }, raja: { n: 'Raja', e: '🤴' }, hoot: { n: 'Hoot', e: '🦉' } };
+const RPG_WHO = { lila: { n: 'Lila', spr: 'lila', e: '' }, raja: { n: 'Raja', spr: 'raja', e: '' }, hoot: { n: 'Hoot', spr: 'owl', e: '' } };
 const RPG_LILA = [
   ['Brother, it is Lila. Bad monsters came to the castle at night.', 'Kak, ini Lila. Monster jahat datang ke istana pada malam hari.', 'lila'],
   ['There are many. Some have weapons. They want the castle.', 'Jumlah mereka banyak. Ada yang membawa senjata. Mereka ingin menguasai istana.', 'lila'],
@@ -2419,16 +2419,17 @@ function mistHTML() {   /* kabut tipis dan warna redup selama area belum selamat
   return `<div class="mist fx-${fxMode()}" style="--tint:${MIST_TINT[id]}" aria-hidden="true"><i class="mf a"></i><i class="mf b"></i><i class="mf c"></i></div>`;
 }
 function rpgAvatar(who) {
+  if (who.spr === 'owl') return owlGraphic('talk');
   const sp = who.spr && NPC_SPR[who.spr];
   if (!sp) return who.e;
-  if (who.spr !== 'lila') return npcAv({ npc: who }, who.e);
-  return `<svg class="rpgsprite" viewBox="${-sp.ax - 4} ${-sp.gy - 6} ${sp.w + 8} ${sp.h + 12}" role="img" aria-label="Lila">${npcSprite('lila', RPG.id === 'intro' ? 'calm' : 'call', 0)}</svg>`;
+  if (!['lila', 'raja'].includes(who.spr)) return npcAv({ npc: who }, who.e);
+  return `<svg class="rpgsprite" viewBox="${-sp.ax - 4} ${-sp.gy - 6} ${sp.w + 8} ${sp.h + 12}" role="img" aria-label="${who.n}">${npcSprite(who.spr, RPG.id === 'intro' ? 'calm' : 'call', 0)}</svg>`;
 }
 function rpgRender() {
   let el = document.getElementById('rpg'); if (!el) { el = document.createElement('div'); el.id = 'rpg'; document.body.appendChild(el); el.addEventListener('click', rpgClick); }
   const L = RPG.lines[RPG.i], last = RPG.i === RPG.lines.length - 1, sp = (L[2] && RPG_WHO[L[2]]) || RPG.who;
-  el.className = 'rpg show'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Dialog ' + RPG.who.n);
-  el.innerHTML = `<div class="rpgname">${sp.n}</div>${(RPG.seq === 'lila' || RPG.seq === 'raja') ? '<button class="rpgskip" data-r="skipall">Lewati cerita ▶▶</button>' : last ? '' : '<button class="rpgskip" data-r="skip">Lewati ▶▶</button>'}<div class="rpgbox" data-r="box"><div class="rpgav${sp.spr === 'lila' ? ' rpgav-lila' : ''}">${rpgAvatar(sp)}</div><div class="rpgtx"><p class="rpg-en" id="rpgen"></p><p class="rpg-id" id="rpgid"></p></div>${last ? '' : '<span class="rpgnext" aria-hidden="true">▶</span>'}</div><div class="rpgacts" id="rpgacts"></div>`;
+  el.className = 'rpg show'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Dialog ' + sp.n);
+  el.innerHTML = `<div class="rpgname">${sp.n}</div>${(RPG.seq === 'lila' || RPG.seq === 'raja') ? '<button class="rpgskip" data-r="skipall">Lewati cerita ▶▶</button>' : last ? '' : '<button class="rpgskip" data-r="skip">Lewati ▶▶</button>'}<div class="rpgbox" data-r="box"><div class="rpgav${['lila', 'raja'].includes(sp.spr) ? ' rpgav-story rpgav-' + sp.spr : ''}">${rpgAvatar(sp)}</div><div class="rpgtx"><p class="rpg-en" id="rpgen"></p><p class="rpg-id" id="rpgid"></p></div>${last ? '' : '<span class="rpgnext" aria-hidden="true">▶</span>'}</div><div class="rpgacts" id="rpgacts"></div>`;
   rpgType(L[0], L[1], last);
 }
 function rpgType(en, idt, last) {
@@ -2470,13 +2471,19 @@ function rpgWalkThenOpen(ai, lines, acts) {   /* penjaga area berjalan menghampi
   requestAnimationFrame(step);
 }
 /* ---------- cerita pembuka: burung hantu, surat Lila, Hoot berlari ke Pintu Ungu, pesan Raja, petunjuk ---------- */
+/*__OWL_SPRITES__*/
+function owlGraphic(state = 'idle') {
+  return `<span class="owl-sprite fx-${fxMode()}" data-pose="${state}" role="img" aria-label="Hoot, burung hantu">${['idle','blink','up','out','down','land','talk','happy'].map(k => `<img class="ow-${k}" src="${OWL_SPR[k]}" alt="" draggable="false">`).join('')}</span>`;
+}
+const owlStill = () => fxMode() === 'off' || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function owlPose(e, state) { const s = e.querySelector('.owl-sprite'); if (s) s.dataset.pose = state; }
 let OWL = null;
-function owlEl() { let e = document.getElementById('owlfly'); if (!e) { e = document.createElement('div'); e.id = 'owlfly'; e.textContent = '🦉'; e.setAttribute('aria-hidden', 'true'); document.body.appendChild(e); } return e; }
+function owlEl() { let e = document.getElementById('owlfly'); if (!e) { e = document.createElement('div'); e.id = 'owlfly'; e.innerHTML = owlGraphic(); e.setAttribute('aria-hidden', 'true'); document.body.appendChild(e); } e.querySelector('.owl-sprite').className = 'owl-sprite fx-' + fxMode(); return e; }
 function owlPos() { const pl = document.getElementById('pl'), r = pl ? pl.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 2, width: 0, height: 0 }; return [r.left + r.width / 2, r.top + r.height * .2]; }
-function owlAnim(dur, fn, done) { const e = owlEl(), id = {}; OWL = id; e.style.display = 'block'; const t0 = performance.now(); const step = now => { if (OWL !== id) return; const k = Math.min(1, (now - t0) / dur); fn(k, e); if (k < 1) requestAnimationFrame(step); else { OWL = null; if (done) done(); } }; requestAnimationFrame(step); }
-const owlPlace = (e, x, y) => { const f = 1 + Math.sin(performance.now() / 55) * .12; x = Math.max(-60, Math.min(innerWidth + 60, x)); y = Math.max(40, Math.min(innerHeight - 40, y));   /* tetap terlihat walau Hoot ada di tepi atas layar */ e.style.transform = `translate(${(x - 32).toFixed(0)}px,${(y - 32).toFixed(0)}px) scale(${f.toFixed(2)},${(1 / f).toFixed(2)})`; };
+function owlAnim(dur, fn, done) { const e = owlEl(), id = {}; OWL = id; owlPose(e, 'fly'); e.style.display = 'block'; const t0 = performance.now(); const step = now => { if (OWL !== id) return; const k = Math.min(1, (now - t0) / dur); fn(k, e); if (k < 1) requestAnimationFrame(step); else { OWL = null; if (done) done(); } }; requestAnimationFrame(step); }
+const owlPlace = (e, x, y) => { x = Math.max(-80, Math.min(innerWidth + 80, x)); y = Math.max(52, Math.min(innerHeight - 52, y)); e.style.transform = `translate(${(x - e.offsetWidth / 2).toFixed(1)}px,${(y - e.offsetHeight / 2).toFixed(1)}px)`; };
 function owlFly(done) {   /* terbang mendekat, melayang, menjatuhkan surat, lalu pergi */
-  if (fxMode() === 'off') { done(); return; }
+  if (owlStill()) { done(); return; }
   const [hx, hy] = owlPos(), W = innerWidth, H = innerHeight; let dropped = false;
   owlAnim(2800, (k, e) => {
     let x, y;
@@ -2487,18 +2494,18 @@ function owlFly(done) {   /* terbang mendekat, melayang, menjatuhkan surat, lalu
     if (!dropped && k > .5) { dropped = true; const l = document.createElement('div'); l.className = 'owlletter'; l.textContent = '✉️'; l.style.left = (x - 14) + 'px'; l.style.top = (y + 10) + 'px'; document.body.appendChild(l); if (l.animate) l.animate([{ transform: 'translateY(0) rotate(-20deg)', opacity: 1 }, { transform: `translateY(${Math.max(40, hy - y + 20)}px) rotate(20deg)`, opacity: 1 }], { duration: 900, easing: 'ease-in' }); setTimeout(() => l.remove(), 900); }
   }, () => { owlEl().style.display = 'none'; done(); });
 }
-function owlLand(done) {   /* terbang kembali dan melayang di dekat bahu pemain selama petunjuk */
-  if (fxMode() === 'off') { owlEl().style.display = 'block'; owlHover(); done(); return; }
+function owlLand(done) {   /* terbang kembali, mendarat, lalu diam di dekat bahu pemain */
+  if (owlStill()) { owlEl().style.display = 'block'; owlHover(); done(); return; }
   const [hx, hy] = owlPos(), W = innerWidth, H = innerHeight;
-  owlAnim(1100, (k, e) => { const s = 1 - Math.pow(1 - k, 2); owlPlace(e, W + 60 + (hx + 36 - (W + 60)) * s, H * .12 + (hy - 40 - H * .12) * s); }, () => { owlHover(); done(); });
+  owlAnim(1100, (k, e) => { owlPose(e, k > .7 ? 'land' : 'fly'); const s = 1 - Math.pow(1 - k, 2); owlPlace(e, W + 60 + (hx + 36 - (W + 60)) * s, H * .12 + (hy - 40 - H * .12) * s); }, () => { owlHover(); done(); });
 }
-function owlHover() { const e = owlEl(), id = {}; OWL = id; e.style.display = 'block'; const step = now => { if (OWL !== id) return; const [hx, hy] = owlPos(); owlPlace(e, hx + 36 + Math.sin(now / 420) * 6, hy - 40 + Math.cos(now / 300) * 5); requestAnimationFrame(step); }; requestAnimationFrame(step); }
+function owlHover() { const e = owlEl(), id = {}; OWL = id; e.style.display = 'block'; owlPose(e, 'idle'); const step = now => { if (OWL !== id) return; const [hx, hy] = owlPos(); owlPlace(e, hx + 36, hy - 40); requestAnimationFrame(step); }; requestAnimationFrame(step); }
 function owlLeave() {
-  const e = owlEl(); if (e.style.display === 'none' || fxMode() === 'off') { OWL = null; e.style.display = 'none'; rpgClose(); return; }
+  const e = owlEl(); if (e.style.display === 'none' || owlStill()) { OWL = null; e.style.display = 'none'; rpgClose(); return; }
   const [hx, hy] = owlPos(); rpgClose();
   owlAnim(900, (k, el) => { const s = k * k; owlPlace(el, hx + 36 - (hx + 120) * s, hy - 40 - (hy + 80) * s); }, () => { e.style.display = 'none'; });
 }
-function cancelOwl() { OWL = null; const e = document.getElementById('owlfly'); if (e) e.style.display = 'none'; const s = document.getElementById('owlskip'); if (s) s.remove(); }
+function cancelOwl() { OWL = null; document.querySelectorAll('.owlletter').forEach(l => l.remove()); const e = document.getElementById('owlfly'); if (e) e.style.display = 'none'; const s = document.getElementById('owlskip'); if (s) s.remove(); }
 function owlSkipBtn(on) { let s = document.getElementById('owlskip'); if (!on) { if (s) s.remove(); return; } if (!s) { s = document.createElement('button'); s.id = 'owlskip'; s.className = 'rpgskip owlskip'; s.textContent = 'Lewati cerita ▶▶'; s.addEventListener('click', rpgSeqSkip); document.body.appendChild(s); } }
 function startOpening() {
   track('mulai-baru', 'Simpanan baru dimulai');
@@ -2918,7 +2925,7 @@ const pwaPanelHTML = () => {
 /*__TITLE__*/
 
 if (INNER_MAPS.includes(S.map)) enterMapPos(S.map, 'hutan');   /* dibuka kembali di gua: mulai dari pintu masuk */
-if (window.__DG_TEST) window.__DG = { PWA, travel, CM, rpgHelp, RPG_LILA, RPG_RAJA, RPG_HINT, RPG_HELP, gunOwned, rpgIntro, rpg: RPG, rpgSt, RPG_TXT, qt: () => (G && G.qt) || null, G: () => G, wcell: WCELL, heroGrip: () => HERO_GRIP, gun: { st: gunSt, WEAPONS, unlocked: unlockedList, give: giveAmmo, ammoOf, cur: curWeapon }, startMode: m => start(m, 'all', 0, null), showResult: r => { G = r; view = 'result'; render(); }, frameNow: ts => frame(ts), solids: () => CM().SOLID, inMain: () => CM().E.inMain, areaWordIds, doorWords, ensureDeal, monstersLeft, bossInfo, fx: { burst: fxBurst, explode: fxExplode, count: () => FX.parts.length, mode: fxMode }, sfx, shooterQuota, shotState: ai => { S.shot = S.shot || {}; return S.shot[AREAS[ai].id] || (S.shot[AREAS[ai].id] = { killed: 0, gems: 0 }); }, bossHere: () => AREA_BY_MAP[S.map] != null ? bossInfo(AREA_BY_MAP[S.map]) : null, areaProgressText, missionDone, record, areaStats, AREAS, MAST_B, G: () => G, S: () => S, A: () => ADV, vil: () => vil(), eng: () => ({ 0: DE, 1: ME, 2: SE, 3: KE, 4: WE, 5: GE }) };   /* pintu uji: hanya aktif bila uji menyalakannya */
+if (window.__DG_TEST) window.__DG = { PWA, travel, CM, owl: { fly: owlFly, land: owlLand, leave: owlLeave, cancel: cancelOwl, graphic: owlGraphic }, rpgHelp, RPG_LILA, RPG_RAJA, RPG_HINT, RPG_HELP, gunOwned, rpgIntro, rpg: RPG, rpgSt, RPG_TXT, qt: () => (G && G.qt) || null, G: () => G, wcell: WCELL, heroGrip: () => HERO_GRIP, gun: { st: gunSt, WEAPONS, unlocked: unlockedList, give: giveAmmo, ammoOf, cur: curWeapon }, startMode: m => start(m, 'all', 0, null), showResult: r => { G = r; view = 'result'; render(); }, frameNow: ts => frame(ts), solids: () => CM().SOLID, inMain: () => CM().E.inMain, areaWordIds, doorWords, ensureDeal, monstersLeft, bossInfo, fx: { burst: fxBurst, explode: fxExplode, count: () => FX.parts.length, mode: fxMode }, sfx, shooterQuota, shotState: ai => { S.shot = S.shot || {}; return S.shot[AREAS[ai].id] || (S.shot[AREAS[ai].id] = { killed: 0, gems: 0 }); }, bossHere: () => AREA_BY_MAP[S.map] != null ? bossInfo(AREA_BY_MAP[S.map]) : null, areaProgressText, missionDone, record, areaStats, AREAS, MAST_B, G: () => G, S: () => S, A: () => ADV, vil: () => vil(), eng: () => ({ 0: DE, 1: ME, 2: SE, 3: KE, 4: WE, 5: GE }) };   /* pintu uji: hanya aktif bila uji menyalakannya */
 lockdown(); autoFs(); syncKb(); window.addEventListener('resize', syncKb);
 TITLE.init();
 })();

@@ -205,3 +205,11 @@ Lihat `CONTRIBUTING.md` untuk aturan cabang, alur Pull Request, dan cara menjala
 
 ## Sprite Lila
 Lila memakai sprite empat pose (diam, kedip, meminta tolong, senang) di `src/npc/lila-*`, dengan potret wajah untuk komponen avatar. Dialog cerita menampilkan badan Lila dengan animasi kedipan dan pose meminta tolong; dialog ulang cerita memakai pose diam. Animasi mengikuti pengaturan efek dan reduced motion. Lila masih merupakan pembicara cerita, bukan NPC baru di peta. Sumber pose dan perintah ekstraksi ada di `art_source/lila-poses-v1.prompt.txt`. Uji dialog: `node tests/49_lila_dialog_sprite.js`.
+
+## Sprite Raja
+Raja memakai empat pose dari `src/npc/raja-*`: diam, kedip, meminta tolong, dan senang. Sprite menggantikan emoji di dialog cerita dan Raja Penguji pada peta istana; dialog penguji memakai potret wajahnya. Di peta, Raja meminta tolong sebelum skor terbaik simulasi penuh mencapai 70%, lalu memakai animasi senang setelahnya. Saat pemain mendekat, ia memakai pose senang seperti penjaga lain. Pengaturan efek dan reduced motion tetap berlaku. Sumber pose dan perintah ekstraksi ada di `art_source/raja-poses-v1.prompt.txt`. Uji: `node tests/49_lila_dialog_sprite.js` dan `node tests/50_raja_castle_sprite.js`.
+
+## Burung hantu beranimasi
+Burung hantu pembawa surat dan pemberi petunjuk memakai delapan pose transparan di `src/owl/`: diam, kedip, tiga posisi sayap, mendarat, berbicara, dan senang. Kepakan memakai urutan naik–terbuka–turun–terbuka, tanpa efek meremas badan yang lama. Saat kembali memberi petunjuk, burung hantu membuka kaki sebelum diam di dekat pemain. Dialog bantuan menggunakan pose berbicara; hasil latihan memakai pose senang. Efek Mati dan reduced motion menampilkan pose diam serta melewati perjalanan terbang. Ikon menu dan dekorasi emoji yang bukan tokoh cerita tetap terpisah.
+
+Sumber: `art_source/owl-poses-v1.png`; ekstraksi dan penyelarasan frame: `python3 tools/make_owl.py` (Pillow, numpy, scipy). `build.py` menyematkan sprite agar tetap dapat dimainkan offline. Uji: `node tests/51_owl_animation.js`.

@@ -119,6 +119,8 @@ for _jf in sorted(glob.glob(os.path.join(SRC, 'npc', '*.json'))):
     _n = os.path.basename(_jf)[:-5]; _m = json.load(open(_jf)); _m['u'] = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'npc', '%s-%s.webp' % (_n, k)), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'help', 'happy', 'head')}; _spr[_n] = _m
 assert '/*__NPC_SPRITES__*/' in tpl
 tpl=tpl.replace('/*__NPC_SPRITES__*/', 'const NPC_SPR = ' + json.dumps(_spr, separators=(',', ':')) + ';')
+_owl = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'owl', k + '.webp'), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'up', 'out', 'down', 'land', 'talk', 'happy', 'head')}
+tpl=tpl.replace('/*__OWL_SPRITES__*/', 'const OWL_SPR = ' + json.dumps(_owl, separators=(',', ':')) + ';')
 travel_css="""
 .travel{position:fixed;inset:0;z-index:200;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 45%,#c58bff 0%,#5b1fb0 45%,#1a0638 100%);color:#fff;font:400 clamp(1.3rem,4vw,2.4rem) 'Lilita One','Fredoka',sans-serif;opacity:0;pointer-events:none;transition:opacity .3s}
 .travel.show{opacity:1;pointer-events:auto}
