@@ -2381,7 +2381,7 @@ const RPG_TXT = {
   portal: { intro: [['Help me, please! The portal cave is full of shadows.', 'Tolong aku! Gua portal penuh bayangan.'], ['A ghost keeps the purple door closed. We cannot go to the castle.', 'Hantu menjaga pintu ungu tetap tertutup. Kami tidak bisa ke istana.'], ['I need a brave helper. Will you help me?', 'Aku butuh penolong pemberani. Maukah kamu membantuku?'], ['Tip: the ghost is strong. Answer quickly and shoot the small monsters.', 'Petunjuk: hantu itu kuat. Jawab cepat dan tembak monster kecil.']],
     win: [['The cave is bright again! You are wonderful.', 'Gua terang lagi! Kamu luar biasa.'], ['The purple door opens. The castle waits for you.', 'Pintu ungu terbuka. Istana menunggumu.'], ['Thank you, my friend. I will never forget you.', 'Terima kasih, Temanku. Aku tidak akan melupakanmu.']] }
 };
-const RPG_WHO = { lila: { n: 'Lila', e: '👧' }, raja: { n: 'Raja', e: '🤴' }, hoot: { n: 'Hoot', e: '🦉' } };
+const RPG_WHO = { lila: { n: 'Lila', spr: 'lila', e: '' }, raja: { n: 'Raja', e: '🤴' }, hoot: { n: 'Hoot', e: '🦉' } };
 const RPG_LILA = [
   ['Brother, it is Lila. Bad monsters came to the castle at night.', 'Kak, ini Lila. Monster jahat datang ke istana pada malam hari.', 'lila'],
   ['There are many. Some have weapons. They want the castle.', 'Jumlah mereka banyak. Ada yang membawa senjata. Mereka ingin menguasai istana.', 'lila'],
@@ -2418,11 +2418,17 @@ function mistHTML() {   /* kabut tipis dan warna redup selama area belum selamat
   const id = AREAS[ai].id; if (areaDone(id)) return '';
   return `<div class="mist fx-${fxMode()}" style="--tint:${MIST_TINT[id]}" aria-hidden="true"><i class="mf a"></i><i class="mf b"></i><i class="mf c"></i></div>`;
 }
+function rpgAvatar(who) {
+  const sp = who.spr && NPC_SPR[who.spr];
+  if (!sp) return who.e;
+  if (who.spr !== 'lila') return npcAv({ npc: who }, who.e);
+  return `<svg class="rpgsprite" viewBox="${-sp.ax - 4} ${-sp.gy - 6} ${sp.w + 8} ${sp.h + 12}" role="img" aria-label="Lila">${npcSprite('lila', RPG.id === 'intro' ? 'calm' : 'call', 0)}</svg>`;
+}
 function rpgRender() {
   let el = document.getElementById('rpg'); if (!el) { el = document.createElement('div'); el.id = 'rpg'; document.body.appendChild(el); el.addEventListener('click', rpgClick); }
   const L = RPG.lines[RPG.i], last = RPG.i === RPG.lines.length - 1, sp = (L[2] && RPG_WHO[L[2]]) || RPG.who;
   el.className = 'rpg show'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Dialog ' + RPG.who.n);
-  el.innerHTML = `<div class="rpgname">${sp.n}</div>${(RPG.seq === 'lila' || RPG.seq === 'raja') ? '<button class="rpgskip" data-r="skipall">Lewati cerita ▶▶</button>' : last ? '' : '<button class="rpgskip" data-r="skip">Lewati ▶▶</button>'}<div class="rpgbox" data-r="box"><div class="rpgav">${sp.e}</div><div class="rpgtx"><p class="rpg-en" id="rpgen"></p><p class="rpg-id" id="rpgid"></p></div>${last ? '' : '<span class="rpgnext" aria-hidden="true">▶</span>'}</div><div class="rpgacts" id="rpgacts"></div>`;
+  el.innerHTML = `<div class="rpgname">${sp.n}</div>${(RPG.seq === 'lila' || RPG.seq === 'raja') ? '<button class="rpgskip" data-r="skipall">Lewati cerita ▶▶</button>' : last ? '' : '<button class="rpgskip" data-r="skip">Lewati ▶▶</button>'}<div class="rpgbox" data-r="box"><div class="rpgav${sp.spr === 'lila' ? ' rpgav-lila' : ''}">${rpgAvatar(sp)}</div><div class="rpgtx"><p class="rpg-en" id="rpgen"></p><p class="rpg-id" id="rpgid"></p></div>${last ? '' : '<span class="rpgnext" aria-hidden="true">▶</span>'}</div><div class="rpgacts" id="rpgacts"></div>`;
   rpgType(L[0], L[1], last);
 }
 function rpgType(en, idt, last) {

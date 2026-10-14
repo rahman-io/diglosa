@@ -201,3 +201,7 @@ npm test
 
 ## Alur kerja tim
 Lihat `CONTRIBUTING.md` untuk aturan cabang, alur Pull Request, dan cara menjalankan uji. Repositori ini publik; `main` berisi versi yang sudah disetujui, tiap versi dikerjakan di cabang `vMAJOR.MINOR`.
+
+
+## Sprite Lila
+Lila memakai sprite empat pose (diam, kedip, meminta tolong, senang) di `src/npc/lila-*`, dengan potret wajah untuk komponen avatar. Dialog cerita menampilkan badan Lila dengan animasi kedipan dan pose meminta tolong; dialog ulang cerita memakai pose diam. Animasi mengikuti pengaturan efek dan reduced motion. Lila masih merupakan pembicara cerita, bukan NPC baru di peta. Sumber pose dan perintah ekstraksi ada di `art_source/lila-poses-v1.prompt.txt`. Uji dialog: `node tests/49_lila_dialog_sprite.js`.
