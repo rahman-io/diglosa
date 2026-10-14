@@ -55,11 +55,11 @@ async function answer(t,ok){
 const V=(t,k,d)=>{const v=t.S()[k];return v===undefined?d:v;};
 const mLives=t=>((t.d.querySelector('#encmh')||{textContent:''}).textContent.match(/💜/g)||[]).length;
 async function winDuel(t){ for(let i=0;i<6;i++){ await answer(t,true); if(/Monster kalah/.test((t.d.querySelector('.encpanel')||{textContent:''}).textContent)) return true; t.click('[data-a=encnext]'); } return false; }
-const hearts=t=>((t.d.querySelector('#alife .hh')||{textContent:''}).textContent.match(/❤/g)||[]).length;
+const hearts=t=>t.d.querySelectorAll('#alife .hh .life-icon.full').length;
 (async()=>{
  // ---------- counts per difficulty ----------
  let t=boot({skin:'petualangan',diff:'petualang'});
- must(t.alive().length===3,'petualang: 3 monsters'); must(t.items().length===8&&t.items().filter(i=>i.gem).length===5,'5 gems + 3 hearts on map'); must(hearts(t)===5,'5 hearts in HUD'); must(t.d.querySelector('#alife').textContent.includes('💎 0'),'gem counter in HUD');
+ must(t.alive().length===3,'petualang: 3 monsters'); must(t.items().length===8&&t.items().filter(i=>i.gem).length===5,'5 gems + 3 hearts on map'); must(hearts(t)===5,'5 hearts in HUD'); must(t.d.querySelector('#alife .gem-icon')&&t.d.querySelector('#alife .hg b').textContent==='0','gem counter in HUD');
  t=boot({skin:'petualangan',diff:'santai'}); must(t.alive().length===0,'santai: no monsters');
  t=boot({skin:'petualangan',diff:'pendekar'}); must(t.alive().length===5,'pendekar: 5 monsters');
  // difficulty switch via options
@@ -70,7 +70,7 @@ const hearts=t=>((t.d.querySelector('#alife .hh')||{textContent:''}).textContent
  // ---------- the duel: first round ----------
  t=boot({skin:'petualangan',diff:'petualang'}); const names=['Gumpal Salam','Lendir Kuali','Semak Gigit','Bayangan Gerbang','Jam Pasir Liar','Hantu Portal'];
  must(await t.toMonster(),'player reached a monster (the duel opened)');
- const pnl=t.d.querySelector('.encpanel.duel'); must(pnl&&names.some(n=>pnl.textContent.includes(n)),'duel shows the monster name'); must(mLives(t)===3,'the monster has 3 lives'); must(/❤️/.test(t.d.querySelector('#enchearts').textContent),'your lives are shown too');
+ const pnl=t.d.querySelector('.encpanel.duel'); must(pnl&&names.some(n=>pnl.textContent.includes(n)),'duel shows the monster name'); must(mLives(t)===3,'the monster has 3 lives'); must(t.d.querySelectorAll('#enchearts .life-icon.full').length>0,'your lives are shown too');
  must(t.d.querySelector('#encgrab')&&t.d.querySelector('#enct'),'AMBIL! button and its timer are shown'); must((t.d.querySelectorAll('.encopt.dis').length>=2||t.d.querySelector('.encfill input[disabled]'))&&!t.d.querySelector('[data-a=encpick]')&&!t.d.querySelector('#encans:not([disabled])'),'answers are locked until AMBIL! is pressed (choices greyed out, or the typing box disabled for a typing question)'); must(pnl.textContent.includes('Kabur'),'flee button');
  // wrong answer after grabbing
  const hpA=V(t,'hp',5); const s1=await answer(t,false); must(t.d.querySelector('.encfb.no')&&t.d.querySelector('.encfb.no').textContent.includes(s1.right),'wrong answer shows the correct one');
@@ -128,7 +128,7 @@ const hearts=t=>((t.d.querySelector('#alife .hh')||{textContent:''}).textContent
  await wait(700); must(await t.toMonster(),'academy second encounter'); const gC=V(t,'gems',0); must(await winDuel(t),'academy: the duel can be won'); must(t.d.querySelector('.encfb.ok')&&t.S().gems===gC+1,'academy win gives a gem (shared)'); t.click('[data-a=encnext]');
  const hpS=V(t,'hp',5), gS=V(t,'gems',0);
  t.click('[data-p=world]'); t.click('[data-a=travelto][data-d=hutan]'); await wait(1300);
- { const al=t.d.querySelector('#app #alife'); must(al&&al.textContent.includes('💎 '+gS)&&hearts(t)===hpS,'lives and gems carry to the forest ['+(al?al.textContent:'none')+' | hp='+hpS+' gems='+gS+']'); }
+ { const al=t.d.querySelector('#app #alife'); must(al&&al.querySelector('.hg b')?.textContent===String(gS)&&hearts(t)===hpS,'lives and gems carry to the forest ['+(al?al.textContent:'none')+' | hp='+hpS+' gems='+gS+']'); }
  // ---------- timers on pendekar ----------
  t=boot({skin:'petualangan',diff:'pendekar'}); must(await t.toMonster(),'pendekar encounter'); must(t.d.querySelector('#enct'),'the AMBIL! timer is shown'); t.click('#encgrab'); must(t.d.querySelector('#enca'),'after AMBIL! a 12 second answer timer runs'); const hpT=V(t,'hp',5);
  await wait(13200); must(t.d.querySelector('.encfb.no')&&t.d.querySelector('.encfb.no').textContent.includes('Waktu habis'),'running out of answer time counts as wrong'); must(t.S().hp===hpT-1,'timeout costs 1 life');

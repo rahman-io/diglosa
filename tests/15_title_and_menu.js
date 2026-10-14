@@ -36,7 +36,7 @@ function boot(seed,{hash='',W=390,H=780,fs=false}={}){
  t.click(d.querySelectorAll('#title .tplus')[2]); must(t.modal()==='Profil','level + opens the profile'); d.getElementById('tovl').dispatchEvent(new t.w.MouseEvent('click',{bubbles:true})); must(!t.modal(),'tapping outside closes the window');
  // ---------- the four tiles and help ----------
  t.click('[data-p=msg]'); must(t.modal()==='Pesan'&&/Kata hari ini/.test(t.txt()),'Pesan shows the word of the day'); t.click('[data-a=closep]'); must(!d.querySelector('#title .t-sq .bdg'),'badge clears after reading');
- t.click('[data-p=trophy]'); must(t.modal()==='Trofi'&&d.querySelectorAll('#tovl .qrow').length===10&&/🏆/.test(d.getElementById('tovl').textContent)&&/Skor terbaik 80%/.test(t.txt()),'Trofi lists 6 villages and 4 exams with the stored results'); t.click('[data-t=close]');
+ t.click('[data-p=trophy]'); must(t.modal()==='Trofi'&&d.querySelectorAll('#tovl .qrow').length===10&&d.querySelectorAll('#tovl .cui').length>=1&&/Skor terbaik 80%/.test(t.txt()),'Trofi lists 6 villages and 4 exams with the stored results'); t.click('[data-t=close]');
  t.click('[data-p=profile]'); must(t.modal()==='Profil'&&/Anak Burung/.test(t.txt())&&d.querySelectorAll('#tovl .t-stat').length===6&&/3 hari/.test(t.txt()),'Profil shows level name and six stats'); t.click('[data-t=close]');
  t.click('[data-p=help]'); must(t.modal()==='Cara Bermain'&&/Kumpulkan kata/.test(t.txt()),'Cara Main explains the game'); t.click('[data-t=close]');
  // ---------- options inside the title ----------
@@ -56,7 +56,7 @@ function boot(seed,{hash='',W=390,H=780,fs=false}={}){
  t.click('#tplay'); must(t.d.getElementById('title').hidden&&t.d.querySelector('#world')&&!t.d.querySelector('.mpanel'),'Lanjutkan returns to the map with the panel closed'); t.w.close();
  // ---------- in-game menu during a vocab game ----------
  t=boot(SEED,{hash:'#play'}); await wait(200); d=t.d; await t.openDlg(0); t.click('[data-a=more]'); t.click('[data-a=mode][data-m=cards]'); must(d.querySelector('.fc'),'cards started');
- t.click('[data-a=gmenu]'); const gm=()=>d.querySelector('#gmenu.show'); must(gm()&&[...gm().querySelectorAll('.pmlist .btn')].map(b=>b.textContent.replace(/\s+/g,' ').trim()).join('|')==='▶ Lanjutkan|🗺️ Kembali ke peta|🏠 Menu depan','menu offers resume, map and home'); must(/XP.*tetap tersimpan/.test(gm().textContent),'menu says XP is kept');
+ t.click('[data-a=gmenu]'); const gm=()=>d.querySelector('#gmenu.show'); must(gm()&&[...gm().querySelectorAll('.pmlist .btn')].map(b=>b.textContent.replace(/\s+/g,' ').trim()).join('|')==='▶ Lanjutkan|Kembali ke peta|Menu depan','menu offers resume, map and home'); must(/XP.*tetap tersimpan/.test(gm().textContent),'menu says XP is kept');
  t.key('Escape'); must(!gm(),'Escape closes the menu'); t.click('[data-a=gmenu]'); gm().dispatchEvent(new t.w.MouseEvent('click',{bubbles:true})); must(!gm()&&d.querySelector('.fc'),'tapping outside closes it and the game continues');
  t.click('[data-a=gmenu]'); t.click('[data-g=resume]'); must(!gm()&&d.querySelector('.fc'),'Lanjutkan keeps playing');
  t.click('#fc'); t.click('[data-a=known]'); const xp1=t.S().xp; must(xp1>186-186+0,'answering gives XP'); 

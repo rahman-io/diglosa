@@ -1,0 +1,9 @@
+Use case: ui-mockup
+Asset type: transparent game UI icon sprite sheet.
+Create exactly sixteen separate polished 3D cartoon icons in a clean 4-by-4 grid, one centered icon per equal square tile, with generous transparent padding and no overlaps.
+Row 1: friendly speech bubble for talking; glowing purple portal crystal; golden crosshair target; small explorer backpack.
+Row 2: sealed envelope; golden mission scroll with a tiny red pennant; parchment world map; rounded brass settings gear.
+Row 3: cozy village cottage; colorful market stall with a steaming bowl; leafy forest tree cluster; friendly city gate.
+Row 4: whimsical clock tower; purple cave entrance; small fantasy castle gate; curved exit arrow sign.
+Style: polished 3D game UI illustration for a cheerful children's fantasy vocabulary adventure, rounded shapes, soft highlights, rich warm colors, bold dark brown outlines, consistent lighting.
+Constraints: true transparent background; no text, letters, numbers, characters, emoji glyphs, watermark, background, clipped edges, or tile overlap.

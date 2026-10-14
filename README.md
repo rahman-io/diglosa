@@ -216,3 +216,9 @@ Sumber: `art_source/owl-poses-v1.png`; ekstraksi dan penyelarasan frame: `python
 
 ## Potret NPC Istana IELTS
 Dialog Sera si Pendengar, Pustakawan Bima, Juru Tulis Ayu, Rangga si Penyair, dan Penjaga Portal memakai potret karakter WebP. Empat potret baru berasal dari `art_source/ielts-npc-portraits-v1.png` dan diekstrak ke `src/portraits/` oleh `tools/make_ielts_portraits.py`; Penjaga Portal memakai kepala sprite Portal yang sudah ada. Ikon pada pintu dan benda ujian tetap menjadi ikon. Uji: `node tests/52_dialog_portraits.js`.
+
+## Ikon bergambar Hutan Kata
+Peta Hutan Kata memakai ikon WebP transparan buatan sendiri untuk Bicara, Masuk Portal, Tembak, Tas, Pesan, Misi, Peta, Opsi, serta enam wilayah dan pintu Istana. Dialog benda di enam dunia dalam juga memakai ikon gambar untuk kolam, kristal kilat, lonceng, jembatan, pintu, panci, bus, kereta, sekolah, dan jam pasir. HUD nyawa dan berlian digambar dengan SVG kecil yang mengikuti bentuk pickup di peta, sehingga tampilan utama dan dialog Hutan Kata tidak lagi bergantung pada emoji. Sumber sprite ada di `art_source/forest-ui-icons-v1.png` dan `art_source/forest-interact-icons-v1.png`; ekstraksi ke `src/ui/forest/` dilakukan oleh `tools/make_forest_ui.py` dan `tools/make_forest_interact.py`. Uji: `node tests/53_forest_ui_assets.js`.
+
+## Ikon UI umum
+Inventaris, peta tujuan, menu opsi, pesan, kartu kilat, kamus, dan latihan ejaan memakai ikon WebP transparan untuk gembok, mahkota, suara, rumah, status hafalan, petunjuk, dan buku. Sumbernya ada di `art_source/common-ui-icons-v1.png`; `tools/make_common_ui.py` mengekstraknya ke `src/ui/common/`, lalu `build.py` menyematkannya ke game. Layar ujian IELTS tetap memakai modulnya sendiri.

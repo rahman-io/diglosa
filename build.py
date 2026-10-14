@@ -44,10 +44,10 @@ rep("  if (p === 'hist') {\n    const b = S.best || {};","  if (p === 'world') {
 rep("Di komputer: panah atau WASD, lalu Enter untuk bicara.</span></p>","Di komputer: panah atau WASD, lalu Enter untuk bicara.</span> Portal ungu di bagian bawah mengantar kembali ke Hutan Kata.</p>")
 rep("EX.filter(e => e.id !== 'portal').map(e => {","EX.map(e => {")
 rep("${e.id === 'full' ? 'Simulasi penuh' : MODS[e.mod].desc}. Terbaik: ${b ? b + '%' : 'belum ada'}","${e.id === 'portal' ? 'Pintu ke Hutan Kata (belajar kosakata)' : (e.id === 'full' ? 'Simulasi penuh' : MODS[e.mod].desc) + '. Terbaik: ' + (b ? b + '%' : 'belum ada')}")
-rep("Object.assign(A, {\n  ground(el, e) {","""const helpList = `<ul class="encl"><li>Ketuk tanah untuk berjalan. Ketuk penguji bertanda ❗ untuk bicara dan memulai ujian.</li><li class="kbhint">Di komputer: panah atau WASD untuk berjalan, Enter untuk bicara.</li><li>Bayangan mengejar kalau kamu terlalu dekat. Jawab soalnya untuk mengalahkannya (ujian resminya tanpa monster).</li><li>Petik 💎 dan ❤️ di peta.</li><li>Portal ungu di bagian bawah mengantar kembali ke Hutan Kata.</li></ul>`;
+rep("Object.assign(A, {\n  ground(el, e) {","""const helpList = `<ul class="encl"><li>Ketuk tanah untuk berjalan. Ketuk penguji bertanda ! untuk bicara dan memulai ujian.</li><li class="kbhint">Di komputer: panah atau WASD untuk berjalan, Enter untuk bicara.</li><li>Bayangan mengejar kalau kamu terlalu dekat. Jawab soalnya untuk mengalahkannya (ujian resminya tanpa monster).</li><li>Petik berlian dan liontin nyawa di peta.</li><li>Portal ungu di bagian bawah mengantar kembali ke Hutan Kata.</li></ul>`;
 const worldPanel = here => `<p class="sub" style="margin-bottom:10px">Pilih tujuan. Kamu juga bisa berjalan kaki: portal ungu di bawah akademi mengantar ke Hutan Kata.</p><div class="advlist" style="margin-top:0">
-  <button class="acard" data-a="travelto" data-d="hutan"><span class="ae">🌲</span><b>Hutan Kata</b><small>${here === 'hutan' ? 'Kamu di sini' : 'Belajar kosakata bersama penduduk hutan'}</small></button>
-  <button class="acard" data-a="travelto" data-d="ielts"><span class="ae">🏰</span><b>Istana IELTS</b><small>${here === 'akademi' ? 'Kamu di sini' : 'Ujian Listening, Reading, Writing, Speaking'}</small></button></div>
+  <button class="acard" data-a="travelto" data-d="hutan"><span class="ae">${forestIcon('forest')}</span><b>Hutan Kata</b><small>${here === 'hutan' ? 'Kamu di sini' : 'Belajar kosakata bersama penduduk hutan'}</small></button>
+  <button class="acard" data-a="travelto" data-d="ielts"><span class="ae">${forestIcon('castle')}</span><b>Istana IELTS</b><small>${here === 'akademi' ? 'Kamu di sini' : 'Ujian Listening, Reading, Writing, Speaking'}</small></button></div>
   <h4 style="margin:14px 0 8px">Stasiun di Istana IELTS</h4><div class="advlist" style="margin-top:0">${EX.map(e => `<button class="acard" data-a="goquest" data-id="${e.id}"><span class="ae">${e.e}</span><b>${e.name}</b><small>${e.id === 'portal' ? 'Pintu ke Hutan Kata' : e.id === 'full' ? 'Simulasi penuh' : MODS[e.mod].desc}</small></button>`).join('')}</div>
   <h4 style="margin:14px 0 6px">Cara bermain</h4>${helpList}`;
 Object.assign(A, {
@@ -125,6 +125,18 @@ for _pf in sorted(glob.glob(os.path.join(SRC, 'portraits', '*.webp'))):
     _portraits[_pn] = 'data:image/webp;base64,' + base64.b64encode(open(_pf, 'rb').read()).decode('ascii')
 assert '/*__NPC_PORTRAITS__*/' in tpl
 tpl=tpl.replace('/*__NPC_PORTRAITS__*/', 'const NPC_PORTRAITS = ' + json.dumps(_portraits, separators=(',', ':')) + ';')
+_forest_ui = {}
+for _uf in sorted(glob.glob(os.path.join(SRC, 'ui', 'forest', '*.webp'))):
+    _un = os.path.basename(_uf)[:-5]
+    _forest_ui[_un] = 'data:image/webp;base64,' + base64.b64encode(open(_uf, 'rb').read()).decode('ascii')
+assert '/*__FOREST_UI_ICONS__*/' in tpl
+tpl=tpl.replace('/*__FOREST_UI_ICONS__*/', 'const FOREST_UI = ' + json.dumps(_forest_ui, separators=(',', ':')) + ';')
+_common_ui = {}
+for _uf in sorted(glob.glob(os.path.join(SRC, 'ui', 'common', '*.webp'))):
+    _un = os.path.basename(_uf)[:-5]
+    _common_ui[_un] = 'data:image/webp;base64,' + base64.b64encode(open(_uf, 'rb').read()).decode('ascii')
+assert '/*__COMMON_UI_ICONS__*/' in tpl
+tpl=tpl.replace('/*__COMMON_UI_ICONS__*/', 'const COMMON_UI = ' + json.dumps(_common_ui, separators=(',', ':')) + ';')
 _owl = {k: 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(SRC, 'owl', k + '.webp'), 'rb').read()).decode('ascii') for k in ('idle', 'blink', 'up', 'out', 'down', 'land', 'talk', 'happy', 'head')}
 tpl=tpl.replace('/*__OWL_SPRITES__*/', 'const OWL_SPR = ' + json.dumps(_owl, separators=(',', ':')) + ';')
 travel_css="""

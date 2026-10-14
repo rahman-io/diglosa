@@ -16,8 +16,8 @@ const T_ACTIONS = ['setdiff', 'setctrl', 'fsenter', 'fsexit', 'setautofs', 'soun
 let tEl = null;
 const trophyHTML = () => {
   const rows = AREAS.map(a => { const s = areaStats(a), won = S.won[a.id], pct = won ? 100 : Math.min(100, Math.round(s.seen / s.n * 100));
-    return `<div class="qrow ${won ? 'done' : ''}"><div><b>${a.e} ${a.name}${won ? ' 🏆' : ''}</b><br><small class="sub">${won ? 'Desa dimenangkan' : `${s.seen}/${s.n} dikenal, ${s.mast} dikuasai`}</small></div><div class="t-mini"><i style="width:${pct}%"></i></div></div>`; }).join('');
-  const nm = [['L', '🎧 Listening'], ['R', '📖 Reading'], ['W', '✍️ Writing'], ['S', '🗣️ Speaking']], b = S.best || {};
+    return `<div class="qrow ${won ? 'done' : ''}"><div><b>${forestIcon(forestAreaIcon(a.id), 'fui-inline')} ${a.name}${won ? ' ' + commonIcon('crown', 'cui-inline') : ''}</b><br><small class="sub">${won ? 'Desa dimenangkan' : `${s.seen}/${s.n} dikenal, ${s.mast} dikuasai`}</small></div><div class="t-mini"><i style="width:${pct}%"></i></div></div>`; }).join('');
+  const nm = [['L', modeIcon('listen') + ' Listening'], ['R', modeIcon('dict') + ' Reading'], ['W', commonIcon('book', 'cui-inline') + ' Writing'], ['S', commonIcon('speaker', 'cui-inline') + ' Speaking']], b = S.best || {};
   const ex = nm.map(([k, l]) => `<div class="qrow ${b[k] >= 60 ? 'done' : ''}"><div><b>${l}</b><br><small class="sub">${b[k] ? `Skor terbaik ${b[k]}%` : 'Belum dicoba'}</small></div><div class="t-mini"><i style="width:${b[k] || 0}%"></i></div></div>`).join('');
   return mHead('Trofi') + `<h4 style="margin-bottom:4px">Desa di Hutan Kata</h4>${rows}<h4 style="margin:14px 0 4px">Ujian di Istana IELTS</h4>${ex}`;
 };
@@ -25,21 +25,21 @@ const profileHTML = () => {
   const lv = level(), st = stats();
   const box = (e, v, l) => `<div class="t-stat"><span>${e}</span><div><b>${v}</b><small>${l}</small></div></div>`;
   return mHead('Profil') + `<div class="t-prof"><div class="t-pav">${heroHead()}</div><div style="flex:1;min-width:0"><h3>Pengelana Hoot</h3><div>Lv. ${lv.n}: ${lv.t}</div><div class="bar"><span class="s" style="width:${lv.pct}%"></span></div><small class="sub">${lv.max ? 'Level tertinggi tercapai' : lv.left + ' XP lagi ke level berikutnya'}</small></div></div>
-    <div class="t-grid">${box('🔥', S.streak + ' hari', 'Beruntun')}${box('⭐', S.xp, 'Total XP')}${box('📚', st.seen + '/' + st.n, 'Kata dikenal')}${box('🏅', st.mast, 'Kata dikuasai')}${box('👾', S.kills || 0, 'Monster dikalahkan')}${box('💎', S.gemTotal || 0, 'Berlian terkumpul')}</div>`;
+    <div class="t-grid">${box(commonIcon('happy', 'cui-inline'), S.streak + ' hari', 'Beruntun')}${box(commonIcon('crown', 'cui-inline'), S.xp, 'Total XP')}${box(commonIcon('book', 'cui-inline'), st.seen + '/' + st.n, 'Kata dikenal')}${box(commonIcon('crown', 'cui-inline'), st.mast, 'Kata dikuasai')}${box(forestIcon('target', 'fui-inline'), S.kills || 0, 'Monster dikalahkan')}${box(forestGem(), S.gemTotal || 0, 'Berlian terkumpul')}</div>`;
 };
 const mapHTML = () => {
   const st = stats(), b = S.best || {}, tried = ['L', 'R', 'W', 'S'].filter(k => b[k]).length;
   return mHead('Pilih Tujuan') + `<p class="sub" style="margin-bottom:10px">Pilih peta untuk memulai petualangan. Kamu bisa berpindah peta kapan saja lewat portal ungu.</p><div class="advlist" style="margin-top:0">
-    <button class="acard" data-t="goto" data-d="hutan"><span class="ae">🌲</span><b>Hutan Kata</b><small>${st.seen}/${st.n} kata dikenal${S.map === 'hutan' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="desa"><span class="ae">🏡</span><b>Desa Sapaan</b><small>${Object.keys(((S.vil || {}).d) || {}).length}/5 pintu terbuka${S.map === 'desa' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="pasar"><span class="ae">🍲</span><b>Pasar Rasa</b><small>${Object.keys(((S.mkt || {}).d) || {}).length}/5 pintu terbuka${S.map === 'pasar' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="satwa"><span class="ae">🌲</span><b>Hutan Satwa</b><small>${Object.keys(((S.sat || {}).d) || {}).length}/5 pintu terbuka${S.map === 'satwa' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="gerbang"><span class="ae">🚪</span><b>Gerbang Kota</b><small>${Object.keys(((S.kot || {}).d) || {}).length}/5 pintu terbuka${S.map === 'gerbang' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="waktu"><span class="ae">⏳</span><b>Menara Waktu</b><small>${Object.keys(((S.wkt || {}).d) || {}).length}/5 pintu terbuka${S.map === 'waktu' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="gua"><span class="ae">🔮</span><b>Gua Portal</b><small>${Object.keys(((S.cave || {}).d) || {}).length}/5 pintu terbuka${S.map === 'gua' ? '. Terakhir kamu di sini' : ''}</small></button>
-    <button class="acard" data-t="goto" data-d="ielts"><span class="ae">🏰</span><b>Istana IELTS</b><small>${tried}/4 bagian ujian pernah dicoba${S.map === 'akademi' ? '. Terakhir kamu di sini' : ''}</small></button></div>`;
+    <button class="acard" data-t="goto" data-d="hutan"><span class="ae">${forestIcon('forest')}</span><b>Hutan Kata</b><small>${st.seen}/${st.n} kata dikenal${S.map === 'hutan' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="desa"><span class="ae">${forestIcon('village')}</span><b>Desa Sapaan</b><small>${Object.keys(((S.vil || {}).d) || {}).length}/5 pintu terbuka${S.map === 'desa' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="pasar"><span class="ae">${forestIcon('market')}</span><b>Pasar Rasa</b><small>${Object.keys(((S.mkt || {}).d) || {}).length}/5 pintu terbuka${S.map === 'pasar' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="satwa"><span class="ae">${forestIcon('forest')}</span><b>Hutan Satwa</b><small>${Object.keys(((S.sat || {}).d) || {}).length}/5 pintu terbuka${S.map === 'satwa' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="gerbang"><span class="ae">${forestIcon('city')}</span><b>Gerbang Kota</b><small>${Object.keys(((S.kot || {}).d) || {}).length}/5 pintu terbuka${S.map === 'gerbang' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="waktu"><span class="ae">${forestIcon('clock')}</span><b>Menara Waktu</b><small>${Object.keys(((S.wkt || {}).d) || {}).length}/5 pintu terbuka${S.map === 'waktu' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="gua"><span class="ae">${forestIcon('cave')}</span><b>Gua Portal</b><small>${Object.keys(((S.cave || {}).d) || {}).length}/5 pintu terbuka${S.map === 'gua' ? '. Terakhir kamu di sini' : ''}</small></button>
+    <button class="acard" data-t="goto" data-d="ielts"><span class="ae">${forestIcon('castle')}</span><b>Istana IELTS</b><small>${tried}/4 bagian ujian pernah dicoba${S.map === 'akademi' ? '. Terakhir kamu di sini' : ''}</small></button></div>`;
 };
-const helpHTML = () => mHead('Cara Bermain') + `<p class="sub" style="margin-bottom:8px">Kumpulkan kata di Hutan Kata, lalu uji dirimu di Istana IELTS.</p>${helpList}<h4 style="margin:14px 0 6px">Tentang menu ini</h4><ul class="encl"><li>❤️ nyawa dan 💎 berlian: ketuk + untuk mengisi nyawa dan melihat cara mendapatkannya.</li><li>✉️ Pesan: kata hari ini. 🏆 Trofi: desa dan skor ujianmu. 🦉 Profil: level dan statistik.</li></ul>`;
+const helpHTML = () => mHead('Cara Bermain') + `<p class="sub" style="margin-bottom:8px">Kumpulkan kata di Hutan Kata, lalu uji dirimu di Istana IELTS.</p>${helpList}<h4 style="margin:14px 0 6px">Tentang menu ini</h4><ul class="encl"><li>Nyawa dan berlian: ketuk + untuk mengisi nyawa dan melihat cara mendapatkannya.</li><li>Pesan: kata hari ini. Trofi: desa dan skor ujianmu. Profil: level dan statistik.</li></ul>`;
 Object.assign(TITLE, {
   html() {
     const lv = level(), st = stats(), unread = S.adv.msgDay !== dstr();
@@ -48,12 +48,12 @@ Object.assign(TITLE, {
     const pill = (ic, val, p, al) => `<div class="t-pill"><span class="ti" aria-hidden="true">${ic}</span><span>${val}</span><button class="tplus" data-t="modal" data-p="${p}" aria-label="${al}">+</button></div>`;
     const sq = (p, ic, l, extra = '') => `<button class="t-sq" data-t="modal" data-p="${p}" aria-label="${l}"><span class="ic">${ic}</span>${extra}<span class="lb">${l}</span></button>`;
     return `<div class="t-stage"><img class="t-bg" src="${TITLE_BG}" alt="" draggable="false"><div class="t-sunglow"></div><div class="t-flies">${TITLE_FLIES}</div>${TITLE_HERO}
-      <div class="t-top">${pill('❤️', `${S.hp}<small>/${S.maxhp}</small>`, 'gem', 'Isi nyawa')}${pill('💎', S.gems, 'gem', 'Cara mendapat berlian')}${pill('⭐', `Lv ${lv.n}`, 'profile', 'Profil dan XP')}</div>
-      <div class="t-side t-left">${sq('msg', '✉️', 'Pesan', unread ? '<i class="bdg">1</i>' : '')}${sq('trophy', '🏆', 'Trofi')}</div>
-      <div class="t-side t-right">${sq('profile', heroHead(), 'Profil')}${sq('map', '🗺️', 'Peta')}</div>
-      <div class="t-logo">${TITLE_LOGO}<div class="t-sub">Petualangan Kata</div>${has ? `<div class="t-resume">Lv. ${String(lv.n).padStart(2, '0')} · ${where}${S.streak > 1 ? ' · 🔥 ' + S.streak + ' hari' : ''}</div>` : ''}</div>
+      <div class="t-top">${pill(forestHeart(true), `${S.hp}<small>/${S.maxhp}</small>`, 'gem', 'Isi nyawa')}${pill(forestGem(), S.gems, 'gem', 'Cara mendapat berlian')}${pill(commonIcon('crown', 'cui-inline'), `Lv ${lv.n}`, 'profile', 'Profil dan XP')}</div>
+      <div class="t-side t-left">${sq('msg', forestIcon('message', 'fui-inline'), 'Pesan', unread ? '<i class="bdg">1</i>' : '')}${sq('trophy', commonIcon('crown', 'cui-inline'), 'Trofi')}</div>
+      <div class="t-side t-right">${sq('profile', heroHead(), 'Profil')}${sq('map', forestIcon('map', 'fui-inline'), 'Peta')}</div>
+      <div class="t-logo">${TITLE_LOGO}<div class="t-sub">Petualangan Kata</div>${has ? `<div class="t-resume">Lv. ${String(lv.n).padStart(2, '0')} · ${where}${S.streak > 1 ? ' · ' + S.streak + ' hari' : ''}</div>` : ''}</div>
       <div class="t-bottom">
-        <div class="t-brow"><div class="t-b"><button class="t-round t-opt" data-t="modal" data-p="opt" aria-label="Opsi"><span>⚙️</span></button><span class="lb">Opsi</span></div>
+        <div class="t-brow"><div class="t-b"><button class="t-round t-opt" data-t="modal" data-p="opt" aria-label="Opsi"><span>${forestIcon('settings')}</span></button><span class="lb">Opsi</span></div>
           <div class="t-b main"><button class="t-round play" id="tplay" data-t="play" aria-label="${lbl}"><svg viewBox="0 0 60 60" aria-hidden="true"><path d="M19 10 L50 30 L19 50 Z" fill="#fff6e0" stroke="#fff6e0" stroke-width="7" stroke-linejoin="round"/></svg></button><span class="lb">${lbl}</span></div>
           <div class="t-b"><button class="t-round t-help" data-t="modal" data-p="help" aria-label="Cara bermain"><span>?</span></button><span class="lb">Cara Main</span></div></div></div></div>
       <div class="ovl modal" id="tovl" aria-live="polite"></div>`;
@@ -140,7 +140,7 @@ const PM = {
       document.addEventListener('keydown', e => { if (this.on && e.key === 'Escape') { e.preventDefault(); this.close(); } });
     }
     this.el.innerHTML = `<div class="mpanel" role="dialog" aria-label="Menu"><div class="mhead"><h3>Menu</h3><button class="mclose" data-g="resume" aria-label="Tutup">✕</button></div><div class="mbody">
-      <div class="pmlist"><button class="btn" data-g="resume">▶ Lanjutkan</button><button class="btn ghost" data-g="map">🗺️ ${ctx.mapLabel || 'Kembali ke peta'}</button><button class="btn ghost" data-g="title">🏠 Menu depan</button></div>
+      <div class="pmlist"><button class="btn" data-g="resume">▶ Lanjutkan</button><button class="btn ghost" data-g="map">${forestIcon('map', 'fui-inline')} ${ctx.mapLabel || 'Kembali ke peta'}</button><button class="btn ghost" data-g="title">${commonIcon('home', 'cui-inline')} Menu depan</button></div>
       ${ctx.note ? `<p class="note">${ctx.note}</p>` : ''}</div></div>`;
     this.el.classList.add('show');
     const b = this.el.querySelector('.pmlist .btn'); if (b) b.focus({ preventScroll: true });

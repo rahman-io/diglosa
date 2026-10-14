@@ -1,0 +1,7 @@
+Use case: ui-mockup
+Asset type: transparent game UI icon sprite sheet for a colorful children's fantasy vocabulary game.
+Create exactly ten separate polished 3D cartoon interactable icons arranged in a clean 5-by-2 grid, one centered icon per equal square tile, generous transparent padding, no overlaps.
+Row 1: a clear blue spring pool with a small splash; a glowing golden lightning crystal; a friendly brass bell; a sturdy wooden footbridge; a rounded wooden puzzle door.
+Row 2: a cheerful red cooking pot with steam; a small colorful bus; a cute old train engine; a friendly schoolhouse; a golden hourglass.
+Style: cohesive with a bright hand-painted 3D game UI, rounded shapes, rich colors, bold dark brown outline, soft highlights, front-facing orthographic icons.
+Constraints: true transparent background; exactly 10 icons; no text, letters, numbers, characters, emoji glyphs, watermark, full-canvas background, clipped edges, or tile overlap.

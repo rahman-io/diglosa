@@ -291,7 +291,7 @@ const curWeapon = () => { const g = gunSt(); if (!WEAPONS[g.cur] || !wUnlocked(g
 const ammoOf = k => gunSt().ammo[k] || 0;
 function refreshAmmoUI() { const g = gunSt(), a = document.getElementById('ammo'); if (a) a.textContent = ammoOf(curWeapon() && g.cur); const w = document.getElementById('wpnbtn'); if (w) { const ic = w.querySelector('.actic'); if (ic) ic.innerHTML = wico(g.cur, 44); } }
 function giveAmmo(n, k) { const g = gunSt(); curWeapon(); const key = k || g.cur; g.ammo[key] = Math.min(40, (g.ammo[key] || 0) + n); save(); refreshAmmoUI(); return n; }
-const weaponsHTML = () => { const g = gunSt(); curWeapon(); return `<h4 style="margin:14px 0 6px">Senjata dan peluru</h4><div class="wlist">${Object.keys(WEAPONS).map(k => { const w = WEAPONS[k], un = wUnlocked(k), on = g.cur === k; return `<div class="wrow${on ? ' on' : ''}${un ? '' : ' lock'}"><span class="we">${un ? wico(k, 56) : '🔒'}</span><div class="wi"><b>${w.n}</b><small>${un ? w.d + ' Peluru: ' + ammoOf(k) : 'Terkunci: selesaikan misi terakhir ' + (w.ai >= 0 ? AREAS[w.ai].name : '')}</small></div>${un ? `<button class="btn sm ${on ? '' : 'ghost'}" data-a="equip" data-w="${k}">${on ? 'Dipakai' : 'Pakai'}</button>` : ''}</div>`; }).join('')}</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-a="buyammo">Beli ${WEAPONS[g.cur].pack} peluru (${AMMO_COST} 💎)</button><button class="btn sm mint" data-a="ammoquiz">Isi ulang: 3 soal untuk 6 peluru</button></div><p class="note">Peluru didapat dari jawaban benar di duel (combo memberi bonus), penembak yang kalah, bonus harian, kuis isi ulang, atau berlian. Senjata Pemula juga mengisi energi sendiri sampai 5 peluru.</p>`; };
+const weaponsHTML = () => { const g = gunSt(); curWeapon(); return `<h4 style="margin:14px 0 6px">Senjata dan peluru</h4><div class="wlist">${Object.keys(WEAPONS).map(k => { const w = WEAPONS[k], un = wUnlocked(k), on = g.cur === k; return `<div class="wrow${on ? ' on' : ''}${un ? '' : ' lock'}"><span class="we">${un ? wico(k, 56) : commonIcon('lock', 'cui-inline')}</span><div class="wi"><b>${w.n}</b><small>${un ? w.d + ' Peluru: ' + ammoOf(k) : 'Terkunci: selesaikan misi terakhir ' + (w.ai >= 0 ? AREAS[w.ai].name : '')}</small></div>${un ? `<button class="btn sm ${on ? '' : 'ghost'}" data-a="equip" data-w="${k}">${on ? 'Dipakai' : 'Pakai'}</button>` : ''}</div>`; }).join('')}</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-a="buyammo">Beli ${WEAPONS[g.cur].pack} peluru (${AMMO_COST} ${forestGem()})</button><button class="btn sm mint" data-a="ammoquiz">Isi ulang: 3 soal untuk 6 peluru</button></div><p class="note">Peluru didapat dari jawaban benar di duel (combo memberi bonus), penembak yang kalah, bonus harian, kuis isi ulang, atau berlian. Senjata Pemula juga mengisi energi sendiri sampai 5 peluru.</p>`; };
 let tt;
 function toast(m) {
   let el = $('#toast');
@@ -529,14 +529,14 @@ function vCards() {
   const i = G.ids[G.k], w = WORDS[i], c = CATS[w[0]];
   app.innerHTML = `<div class="wrap">${gtop('Kartu Kilat', G.k / G.ids.length, `<span class="pill">${G.k + 1}/${G.ids.length}</span>`)}
     <div class="scene"><div class="fc ${G.flipped ? 'on' : ''}" data-a="flip" id="fc">
-      <div class="face front"><span class="chip">${c[1]} ${c[0]}</span><div class="big">${w[1]}</div>
-        <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan">🔊</button>
+      <div class="face front"><span class="chip">${categoryIcon(w[0])} ${c[0]}</span><div class="big">${w[1]}</div>
+        <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan">${commonIcon('speaker', 'cui-inline')}</button>
         <span class="hintx">Ketuk kartu untuk melihat arti</span></div>
       <div class="face back"><span class="chip">Artinya</span><div class="big">${w[2]}</div><div class="sub">${w[1]}</div></div>
     </div></div>
     <div class="actions">
-      <button class="btn coral" data-a="unknown">😵 Belum hafal</button>
-      <button class="btn mint" data-a="known">😎 Sudah hafal</button>
+      <button class="btn coral" data-a="unknown">${commonIcon('worried', 'cui-inline')} Belum hafal</button>
+      <button class="btn mint" data-a="known">${commonIcon('happy', 'cui-inline')} Sudah hafal</button>
     </div>
     <p class="kb">Pintasan: Spasi membalik kartu, panah kiri belum hafal, panah kanan sudah hafal.</p></div>`;
 }
@@ -554,9 +554,9 @@ function vQuiz() {
   const lab = j => q.dir === 'en2id' ? WORDS[j][2] : WORDS[j][1];
   const head = q.dir === 'en2id' ? 'Apa arti kata ini?' : q.dir === 'id2en' ? 'Apa bahasa Inggrisnya?' : 'Dengarkan, lalu pilih kata yang benar';
   const prompt = listen
-    ? `<button class="speak xl" data-a="say" data-w="${q.i}" aria-label="Putar suara">🔊</button><span class="sub">Ketuk untuk memutar ulang</span>`
+    ? `<button class="speak xl" data-a="say" data-w="${q.i}" aria-label="Putar suara">${commonIcon('speaker', 'cui-inline')}</button><span class="sub">Ketuk untuk memutar ulang</span>`
     : q.dir === 'en2id'
-      ? `<div class="big">${w[1]}</div><button class="speak" data-a="say" data-w="${q.i}" aria-label="Dengarkan">🔊</button>`
+      ? `<div class="big">${w[1]}</div><button class="speak" data-a="say" data-w="${q.i}" aria-label="Dengarkan">${commonIcon('speaker', 'cui-inline')}</button>`
       : `<div class="big">${w[2]}</div>`;
   const done = q.pick != null, ok = q.pick === q.i;
   const opts = q.opts.map((j, x) => {
@@ -592,12 +592,12 @@ function vType() {
     ? `<div class="fb ${t.ok ? 'ok' : 'no'}"><span>${t.ok ? `Mantap! +${t.gain} XP` : `${t.late ? 'Waktu habis! ' : ''}Jawabannya: <b>${w[1]}</b>`}</span>
        <button class="btn" data-a="next">${G.k + 1 >= n ? 'Lihat hasil' : 'Lanjut'}</button></div>`
     : `<div class="actions">
-         <button class="btn" data-a="hint">💡 Petunjuk</button>
+         <button class="btn" data-a="hint">${commonIcon('bulb', 'cui-inline')} Petunjuk</button>
          <button class="btn mint" data-a="check">Periksa</button>
          <button class="btn ghost" data-a="skip">Lewati</button></div>
        ${t.msg ? `<div class="fb no"><span>${t.msg}</span></div>` : ''}`;
   app.innerHTML = `<div class="wrap">${gtop('Jago Ejaan', G.k / n, `<span class="pill">${G.k + 1}/${n}</span>`)}
-    ${qstrip()}<div class="card qcard"><div class="qh">${c[1]} Ketik bahasa Inggrisnya</div><div class="big">${w[2]}</div><div class="blanks">${blanks}</div></div>
+    ${qstrip()}<div class="card qcard"><div class="qh">${categoryIcon(w[0])} Ketik bahasa Inggrisnya</div><div class="big">${w[2]}</div><div class="blanks">${blanks}</div></div>
     <input id="ans" class="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Ketik di sini" value="${escA(t.val)}" ${t.done ? 'disabled' : ''} aria-label="Jawaban">
     ${fb}</div>`;
   if (!t.done) { const el = $('#ans'); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
@@ -639,7 +639,7 @@ function vResult() {
   const r = G.res, p = r.pct;
   const title = p >= .9 ? 'Luar biasa!' : p >= .7 ? 'Bagus sekali!' : p >= .5 ? 'Lumayan, terus berlatih!' : 'Tidak apa-apa, ulangi lagi!';
   const miss = G.miss.map(i => `<div class="row"><div class="wd"><b>${WORDS[i][1]}</b><small>${WORDS[i][2]}</small></div>
-      <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan">🔊</button></div>`).join('');
+      <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan">${commonIcon('speaker', 'cui-inline')}</button></div>`).join('');
   const extra = G.m === 'match' ? `<span class="pill">⏱ ${fmt(G.sec)}</span><span class="pill">🖱 ${G.moves} langkah</span>${G.timedOut ? '<span class="pill">⏰ Waktu habis</span>' : ''}` : '';
   app.innerHTML = `<div class="wrap"><div class="card res">
       <div class="owl">${owlGraphic('happy')}</div>
@@ -677,9 +677,9 @@ function listDict() {
   $('#dcount').textContent = rows.length + ' kata';
   $('#dlist').innerHTML = rows.map(i => {
     const b = S.p[i] ? S.p[i].b : 0;
-    return `<div class="row"><span class="em">${CATS[WORDS[i][0]][1]}</span><div class="wd"><b>${WORDS[i][1]}</b><small>${WORDS[i][2]}</small></div>
+    return `<div class="row"><span class="em">${categoryIcon(WORDS[i][0])}</span><div class="wd"><b>${WORDS[i][1]}</b><small>${WORDS[i][2]}</small></div>
       <span class="lv" title="Tingkat hafalan ${b} dari 5">${'●'.repeat(b)}${'○'.repeat(5 - b)}</span>
-      <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan ${WORDS[i][1]}">🔊</button></div>`;
+      <button class="speak" data-a="say" data-w="${i}" aria-label="Dengarkan ${WORDS[i][1]}">${commonIcon('speaker', 'cui-inline')}</button></div>`;
   }).join('') || '<p class="empty">Tidak ada kata yang cocok. Coba kata kunci atau filter lain.</p>';
 }
 
@@ -814,17 +814,17 @@ const AREAS = AREA_DEF.map(a => Object.assign({}, a, { catIdx: a.cats.map(n => C
 const DOOR = { id: 'door', name: 'Portal Istana', e: '🏰', npc: { n: 'Portal Ungu', e: '🔮', x: 526, y: 58 }, go: [526, 100],
   say: [['This purple portal leads to the IELTS Castle.', 'Portal ungu ini menuju Istana IELTS.'], ['Are you ready for the test?', 'Siapkah kamu untuk ujian?']] };
 const ENT = AREAS.concat([DOOR]);
-const helpList = `<ul class="encl"><li>Ketuk tanah untuk berjalan. Ketuk penduduk bertanda ❗ untuk bicara dan menerima misi.</li><li class="kbhint">Di komputer: panah atau WASD untuk berjalan, Enter untuk bicara.</li><li>Monster mengejar kalau kamu terlalu dekat. Jawab soalnya untuk mengalahkannya.</li><li>Petik 💎 dan ❤️ di peta. Menangkan desa untuk hadiah besar.</li><li>Naiki tangga batu ke portal ungu di atas Hutan Kata untuk menuju Istana IELTS.</li></ul>`;
+const helpList = `<ul class="encl"><li>Ketuk tanah untuk berjalan. Ketuk penduduk bertanda ! untuk bicara dan menerima misi.</li><li class="kbhint">Di komputer: panah atau WASD untuk berjalan, Enter untuk bicara.</li><li>Monster mengejar kalau kamu terlalu dekat. Jawab soalnya untuk mengalahkannya.</li><li>Petik berlian dan liontin nyawa di peta. Menangkan desa untuk hadiah besar.</li><li>Naiki tangga batu ke portal ungu di atas Hutan Kata untuk menuju Istana IELTS.</li></ul>`;
 const worldPanel = here => `<p class="sub" style="margin-bottom:10px">Pilih tujuan. Kamu juga bisa berjalan kaki: naiki tangga batu ke portal ungu di atas Hutan Kata untuk menuju Istana IELTS.</p><div class="advlist" style="margin-top:0">
-  <button class="acard" data-a="travelto" data-d="hutan"><span class="ae">🌲</span><b>Hutan Kata</b><small>${here === 'hutan' ? 'Kamu di sini' : 'Belajar kosakata bersama penduduk hutan'}</small></button>
-  <button class="acard" data-a="travelto" data-d="desa"><span class="ae">🏡</span><b>Desa Sapaan</b><small>${here === 'desa' ? 'Kamu di sini' : 'Lima pintu tantangan dan Gumpal Salam'}</small></button>
-  <button class="acard" data-a="travelto" data-d="pasar"><span class="ae">🍲</span><b>Pasar Rasa</b><small>${here === 'pasar' ? 'Kamu di sini' : 'Lima pintu tantangan dan Lendir Kuali'}</small></button>
-  <button class="acard" data-a="travelto" data-d="satwa"><span class="ae">🌲</span><b>Hutan Satwa</b><small>${here === 'satwa' ? 'Kamu di sini' : 'Lima pintu tantangan dan Semak Gigit'}</small></button>
-  <button class="acard" data-a="travelto" data-d="gerbang"><span class="ae">🚪</span><b>Gerbang Kota</b><small>${here === 'gerbang' ? 'Kamu di sini' : 'Lima pintu tantangan dan Bayangan Gerbang'}</small></button>
-  <button class="acard" data-a="travelto" data-d="waktu"><span class="ae">⏳</span><b>Menara Waktu</b><small>${here === 'waktu' ? 'Kamu di sini' : 'Lima pintu tantangan dan Jam Pasir Liar'}</small></button>
-  <button class="acard" data-a="travelto" data-d="gua"><span class="ae">🔮</span><b>Gua Portal</b><small>${here === 'gua' ? 'Kamu di sini' : 'Lima pintu tantangan dan Hantu Portal'}</small></button>
-  <button class="acard" data-a="travelto" data-d="ielts"><span class="ae">🏰</span><b>Istana IELTS</b><small>${here === 'akademi' ? 'Kamu di sini' : 'Ujian Listening, Reading, Writing, Speaking'}</small></button></div>
-  ${here !== 'hutan' ? '' : `<h4 style="margin:14px 0 8px">Wilayah di Hutan Kata</h4><div class="advlist" style="margin-top:0">${ENT.map((a, i) => { const st = i < AREAS.length ? areaStats(a) : null; return `<button class="acard" data-a="goquest" data-i="${i}"><span class="ae">${a.e}</span><b>${a.name}${areaDone(a.id) ? ' ✓' : ''}</b><small>${st ? st.seen + '/' + st.n + ' dipelajari, ' + st.mast + ' dikuasai' : 'Pintu ke Istana IELTS'}</small></button>`; }).join('')}</div>`}
+  <button class="acard" data-a="travelto" data-d="hutan"><span class="ae">${forestIcon('forest')}</span><b>Hutan Kata</b><small>${here === 'hutan' ? 'Kamu di sini' : 'Belajar kosakata bersama penduduk hutan'}</small></button>
+  <button class="acard" data-a="travelto" data-d="desa"><span class="ae">${forestIcon('village')}</span><b>Desa Sapaan</b><small>${here === 'desa' ? 'Kamu di sini' : 'Lima pintu tantangan dan Gumpal Salam'}</small></button>
+  <button class="acard" data-a="travelto" data-d="pasar"><span class="ae">${forestIcon('market')}</span><b>Pasar Rasa</b><small>${here === 'pasar' ? 'Kamu di sini' : 'Lima pintu tantangan dan Lendir Kuali'}</small></button>
+  <button class="acard" data-a="travelto" data-d="satwa"><span class="ae">${forestIcon('forest')}</span><b>Hutan Satwa</b><small>${here === 'satwa' ? 'Kamu di sini' : 'Lima pintu tantangan dan Semak Gigit'}</small></button>
+  <button class="acard" data-a="travelto" data-d="gerbang"><span class="ae">${forestIcon('city')}</span><b>Gerbang Kota</b><small>${here === 'gerbang' ? 'Kamu di sini' : 'Lima pintu tantangan dan Bayangan Gerbang'}</small></button>
+  <button class="acard" data-a="travelto" data-d="waktu"><span class="ae">${forestIcon('clock')}</span><b>Menara Waktu</b><small>${here === 'waktu' ? 'Kamu di sini' : 'Lima pintu tantangan dan Jam Pasir Liar'}</small></button>
+  <button class="acard" data-a="travelto" data-d="gua"><span class="ae">${forestIcon('cave')}</span><b>Gua Portal</b><small>${here === 'gua' ? 'Kamu di sini' : 'Lima pintu tantangan dan Hantu Portal'}</small></button>
+  <button class="acard" data-a="travelto" data-d="ielts"><span class="ae">${forestIcon('castle')}</span><b>Istana IELTS</b><small>${here === 'akademi' ? 'Kamu di sini' : 'Ujian Listening, Reading, Writing, Speaking'}</small></button></div>
+  ${here !== 'hutan' ? '' : `<h4 style="margin:14px 0 8px">Wilayah di Hutan Kata</h4><div class="advlist" style="margin-top:0">${ENT.map((a, i) => { const st = i < AREAS.length ? areaStats(a) : null; return `<button class="acard" data-a="goquest" data-i="${i}"><span class="ae">${forestIcon(forestAreaIcon(a.id))}</span><b>${a.name}${areaDone(a.id) ? ' ✓' : ''}</b><small>${st ? st.seen + '/' + st.n + ' dipelajari, ' + st.mast + ' dikuasai' : 'Pintu ke Istana IELTS'}</small></button>`; }).join('')}</div>`}
   <h4 style="margin:14px 0 6px">Cara bermain</h4>${helpList}`;
 /* ---------- mesin monster, nyawa, dan berlian (dipakai kedua peta) ---------- */
 const TUNE = {            // semua angka penyetelan ada di sini
@@ -1045,8 +1045,8 @@ function makeEngine(cfg) {
   };
   E.svg = () => (E.syncDrops(), `<g id="mons">${E.mons.map(monSVG).join('')}</g><g id="shooters">${E.shooters.map(shSVG).join('')}</g><g id="itms">${E.items.map(itemSVG).join('')}</g>${bossSVG()}<g id="fx" pointer-events="none"></g>`);
 
-  const hearts = () => { const s = st(); return '❤️'.repeat(Math.max(0, s.hp)) + '🤍'.repeat(Math.max(0, s.maxhp - s.hp)); };
-  E.hudInner = () => `<span class="hh">${hearts()}</span><span class="hg">💎 ${st().gems}</span>`;
+  const hearts = () => { const s = st(); return Array.from({ length: Math.max(0, s.hp) }, () => forestHeart(true)).join('') + Array.from({ length: Math.max(0, s.maxhp - s.hp) }, () => forestHeart(false)).join(''); };
+  E.hudInner = () => `<span class="hh" aria-label="${st().hp} dari ${st().maxhp} nyawa">${hearts()}</span><span class="hg" aria-label="${st().gems} berlian">${forestGem()} <b>${st().gems}</b></span>`;
   E.hudHTML = () => `<button class="alife" id="alife" data-a="panel" data-p="gem" aria-label="Nyawa dan berlian">${E.hudInner()}</button>`;
   E.refreshHud = () => { const e = $('#alife'); if (e) e.innerHTML = E.hudInner(); const ap = $('#areaprog'); if (ap && cfg.ai != null) ap.textContent = areaProgressText(); const h = $('#enchearts'); if (h) h.textContent = hearts(); };
   function heal(n, auto) { const s = st(), b = s.hp; s.hp = Math.min(s.maxhp, s.hp + n); if (s.hp > b) { cfg.save(); E.refreshHud(); cfg.toast(auto ? '❤️ Nyawamu pulih satu' : '+1 ❤️'); } }
@@ -1386,7 +1386,7 @@ function controlsHTML(s) {
   const pad = m === 'dpad'
     ? `<div class="ctl ctl-dpad" id="dpad">${[['u', '▲'], ['l', '◀'], ['r', '▶'], ['d', '▼']].map(([k, i]) => `<button class="dbtn" data-dir="${k}" aria-label="Berjalan ke arah ${k}">${i}</button>`).join('')}</div>`
     : `<div class="fjoy" id="fjoy" aria-hidden="true"><div class="joyring"><div class="joyknob" id="joyknob"></div></div></div>`;
-  return pad + `<button class="ctl ctl-act" id="act" data-a="act" aria-label="Bicara atau masuk"><span class="actic">💬</span><span class="actlb">Bicara</span><span class="actnm"></span></button>` + (AREA_BY_MAP[S.map] != null && gunOwned() ? `<button class="ctl ctl-shoot" id="shootbtn" data-a="shoot" aria-label="Tembak penembak terdekat"><span class="actic">🎯</span><span class="actlb">Tembak</span><span class="ammo" id="ammo">${ammoOf(curWeapon() && gunSt().cur)}</span></button><button class="ctl ctl-wpn" id="wpnbtn" data-a="wpn" aria-label="Ganti senjata"><span class="actic">${wico(gunSt().cur, 44)}</span></button>` : '');
+  return pad + `<button class="ctl ctl-act" id="act" data-a="act" aria-label="Bicara atau masuk"><span class="actic">${forestIcon('talk')}</span><span class="actlb">Bicara</span><span class="actnm"></span></button>` + (AREA_BY_MAP[S.map] != null && gunOwned() ? `<button class="ctl ctl-shoot" id="shootbtn" data-a="shoot" aria-label="Tembak penembak terdekat"><span class="actic">${forestIcon('target')}</span><span class="actlb">Tembak</span><span class="ammo" id="ammo">${ammoOf(curWeapon() && gunSt().cur)}</span></button><button class="ctl ctl-wpn" id="wpnbtn" data-a="wpn" aria-label="Ganti senjata"><span class="actic">${wico(gunSt().cur, 44)}</span></button>` : '');
 }
 
 /* ---------- layar penuh ---------- */
@@ -1414,9 +1414,9 @@ function autoFs() {
 const privacyHTML = () => `<h4 style="margin:16px 0 8px">Privasi</h4><p class="note">Kemajuanmu hanya tersimpan di perangkat ini, tidak dikirim ke server mana pun. Bila halaman memakai statistik, yang dihitung hanya jumlah kunjungan, kejadian umum (misalnya cerita pembuka selesai, area selamat, atau galat teknis), dan data gabungan yang kasar: perkiraan negara, jenis peramban, sistem, dan ukuran layar. Tanpa nama, tanpa cookie, tanpa identitas, dan alamat IP tidak disimpan.</p>`;
 const fsPanelHTML = s => `<h4 style="margin:16px 0 8px">Layar penuh</h4><div class="actions" style="margin-top:0"><button class="btn sm" data-a="fsenter">Masuk layar penuh</button><button class="btn sm ghost" data-a="fsexit">Keluar (mode Manual)</button></div><div class="actions" style="margin-top:8px">${[['1', 'Otomatis (HP dan tablet)'], ['0', 'Manual']].map(([k, l]) => `<button class="btn sm ${((s.autofs !== false) ? '1' : '0') === k ? '' : 'ghost'}" data-a="setautofs" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Mode Otomatis: game masuk layar penuh pada sentuhan pertama, dan masuk lagi pada sentuhan berikutnya setelah kamu keluar (misalnya dengan tombol Back). Untuk berhenti, tekan Keluar atau pilih Manual. iPhone tidak mendukung layar penuh di browser: pakai Bagikan, lalu Tambah ke Layar Utama.</p>`;
 const fxPanelHTML = s => `<h4 style="margin:16px 0 8px">Efek visual dan getaran</h4><div class="actions" style="margin-top:0">${[['full', 'Penuh'], ['lite', 'Hemat'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${fxMode() === k ? '' : 'ghost'}" data-a="setfx" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Penuh: ledakan, getaran layar, kilatan, dan getaran HP. Hemat: efek lebih sedikit dan tanpa getaran layar (dipakai otomatis bila perangkat meminta gerakan dikurangi). Mati: tanpa efek dan tanpa getaran HP. Suara diatur terpisah.</p>`;
-const storyReplayHTML = () => `<h4 style="margin:16px 0 8px">Cerita pembuka</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="replayintro">▶ Putar ulang cerita pembuka</button><button class="btn sm ghost" data-a="helpplay">🦉 Bantuan cara bermain</button></div>`;
+const storyReplayHTML = () => `<h4 style="margin:16px 0 8px">Cerita pembuka</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="replayintro">▶ Putar ulang cerita pembuka</button><button class="btn sm ghost" data-a="helpplay">${forestIcon('forest', 'fui-inline')} Bantuan cara bermain</button></div>`;
 const qtPanelHTML = s => `<h4 style="margin:16px 0 8px">Waktu per soal</h4><div class="actions" style="margin-top:0">${[['on', 'Nyala'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${(s.qtimer === 'off' ? 'off' : 'on') === k ? '' : 'ghost'}" data-a="setqt" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Nyala: tiap soal punya batas waktu dan monster berjalan mendekat. Santai 20 detik, Petualang 12, Pendekar 8 (Jago Ejaan 1,5 kali lebih lama). Pasang Kartu memakai satu waktu untuk seluruh papan: 180, 120, atau 90 detik. Kartu Kilat tanpa waktu. Waktu habis dihitung salah, tanpa mengurangi nyawa. Mati: tanpa batas waktu.</p>`;
-const ctrlPanelHTML = s => `<h4 style="margin:16px 0 8px">Kontrol di layar</h4><div class="actions" style="margin-top:0">${[['joystick', 'Joystick'], ['dpad', 'Tombol arah'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${(s.ctrl || 'joystick') === k ? '' : 'ghost'}" data-a="setctrl" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Joystick: tahan atau geser jarimu di peta, dan joystick muncul tepat di titik sentuhan. Geser pelan berarti jalan pelan, angkat jari untuk menyembunyikannya. Ketukan singkat tetap berjalan ke titik yang diketuk. Tombol 💬 muncul di kiri bawah saat ada yang bisa diajak bicara.</p>`;
+const ctrlPanelHTML = s => `<h4 style="margin:16px 0 8px">Kontrol di layar</h4><div class="actions" style="margin-top:0">${[['joystick', 'Joystick'], ['dpad', 'Tombol arah'], ['off', 'Mati']].map(([k, l]) => `<button class="btn sm ${(s.ctrl || 'joystick') === k ? '' : 'ghost'}" data-a="setctrl" data-v="${k}">${l}</button>`).join('')}</div><p class="note">Joystick: tahan atau geser jarimu di peta, dan joystick muncul tepat di titik sentuhan. Geser pelan berarti jalan pelan, angkat jari untuk menyembunyikannya. Tombol Bicara muncul di kiri bawah saat ada yang bisa diajak bicara.</p>`;
 function resetJoy(A_) {
   A_.joy.x = A_.joy.y = 0;
   if (A_.fj) { if (A_.fj.timer) clearTimeout(A_.fj.timer); A_.fj = null; }
@@ -1524,9 +1524,10 @@ function caveLines(e, st) {
   const x = T[e.id];
   return doorLines(5, e, x, done);
 }
-function caveDlgHTML() { const e = CAVE_ENT[ADV.dlg]; return innerDlgHTML(e, caveLines(e, caveState(e)), '🔮 Gua Portal'); }
+function caveDlgHTML() { const e = CAVE_ENT[ADV.dlg]; return innerDlgHTML(e, caveLines(e, caveState(e)), forestIcon('cave', 'fui-inline') + ' Gua Portal'); }
 function innerDlgHTML(e, L, sub) {
-  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${e.npc.n}"><div class="enchead"><div class="dlgav">${npcAv(e, e.av)}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${sub}</div></div></div>
+  const av = e.t === 'npc' ? e.npc.e : forestIcon(forestInnerIcon(S.map, e.id));
+  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${e.npc.n}"><div class="enchead"><div class="dlgav">${npcAv(e, av)}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${sub}</div></div></div>
     <div class="dlglines">${L.lines.map(l => `<div class="dlgline"><div class="en">${l[0]}</div><div class="id">${l[1]}</div></div>`).join('')}</div>
     <div class="dlgstat">${L.stat}</div>
     <div class="dlgacts">${L.acc ? `<button class="acc" data-a="accept">${L.acc}</button>` : ''}<button class="ign" data-a="ignore">${L.acc ? (L.ign || 'Abaikan') : 'Tutup'}</button></div></div>`;
@@ -1628,7 +1629,7 @@ function vilLines(e, st) {
   const x = T[e.id];
   return doorLines(0, e, x, done);
 }
-function vilDlgHTML() { const e = VIL_ENT[ADV.dlg]; return innerDlgHTML(e, vilLines(e, vilState(e)), '🏡 Desa Sapaan'); }
+function vilDlgHTML() { const e = VIL_ENT[ADV.dlg]; return innerDlgHTML(e, vilLines(e, vilState(e)), forestIcon('village', 'fui-inline') + ' Desa Sapaan'); }
 function vilSVG() {
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Desa Sapaan">
     ${VIL_IMG}
@@ -1716,7 +1717,7 @@ function mktLines(e, st) {
   const x = T[e.id];
   return doorLines(1, e, x, done);
 }
-function mktDlgHTML() { const e = MKT_ENT[ADV.dlg]; return innerDlgHTML(e, mktLines(e, mktState(e)), '🍲 Pasar Rasa'); }
+function mktDlgHTML() { const e = MKT_ENT[ADV.dlg]; return innerDlgHTML(e, mktLines(e, mktState(e)), forestIcon('market', 'fui-inline') + ' Pasar Rasa'); }
 function mktSVG() {
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Pasar Rasa">
     ${MKT_IMG}
@@ -1804,7 +1805,7 @@ function satLines(e, st) {
   const x = T[e.id];
   return doorLines(2, e, x, done);
 }
-function satDlgHTML() { const e = SAT_ENT[ADV.dlg]; return innerDlgHTML(e, satLines(e, satState(e)), '🌲 Hutan Satwa'); }
+function satDlgHTML() { const e = SAT_ENT[ADV.dlg]; return innerDlgHTML(e, satLines(e, satState(e)), forestIcon('forest', 'fui-inline') + ' Hutan Satwa'); }
 function satSVG() {
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Hutan Satwa">
     ${SAT_IMG}
@@ -1892,7 +1893,7 @@ function kotLines(e, st) {
   const x = T[e.id];
   return doorLines(3, e, x, done);
 }
-function kotDlgHTML() { const e = KOT_ENT[ADV.dlg]; return innerDlgHTML(e, kotLines(e, kotState(e)), '🚪 Gerbang Kota'); }
+function kotDlgHTML() { const e = KOT_ENT[ADV.dlg]; return innerDlgHTML(e, kotLines(e, kotState(e)), forestIcon('city', 'fui-inline') + ' Gerbang Kota'); }
 function kotSVG() {
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Gerbang Kota">
     ${KOT_IMG}
@@ -1980,7 +1981,7 @@ function wktLines(e, st) {
   const x = T[e.id];
   return doorLines(4, e, x, done);
 }
-function wktDlgHTML() { const e = WKT_ENT[ADV.dlg]; return innerDlgHTML(e, wktLines(e, wktState(e)), '⏳ Menara Waktu'); }
+function wktDlgHTML() { const e = WKT_ENT[ADV.dlg]; return innerDlgHTML(e, wktLines(e, wktState(e)), forestIcon('clock', 'fui-inline') + ' Menara Waktu'); }
 function wktSVG() {
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta Menara Waktu">
     ${WKT_IMG}
@@ -2104,8 +2105,8 @@ const INNER_MAPS = ['gua', 'desa', 'pasar', 'satwa', 'gerbang', 'waktu'];   /* p
 const CM = () => MAPS[S.map] || MAPS.hutan;
 function entUI(M, i) {
   const a = M.ents[i];
-  if (INNER_MAPS.includes(M.id)) return a.t === 'npc' ? ['💬', 'Bicara', a.npc.n, 'Bicara: ' + a.npc.n] : a.t === 'exit' ? ['⬅️', 'Keluar', a.npc.n, { gua: 'Keluar gua', desa: 'Keluar desa', pasar: 'Keluar pasar', satwa: 'Keluar hutan satwa', gerbang: 'Keluar kota', waktu: 'Keluar menara' }[M.id]] : ['🚪', 'Masuk', a.npc.n, 'Masuk: ' + a.npc.n];
-  const door = i === AREAS.length; return [door ? '🔮' : '💬', door ? 'Masuk' : 'Bicara', a.npc.n, door ? 'Masuk Portal' : 'Bicara: ' + a.npc.n];
+  if (INNER_MAPS.includes(M.id)) return [forestIcon(a.t === 'npc' ? 'talk' : forestInnerIcon(M.id, a.id)), a.t === 'exit' ? 'Keluar' : a.t === 'npc' ? 'Bicara' : 'Masuk', a.npc.n, a.t === 'exit' ? ({ gua: 'Keluar gua', desa: 'Keluar desa', pasar: 'Keluar pasar', satwa: 'Keluar hutan satwa', gerbang: 'Keluar kota', waktu: 'Keluar menara' }[M.id]) : (a.t === 'npc' ? 'Bicara: ' + a.npc.n : 'Masuk: ' + a.npc.n)];
+  const door = i === AREAS.length; return [forestIcon(door ? 'portal' : 'talk'), door ? 'Masuk' : 'Bicara', a.npc.n, door ? 'Masuk Portal' : 'Bicara: ' + a.npc.n];
 }
 /* ---------- cerita: benda, pecahan mahkota, pita merah ---------- */
 const ITEMS = {
@@ -2213,8 +2214,31 @@ function questList() {
    diam = bernapas dan berkedip; call = misi belum selesai, tiap sekitar 11 detik melompat sambil berseru "Help! / Tolong!"; done = misi selesai, sesekali senang;
    .near (dipasang frame() saat pemain dekat) = pose senang dan melompat kecil. Tokoh tanpa sprite tetap memakai emoji. */
 /*__NPC_SPRITES__*/
+/*__FOREST_UI_ICONS__*/
+/*__COMMON_UI_ICONS__*/
 const NPC_NEAR = 150;
 const sprOf = a => (a && a.npc && a.npc.spr && NPC_SPR[a.npc.spr]) || null;
+const forestIcon = (key, cls = '') => FOREST_UI[key] ? `<img class="fui ${cls}" src="${FOREST_UI[key]}" alt="" draggable="false">` : '';
+const commonIcon = (key, cls = '') => COMMON_UI[key] ? `<img class="cui ${cls}" src="${COMMON_UI[key]}" alt="" draggable="false">` : '';
+const categoryIcon = i => {
+  const n = String(CATS[i]?.[0] || '').toLowerCase();
+  const map = [['rumah', 'home'], ['sekolah', 'book'], ['kota', 'city'], ['tempat', 'city'], ['waktu', 'clock'], ['hewan', 'forest'], ['alam', 'forest'], ['cuaca', 'forest'], ['makanan', 'pot'], ['minuman', 'pot'], ['dapur', 'pot'], ['transport', 'bus'], ['kendaraan', 'bus'], ['keluarga', 'village'], ['orang', 'village'], ['pakaian', 'bag'], ['belanja', 'bag'], ['kesehatan', 'water'], ['kata kerja', 'target'], ['kata sifat', 'happy'], ['kata keterangan', 'clock'], ['hobi', 'quest'], ['hiburan', 'quest'], ['tanya', 'message'], ['depan', 'message'], ['sambung', 'message'], ['ganti', 'quest'], ['penentu', 'quest'], ['bantu', 'settings'], ['dasar', 'map'], ['ielts', 'castle']];
+  const key = map.find(([part]) => n.includes(part))?.[1] || 'map';
+  return FOREST_UI[key] ? forestIcon(key, 'fui-inline') : commonIcon('book', 'cui-inline');
+};
+const modeIcon = key => ({ cards: commonIcon('book', 'cui-inline'), quiz: forestIcon('target', 'fui-inline'), listen: commonIcon('speaker', 'cui-inline'), type: commonIcon('book', 'cui-inline'), match: forestIcon('quest', 'fui-inline'), dict: commonIcon('book', 'cui-inline') }[key] || commonIcon('book', 'cui-inline'));
+const forestSvgIcon = (key, x, y, w = 34, h = 34) => FOREST_UI[key] ? `<image href="${FOREST_UI[key]}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/>` : '';
+const forestAreaIcon = id => ({ desa: 'village', pasar: 'market', hutan: 'forest', kota: 'city', menara: 'clock', portal: 'cave', door: 'castle' }[id] || 'forest');
+const forestInnerIcon = (map, id) => ({
+  gua: { npc: 'cave', kolam: 'water', kilat: 'lightning', gema: 'bell', huruf: 'bridge', teka: 'door', exit: 'exit' },
+  desa: { npc: 'village', sumur: 'water', jembatan: 'bridge', lumbung: 'bell', parit: 'bridge', rani: 'door', portal: 'portal', exit: 'exit' },
+  pasar: { npc: 'pot', panci: 'pot', lorong: 'lightning', gudang: 'bell', sungai: 'bridge', lemari: 'door', portal: 'portal', exit: 'exit' },
+  satwa: { npc: 'forest', genangan: 'water', jalur: 'lightning', ceruk: 'bell', batang: 'bridge', akar: 'door', portal: 'portal', exit: 'exit' },
+  gerbang: { npc: 'city', peta: 'map', bus: 'bus', stasiun: 'train', layang: 'bridge', sekolah: 'school', portal: 'portal', exit: 'exit' },
+  waktu: { npc: 'clock', permukaan: 'clock', roda: 'lightning', lonceng: 'bell', bandul: 'hourglass', pintujam: 'door', portal: 'portal', exit: 'exit' }
+}[map]?.[id] || (id === 'portal' ? 'portal' : id === 'exit' ? 'exit' : 'door'));
+const forestHeart = full => `<svg class="life-icon ${full ? 'full' : 'empty'}" viewBox="-22 -26 44 48" aria-hidden="true"><path d="M0 17C-8 9-19 1-19-10c0-8 10-12 19-3 9-9 19-5 19 3 0 11-11 19-19 27Z"/></svg>`;
+const forestGem = () => `<svg class="gem-icon" viewBox="-20 -25 40 50" aria-hidden="true"><path d="M0-21 16-7 0 19-16-7Z"/><path d="M0-21 16-7-16-7Z" class="shine"/><path d="M-5-7 0 16 5-7" class="facet"/></svg>`;
 function npcSprite(key, state, seed) {   /* state: call, done, atau calm */
   const s = NPC_SPR[key]; if (!s) return '';
   const x0 = -s.ax, y0 = -s.gy, b = s.blink, im = (k, x, y, w, h, c) => `<image${c ? ' class="' + c + '"' : ''} href="${s.u[k]}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none"/>`, f = k => im(k, x0, y0, s.w, s.h), top = -(s.body + 2);
@@ -2255,7 +2279,7 @@ function worldSVG() {
   if (S.map === 'waktu') return wktSVG();
   return `<svg class="world" id="world" viewBox="0 0 1000 640" data-a="ground" role="application" aria-label="Peta petualangan Diglosa">
     ${FOREST_IMG}
-    <g class="npc door" data-a="npc" data-i="6" transform="translate(526 52)" role="button" aria-label="Portal ke Istana IELTS"><circle r="64" cy="24" fill="transparent"/><ellipse rx="44" ry="36" cy="-26" fill="rgba(190,120,255,.20)" class="portal"/><g transform="translate(-112 78)"><rect x="-84" y="-12" width="168" height="22" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/><text y="4" font-size="12" text-anchor="middle" fill="#fff3d0" font-family="'Lilita One',sans-serif">🏰 Portal ke Istana IELTS</text></g></g>
+    <g class="npc door" data-a="npc" data-i="6" transform="translate(526 52)" role="button" aria-label="Portal ke Istana IELTS"><circle r="64" cy="24" fill="transparent"/><ellipse rx="44" ry="36" cy="-26" fill="rgba(190,120,255,.20)" class="portal"/><g transform="translate(-112 78)"><rect x="-84" y="-12" width="168" height="22" rx="6" fill="#8a4b1c" stroke="#4b2a0e" stroke-width="2.5"/>${forestSvgIcon('castle', -76, -9, 20, 20)}<text x="-50" y="4" font-size="12" text-anchor="start" fill="#fff3d0" font-family="'Lilita One',sans-serif">Portal ke Istana IELTS</text></g></g>
     ${AREAS.map(npcSVG).join('')}
     ${FE.svg()}
     <g id="pl" transform="translate(${ADV.px} ${ADV.py})" pointer-events="none">${heroBody}</g></svg>`;
@@ -2266,25 +2290,25 @@ function vHomeA() {
   CM().E.ensure();
   const lv = level(), unread = S.adv.msgDay !== dstr() ? 1 : 0, qOpen = questList().filter(q => !q.done).length;
   const cards = AREAS.map((a, i) => { const s = areaStats(a);
-    return `<button class="acard" data-a="goarea" data-i="${i}"><span class="ae">${a.e}</span><b>${a.name}${areaDone(a.id) ? ' ✓' : ''}</b><small>${s.seen}/${s.n} dipelajari, ${s.mast} dikuasai</small><div class="bar mini"><span class="s" style="width:${s.seen / s.n * 100}%"></span><span class="m" style="width:${s.mast / s.n * 100}%"></span></div></button>`; }).join('');
+    return `<button class="acard" data-a="goarea" data-i="${i}"><span class="ae">${forestIcon(forestAreaIcon(a.id))}</span><b>${a.name}${areaDone(a.id) ? ' ✓' : ''}</b><small>${s.seen}/${s.n} dipelajari, ${s.mast} dikuasai</small><div class="bar mini"><span class="s" style="width:${s.seen / s.n * 100}%"></span><span class="m" style="width:${s.mast / s.n * 100}%"></span></div></button>`; }).join('');
   const compact = compactNow(); ADV.compact = compact;
   const scene = `<div class="advwrap${compact ? ' full' : ''}${S.ctrl === 'off' ? '' : ' hasctl'}"><div class="adv">${worldSVG()}${mistHTML()}
       <div class="hudL"><div class="ahud"><div class="aav">${heroHead()}</div><div class="aname">Pengelana Hoot</div></div>
       <div class="alv">Lv. ${String(lv.n).padStart(2, '0')}<i><b style="width:${lv.pct}%"></b></i></div>
       ${CM().E.hudHTML()}${areaProgressHTML()}</div>
       <div class="abtns">
-        <button class="abtn" data-a="panel" data-p="bag" aria-label="Tas"><span class="ic">🎒</span><span class="lb">Tas</span></button>
-        <button class="abtn" data-a="panel" data-p="msg" aria-label="Pesan"><span class="ic">✉️</span><span class="lb">Pesan</span>${unread ? '<span class="bdg">1</span>' : ''}</button>
-        <button class="abtn" data-a="panel" data-p="quest" aria-label="Misi"><span class="ic">❗</span><span class="lb">Misi</span>${qOpen ? `<span class="bdg">${qOpen}</span>` : ''}</button>
-        <button class="abtn" data-a="panel" data-p="world" aria-label="Peta dunia"><span class="ic">🗺️</span><span class="lb">Peta</span></button>
-        <button class="abtn" data-a="panel" data-p="opt" aria-label="Opsi"><span class="ic">⚙️</span><span class="lb">Opsi</span></button>
+        <button class="abtn" data-a="panel" data-p="bag" aria-label="Tas"><span class="ic">${forestIcon('bag')}</span><span class="lb">Tas</span></button>
+        <button class="abtn" data-a="panel" data-p="msg" aria-label="Pesan"><span class="ic">${forestIcon('message')}</span><span class="lb">Pesan</span>${unread ? '<span class="bdg">1</span>' : ''}</button>
+        <button class="abtn" data-a="panel" data-p="quest" aria-label="Misi"><span class="ic">${forestIcon('quest')}</span><span class="lb">Misi</span>${qOpen ? `<span class="bdg">${qOpen}</span>` : ''}</button>
+        <button class="abtn" data-a="panel" data-p="world" aria-label="Peta dunia"><span class="ic">${forestIcon('map')}</span><span class="lb">Peta</span></button>
+        <button class="abtn" data-a="panel" data-p="opt" aria-label="Opsi"><span class="ic">${forestIcon('settings')}</span><span class="lb">Opsi</span></button>
       </div>
       ${controlsHTML(S)}
       <button class="talk" id="talk" data-a="talk" hidden>Bicara</button></div>
     <div class="ovl" id="ovl"></div></div>`;
   const more = INNER_MAPS.includes(S.map) ? '' : `
-    <div class="advbar">${ENT.map((a, i) => `<button class="btn sm" data-a="goarea" data-i="${i}">${a.e} ${a.name}</button>`).join('')}</div>
-    <p class="advhelp">Ketuk tanah untuk berjalan dan ketuk penduduk bertanda ❗ untuk bicara.<span class="kbhint"> Di komputer: panah atau WASD, lalu Enter untuk bicara.</span> Naiki tangga batu ke portal ungu di atas untuk menuju Istana IELTS.</p>
+    <div class="advbar">${ENT.map((a, i) => `<button class="btn sm" data-a="goarea" data-i="${i}">${forestIcon(forestAreaIcon(a.id), 'fui-inline')} ${a.name}</button>`).join('')}</div>
+    <p class="advhelp">Ketuk tanah untuk berjalan dan ketuk penduduk bertanda ! untuk bicara.<span class="kbhint"> Di komputer: panah atau WASD, lalu Enter untuk bicara.</span> Naiki tangga batu ke portal ungu di atas untuk menuju Istana IELTS.</p>
     <div class="advlist">${cards}</div>`;
   app.innerHTML = `<div class="wrap">${scene}${compact ? '' : more}</div>`;
   document.documentElement.classList.toggle('adv-full', compact);
@@ -2302,10 +2326,10 @@ function renderOverlay() {
 }
 function doorHTML() {
   const e = DOOR;
-  return `<div class="encpanel dlg" role="dialog" aria-label="Portal ke Istana IELTS"><div class="enchead"><div class="dlgav">${e.npc.e}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${e.e} ${e.name}</div></div></div>
+  return `<div class="encpanel dlg" role="dialog" aria-label="Portal ke Istana IELTS"><div class="enchead"><div class="dlgav">${forestIcon('portal')}</div><div><div class="dlgname">${e.npc.n}</div><div class="dlgsub">${forestIcon('castle', 'fui-inline')} ${e.name}</div></div></div>
     <div class="dlglines">${e.say.map(l => `<div class="dlgline"><div class="en">${l[0]}</div><div class="id">${l[1]}</div></div>`).join('')}</div>
     <div class="dlgstat">${storyLocked() && remainingAreas().length ? 'Istana masih tersegel. Masih ada ' + remainingAreas().length + ' area yang harus ditolong: ' + remainingAreas().join(', ') + '.' : 'Tujuan: Istana IELTS, tempat ujian Listening, Reading, Writing, dan Speaking.'}</div>
-    <div class="dlgacts">${storyLocked() && remainingAreas().length ? '' : '<button class="acc" data-a="accept">Terima: Masuk ke Istana IELTS</button>'}<button class="ign" data-a="ignore">${storyLocked() && remainingAreas().length ? 'Tutup' : 'Abaikan'}</button></div></div>`;
+    <div class="dlgacts">${storyLocked() && remainingAreas().length ? '' : `<button class="acc" data-a="accept">${forestIcon('castle', 'fui-inline')} Masuk ke Istana IELTS</button>`}<button class="ign" data-a="ignore">${storyLocked() && remainingAreas().length ? 'Tutup' : 'Abaikan'}</button></div></div>`;
 }
 function dlgHTML() {
   if (S.map === 'gua') return caveDlgHTML();
@@ -2316,13 +2340,14 @@ function dlgHTML() {
   if (S.map === 'waktu') return wktDlgHTML();
   if (ADV.dlg === AREAS.length) return doorHTML();
   const i = ADV.dlg, a = AREAS[i], st = areaStats(a), sg = suggest(i);
-  const modes = ['cards', 'quiz', 'listen', 'type', 'match'].map(k => `<button data-a="mode" data-m="${k}">${MODES[k].e} ${MODES[k].t}</button>`).join('');
-  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${a.npc.n}"><div class="enchead"><div class="dlgav">${npcAv(a, a.npc.e)}</div><div><div class="dlgname">${a.npc.n}</div><div class="dlgsub">${a.e} ${a.name}</div></div></div>
+  const modeIcons = { cards: 'quest', quiz: 'target', listen: 'message', type: 'map', match: 'forest' };
+  const modes = ['cards', 'quiz', 'listen', 'type', 'match'].map(k => `<button data-a="mode" data-m="${k}">${forestIcon(modeIcons[k], 'fui-inline')} ${MODES[k].t}</button>`).join('');
+  return `<div class="encpanel dlg" role="dialog" aria-label="Dialog ${a.npc.n}"><div class="enchead"><div class="dlgav">${npcAv(a, a.npc.e)}</div><div><div class="dlgname">${a.npc.n}</div><div class="dlgsub">${forestIcon(forestAreaIcon(a.id), 'fui-inline')} ${a.name}</div></div></div>
     <div class="dlglines">${(areaDone(a.id) ? THANKS[a.id] : a.say).map(l => `<div class="dlgline"><div class="en">${l[0]}</div><div class="id">${l[1]}</div></div>`).join('')}</div>
-    <div class="dlgstat">${areaDone(a.id) ? '✓ ' + a.name + ' selamat. ' : a.name + ': '}Kata dipelajari ${st.seen}/${st.n}. Dikuasai ${st.mast}/${st.n} (butuh ${MAST_B} jawaban benar bersih per kata).${st.mast >= Math.ceil(st.n * .8) ? ' 🏅 Pakar' : ''}</div>
-    <div class="dlgacts"><button class="acc" data-a="accept">${a.id === 'portal' ? '🔮 Masuk ke Gua Portal' : a.id === 'desa' ? '🏡 Masuk ke Desa Sapaan' : a.id === 'pasar' ? '🍲 Masuk ke Pasar Rasa' : a.id === 'hutan' ? '🌲 Masuk ke Hutan Satwa' : a.id === 'kota' ? '🚪 Masuk ke Gerbang Kota' : a.id === 'menara' ? '⏳ Masuk ke Menara Waktu' : 'Terima: ' + MODES[sg].t}</button><button class="ign" data-a="ignore">Abaikan</button></div>
+    <div class="dlgstat">${areaDone(a.id) ? '✓ ' + a.name + ' selamat. ' : a.name + ': '}Kata dipelajari ${st.seen}/${st.n}. Dikuasai ${st.mast}/${st.n} (butuh ${MAST_B} jawaban benar bersih per kata).${st.mast >= Math.ceil(st.n * .8) ? ' Pakar' : ''}</div>
+    <div class="dlgacts"><button class="acc" data-a="accept">${a.id === 'portal' ? forestIcon('cave', 'fui-inline') + ' Masuk ke Gua Portal' : a.id === 'desa' ? forestIcon('village', 'fui-inline') + ' Masuk ke Desa Sapaan' : a.id === 'pasar' ? forestIcon('market', 'fui-inline') + ' Masuk ke Pasar Rasa' : a.id === 'hutan' ? forestIcon('forest', 'fui-inline') + ' Masuk ke Hutan Satwa' : a.id === 'kota' ? forestIcon('city', 'fui-inline') + ' Masuk ke Gerbang Kota' : a.id === 'menara' ? forestIcon('clock', 'fui-inline') + ' Masuk ke Menara Waktu' : forestIcon(modeIcons[sg], 'fui-inline') + ' Terima: ' + MODES[sg].t}</button><button class="ign" data-a="ignore">Abaikan</button></div>
     <div class="dlgmore"><button data-a="more">${ADV.more ? 'Sembunyikan misi lain' : 'Pilih misi lain'}</button>${ADV.more ? modes : ''}${areaDone(a.id) ? '<button data-a="review">🔁 Ulangi kata yang belum dikuasai</button>' : ''}
-      ${a.id === 'portal' ? `<button data-a="portalch">🔮 Tantangan Portal (15 kata campuran)</button><button data-a="gotoielts">🏰 Pergi ke Istana IELTS</button>` : ''}</div></div>`;
+      ${a.id === 'portal' ? `<button data-a="portalch">${forestIcon('portal', 'fui-inline')} Tantangan Portal (15 kata campuran)</button><button data-a="gotoielts">${forestIcon('castle', 'fui-inline')} Pergi ke Istana IELTS</button>` : ''}</div></div>`;
 }
 function panelHTML(p) {
   const head = t => `<div class="mpanel" role="dialog" aria-label="${t}"><div class="mhead"><h3>${t}</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody">`;
@@ -2343,23 +2368,23 @@ function panelHTML(p) {
     const tot = stats(), a = AREAS[ADV.bag];
     const ids = WORDS.map((w, i) => i).filter(i => a.catIdx.includes(WORDS[i][0]));
     const got = ids.filter(i => S.p[i] && S.p[i].r + S.p[i].w > 0);
-    const items = got.map(i => { const b = S.p[i].b; return `<button class="item" data-a="say" data-w="${i}"><span>${CATS[WORDS[i][0]][1]}</span><b>${WORDS[i][1]}</b><small>${WORDS[i][2]}</small><i>${'●'.repeat(b)}${'○'.repeat(5 - b)}</i></button>`; }).join('');
+    const items = got.map(i => { const b = S.p[i].b; return `<button class="item" data-a="say" data-w="${i}"><span>${categoryIcon(WORDS[i][0])}</span><b>${WORDS[i][1]}</b><small>${WORDS[i][2]}</small><i>${'●'.repeat(b)}${'○'.repeat(5 - b)}</i></button>`; }).join('');
     const locked = ids.length - got.length;
     body = head('Tas Kata') + gearHTML() + `<p class="sub" style="margin-bottom:10px">Terkumpul ${tot.seen} dari ${tot.n} kata. Ketuk kata untuk mendengar ucapannya.</p>
-      <div class="tabs">${AREAS.map((x, k) => `<button class="tabb ${k === ADV.bag ? 'on' : ''}" data-a="bagtab" data-i="${k}" aria-label="${x.name}">${x.e}</button>`).join('')}</div>
+      <div class="tabs">${AREAS.map((x, k) => `<button class="tabb ${k === ADV.bag ? 'on' : ''}" data-a="bagtab" data-i="${k}" aria-label="${x.name}">${forestIcon(forestAreaIcon(x.id), 'fui-inline')}</button>`).join('')}</div>
       <h4 style="margin-bottom:8px">${a.name}: ${got.length}/${ids.length}</h4>
       <div class="items">${items}${locked ? `<div class="item lock"><span>❔</span><small>${locked} kata belum ditemukan</small></div>` : ''}</div>
-      <div class="actions"><button class="btn sm" data-a="start" data-m="dict">📖 Buka kamus lengkap</button></div>`;
+      <div class="actions"><button class="btn sm" data-a="start" data-m="dict">${commonIcon('book', 'cui-inline')} Buka kamus lengkap</button></div>`;
   } else if (p === 'msg') {
     const wi = wotd(), w = WORDS[wi], st = stats();
-    body = head('Pesan') + `<div class="msg"><div><h4>Kata hari ini</h4><div class="big" style="font-size:1.8rem">${w[1]}</div><span class="sub">${w[2]}</span></div><button class="speak" data-a="say" data-w="${wi}" aria-label="Dengarkan">🔊</button></div>
+    body = head('Pesan') + `<div class="msg"><div><h4>Kata hari ini</h4><div class="big" style="font-size:1.8rem">${w[1]}</div><span class="sub">${w[2]}</span></div><button class="speak" data-a="say" data-w="${wi}" aria-label="Dengarkan">${commonIcon('speaker', 'cui-inline')}</button></div>
       <div class="msg"><div><h4>Pesan dari Hoot</h4><span>${owlMsg(st)}</span></div><span class="owl">${owlGraphic()}</span></div>
       <div class="msg"><div><h4>Petunjuk</h4><span>Bicara dengan penduduk bertanda ❗ untuk menerima misi. Misi memakai kata dari wilayah mereka.</span></div></div>`;
   } else if (p === 'quest') {
     body = head('Daftar Misi') + questList().map(q => `<div class="qrow ${q.done ? 'done' : ''}"><div><b>${q.t}</b><br><small class="sub">${q.d}</small></div>${q.i != null && !q.done ? `<button class="btn sm" data-a="goquest" data-i="${q.i}">Pergi</button>` : '<span></span>'}<div class="bar mini"><span class="m" style="width:${Math.min(100, q.p * 100)}%"></span></div></div>`).join('');
   } else {
     body = head('Opsi') + HOST.menuBtn() + CM().E.diffHTML() + storyHTML() + ctrlPanelHTML(S) + fxPanelHTML(S) + qtPanelHTML(S) + storyReplayHTML() + pwaPanelHTML() + privacyHTML() + fsPanelHTML(S) + `
-      <h4 style="margin:16px 0 8px">Suara efek</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="sound">${S.sound ? '🔊 Nyala' : '🔇 Mati'}</button></div>
+      <h4 style="margin:16px 0 8px">Suara efek</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="sound">${commonIcon('speaker', 'cui-inline')} ${S.sound ? 'Nyala' : 'Mati'}</button></div>
       <h4 style="margin:16px 0 8px">Progres</h4><div class="actions" style="margin-top:0"><button class="btn sm coral" data-a="reset">Reset progres</button></div>`;
   }
   return body + '</div></div>';
@@ -2621,7 +2646,7 @@ function frame(ts) {
   const ab = $('#act');
   if (ab) {
     ab.classList.toggle('ready', near >= 0 && !busy);
-    if (near >= 0 && near !== ADV.near) { const u = entUI(M, near); ab.querySelector('.actic').textContent = u[0]; ab.querySelector('.actlb').textContent = u[1]; ab.querySelector('.actnm').textContent = u[2]; }
+    if (near >= 0 && near !== ADV.near) { const u = entUI(M, near); ab.querySelector('.actic').innerHTML = u[0]; ab.querySelector('.actlb').textContent = u[1]; ab.querySelector('.actnm').textContent = u[2]; }
   }
   if (near !== ADV.near) { ADV.near = near; const t = $('#talk'); if (t) { t.hidden = near < 0 || busy; if (near >= 0) t.textContent = entUI(M, near)[3]; } }
   updateCam(ADV, Math.min(.5, raw));
@@ -2746,7 +2771,7 @@ const HOST = {
   award: (n, quiet) => { if (n > 0) { touchDay(); S.xp += n; save(); if (!quiet) toast('+' + n + ' XP'); } },
   vocabQ: c => vocabQ(c),
   enterFs: m => enterFs(m), exitFs: () => exitFs(), fsPanelHTML: s => fsPanelHTML(s),
-  titleOn: () => TITLE.on, showTitle: () => TITLE.show(), pauseMenu: c => PM.open(c), menuBtn: () => TITLE.on ? '' : '<div class="actions" style="margin:0 0 6px"><button class="btn" data-a="totitle">🏠 Menu depan</button></div>'
+  titleOn: () => TITLE.on, showTitle: () => TITLE.show(), pauseMenu: c => PM.open(c), menuBtn: () => TITLE.on ? '' : `<div class="actions" style="margin:0 0 6px"><button class="btn" data-a="totitle">${commonIcon('home', 'cui-inline')} Menu depan</button></div>`
 };
 function showIELTS() { app.innerHTML = ''; app.hidden = true; xapp.hidden = false; IX.enter(); }
 function showHoot() { IX.leave(); xapp.hidden = true; app.hidden = false; view = 'home'; render(); }
