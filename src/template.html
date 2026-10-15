@@ -836,7 +836,10 @@ const TUNE = {            // semua angka penyetelan ada di sini
   guess: { santai: .4, petualang: .6, pendekar: .8 },          /* peluang monster menebak benar saat pemain terlambat */
   gemPerKill: 1, winGems: 5, costHeart: 3, costFull: 8, costHint: 1, winSeen: .6, winMast: .2
 };
+const MONSTER_BLINK_URI = { 'Gumpal Kecil': 'data:image/webp;base64,__GUMPAL_BLINK_B64__', 'Lendir Kecil': 'data:image/webp;base64,__LENDIR_BLINK_B64__', 'Semak Kecil': 'data:image/webp;base64,__SEMAK_BLINK_B64__', 'Gumpal Salam': 'data:image/webp;base64,__GUMPAL_SALAM_BLINK_B64__', 'Lendir Kuali': 'data:image/webp;base64,__LENDIR_KUALI_BLINK_B64__', 'Semak Gigit': 'data:image/webp;base64,__SEMAK_GIGIT_BLINK_B64__', 'Bayangan Kecil': 'data:image/webp;base64,__BAYANGAN_KECIL_BLINK_B64__', 'Bayangan Gerbang': 'data:image/webp;base64,__BAYANGAN_GERBANG_BLINK_B64__', 'Jam Pasir Kecil': 'data:image/webp;base64,__JAM_PASIR_KECIL_BLINK_B64__', 'Jam Pasir Liar': 'data:image/webp;base64,__JAM_PASIR_LIAR_BLINK_B64__', 'Hantu Portal': 'data:image/webp;base64,__HANTU_PORTAL_BLINK_B64__', 'Kristal Liar': 'data:image/webp;base64,__KRISTAL_LIAR_BLINK_B64__' };
+const MONSTER_WALK_URI = { 'Gumpal Kecil': 'data:image/webp;base64,__GUMPAL_SALAM_WALK_B64__', 'Gumpal Salam': 'data:image/webp;base64,__GUMPAL_SALAM_WALK_B64__', 'Lendir Kecil': 'data:image/webp;base64,__LENDIR_KUALI_WALK_B64__', 'Lendir Kuali': 'data:image/webp;base64,__LENDIR_KUALI_WALK_B64__', 'Semak Kecil': 'data:image/webp;base64,__SEMAK_GIGIT_WALK_B64__', 'Semak Gigit': 'data:image/webp;base64,__SEMAK_GIGIT_WALK_B64__', 'Bayangan Kecil': 'data:image/webp;base64,__BAYANGAN_GERBANG_WALK_B64__', 'Bayangan Gerbang': 'data:image/webp;base64,__BAYANGAN_GERBANG_WALK_B64__', 'Jam Pasir Kecil': 'data:image/webp;base64,__JAM_PASIR_LIAR_WALK_B64__', 'Jam Pasir Liar': 'data:image/webp;base64,__JAM_PASIR_LIAR_WALK_B64__', 'Hantu Portal': 'data:image/webp;base64,__HANTU_PORTAL_WALK_B64__', 'Kristal Liar': 'data:image/webp;base64,__KRISTAL_LIAR_WALK_B64__' };
 function monBody(k) {
+  if (MONSTER_BLINK_URI[k.n]) return `<svg class="gumpal-blink" x="-24" y="-56" width="48" height="56" viewBox="0 0 192 256" preserveAspectRatio="none" overflow="hidden"><image class="gumpal-blink-sheet gumpal-idle-sheet" href="${MONSTER_BLINK_URI[k.n]}" x="0" y="0" width="768" height="256" preserveAspectRatio="none"/>${MONSTER_WALK_URI[k.n] ? `<image class="gumpal-walk-sheet" href="${MONSTER_WALK_URI[k.n]}" x="0" y="0" width="1152" height="256" preserveAspectRatio="none"/>` : ''}</svg>`;
   return `<path d="M-24 0 Q-27 -36 0 -42 Q27 -36 24 0 Q12 5 0 3 Q-12 5 -24 0 Z" fill="${k.c}" stroke="${k.d}" stroke-width="3.5" stroke-linejoin="round"/>
     <path d="M-15 -38 L-10 -51 L-4 -41 Z M15 -38 L10 -51 L4 -41 Z" fill="${k.d}" stroke="${k.d}" stroke-width="2" stroke-linejoin="round"/>
     <ellipse cx="-9" cy="-22" rx="7" ry="8.5" fill="#fff" stroke="${k.d}" stroke-width="2"/><ellipse cx="9" cy="-22" rx="7" ry="8.5" fill="#fff" stroke="${k.d}" stroke-width="2"/>
@@ -867,15 +870,22 @@ function makeEngine(cfg) {
   const inMain = (x, y, n = 1) => { const reg = mainRegion(), { C, NX, NY } = GN, ci = Math.round(x / C), cj = Math.round(y / C); for (let dj = -n; dj <= n; dj++) for (let di = -n; di <= n; di++) { const i = ci + di, j = cj + dj; if (i >= 0 && j >= 0 && i < NX && j < NY && reg[j * NX + i]) return true; } return false; };   /* 3x3 kotak: pemain yang menempel di tembok tetap dianggap di jalan */
   function nearestMain(x, y) { const reg = mainRegion(), { C, NX, NY } = GN; let best = [cfg.start[0], cfg.start[1]], bd = 1e9; for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) if (reg[j * NX + i]) { const d = Math.hypot(i * C - x, j * C - y); if (d < bd) { bd = d; best = [i * C, j * C]; } } return best; }
   E.inMain = inMain;
-  function randPos(minFar, others) {
+  const entityClear = (x, y, self, others, radius = 42) => !(others || []).some(o => o !== self && !o.dead && !o.gone && Math.hypot(x - o.x, y - o.y) < radius + 34 * (o.sc || 1) + 18);
+  function randPos(minFar, others, radius = 42) {
     let best = null, bs = -1, found = 0;
-    for (let k = 0; k < 500 && found < 40; k++) {
+    for (let k = 0; k < 900 && found < 40; k++) {
       const x = rnd(B[0] + 30, B[1] - 30), y = rnd(B[2] + 20, B[3] - 20);
-      if (!free(x, y) || !safe(x, y) || !inMain(x, y) || Math.hypot(x - A_.px, y - A_.py) <= minFar) continue;
+      if (!free(x, y, 8) || !safe(x, y) || !inMain(x, y) || !entityClear(x, y, null, others, radius) || Math.hypot(x - A_.px, y - A_.py) <= minFar) continue;
       found++; const sc = others && others.length ? Math.min(...others.map(o => Math.hypot(x - o.x, y - o.y))) : 1;
       if (sc > bs) { bs = sc; best = [x, y]; } if (sc >= TUNE.spread * 1.6) break;
     }
-    return best || [cfg.fallback[0], cfg.fallback[1]];
+    if (best) return best;
+    /* bila area sempit, jarak dari pemain boleh dilonggarkan; jarak antarmonster tetap wajib */
+    for (let k = 0; k < 900; k++) {
+      const x = rnd(B[0] + 30, B[1] - 30), y = rnd(B[2] + 20, B[3] - 20);
+      if (free(x, y, 8) && safe(x, y) && inMain(x, y) && entityClear(x, y, null, others, radius)) return [x, y];
+    }
+    return [cfg.fallback[0], cfg.fallback[1]];
   }
   const wordMode = () => cfg.ai != null;
   const groupsLeft = () => ensureDeal(cfg.ai).roster.filter(g => g.some(i => !isSeen(i)));
@@ -898,7 +908,7 @@ function makeEngine(cfg) {
   const shAlive = () => E.shooters.filter(s => !s.dead && !s.gone).length;
   const shOn = () => wordMode() && !st().noshoot && !st().nomon;
   function spawnShooter(idx, reuse) {
-    const [x, y] = randPos(260, E.mons.concat(E.shooters)), k = cfg.kinds.find(q => !q.boss) || cfg.kinds[0], s = reuse || { id: 's' + idx };
+    const [x, y] = randPos(260, E.mons.concat(E.shooters), 44), k = cfg.kinds.find(q => !q.boss) || cfg.kinds[0], s = reuse || { id: 's' + idx };
     Object.assign(s, { x, y, hx: x, hy: y, tx: x, ty: y, wait: rnd(0, 2), face: 1, hp: 3, mhp: 3, cd: rnd(1.2, 2.6), wind: 0, flash: 0, recoil: 0, dead: false, gone: false, respawn: 0, kind: k, shooter: true });
     if (!reuse) E.shooters.push(s); return s;
   }
@@ -940,12 +950,13 @@ function makeEngine(cfg) {
   function stepShooters(dt, now) {
     const v = df().v;
     E.shooters.forEach(s => {
+      s.walking = false;
       if (s.gone) return;
       if (s.dead) { if (now > s.respawn) { if (shotSt().killed + shAlive() < shQuota() && shAlive() < shCap()) { spawnShooter(0, s); E.needsRebuild = true; } else if (shotSt().killed >= shQuota()) s.gone = true; } return; }
       const dx = A_.px - s.x, dy = A_.py - s.y, d = Math.hypot(dx, dy); s.face = dx >= 0 ? 1 : -1; s.cd -= dt; if (s.recoil > 0) s.recoil -= dt; if (s.flash > 0) s.flash -= dt;
       s.wait -= dt; const td = Math.hypot(s.tx - s.x, s.ty - s.y), sp = Math.max(36, v * .35);
       if (s.hold) { /* penembak ditahan (dipakai uji) */ } else if (td < 8 || s.wait <= 0) { for (let k = 0; k < 12; k++) { const a = Math.random() * 6.283, r = rnd(30, 110), x = s.hx + Math.cos(a) * r, y = s.hy + Math.sin(a) * r; if (free(x, y) && inMain(x, y)) { s.tx = x; s.ty = y; break; } } s.wait = rnd(2, 4); }
-      else if (s.wind <= 0) { const nx = s.x + (s.tx - s.x) / td * sp * dt, ny = s.y + (s.ty - s.y) / td * sp * dt; if (free(nx, ny)) { s.x = nx; s.y = ny; } else s.wait = 0; }
+      else if (s.wind <= 0) { const nx = s.x + (s.tx - s.x) / td * sp * dt, ny = s.y + (s.ty - s.y) / td * sp * dt; if (free(nx, ny, 8) && entityClear(nx, ny, s, E.mons.concat(E.shooters), 44)) { s.x = nx; s.y = ny; s.walking = true; } else s.wait = 0; }
       if (s.wind > 0) { s.wind -= dt; if (s.wind <= 0) fireEnemy(s); }
       else if (d < 340 && s.cd <= 0 && E.invuln <= 0) { s.wind = .45; }   /* kilat merah sesaat memberi aba-aba */
     });
@@ -968,6 +979,7 @@ function makeEngine(cfg) {
       if (s.dead || s.gone) { g.setAttribute('display', 'none'); return; }
       g.removeAttribute('display'); g.setAttribute('transform', `translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`);
       const f = $('#shf-' + s.id); if (f) f.setAttribute('transform', `scale(${s.face} 1)`);
+      const inner = g.querySelector('.mon'); if (inner) inner.classList.toggle('walk', !!s.walking);
       const w = $('#shw-' + s.id); if (w) w.setAttribute('transform', `translate(${20 - (s.recoil > 0 ? 7 : 0)} -18)`);
       const b = $('#shb-' + s.id); if (b) b.setAttribute('width', (34 * Math.max(0, s.hp) / s.mhp).toFixed(1));
       const r = $('#shr-' + s.id); if (r) r.setAttribute('opacity', s.wind > 0 ? (.35 + .65 * Math.abs(Math.sin(now / 55))).toFixed(2) : '0');
@@ -1026,7 +1038,7 @@ function makeEngine(cfg) {
   E.spawn = () => {
     const kinds = shuffle(cfg.kinds.filter(k => !(wordMode() && k.boss) && !(cfg.cleared && cfg.cleared(k)))); E.mons = [];   /* area yang sudah selesai tidak punya monster lagi */
     const nMon = wordMode() ? (st().nomon ? 0 : Math.min(Math.max(3, df().n), groupsLeft().length)) : df().n;   /* di area dunia dalam monster selalu ada, selama masih ada kata */
-    for (let i = 0; i < nMon && kinds.length; i++) { const [x, y] = randPos(220, E.mons); const m = { id: i, x, y, hx: x, hy: y, tx: x, ty: y, wait: rnd(0, 2), face: 1, dead: false, respawn: 0, kind: kinds[i % kinds.length] }; E.mons.push(m); if (wordMode()) arm(m); }
+    for (let i = 0; i < nMon && kinds.length; i++) { const [x, y] = randPos(220, E.mons, 44); const m = { id: i, x, y, hx: x, hy: y, tx: x, ty: y, wait: rnd(0, 2), face: 1, dead: false, respawn: 0, kind: kinds[i % kinds.length] }; E.mons.push(m); if (wordMode()) arm(m); }
     E.items = [];
     (cfg.noPickups ? [] : [['gem', 5], ['heart', 3]]).forEach(([type, n]) => { for (let i = 0; i < n; i++) { let x, y, k = 0; do { x = rnd(B[0] + 40, B[1] - 40); y = rnd(B[2] + 30, B[3] - 30); k++; } while ((!free(x, y, 10) || Math.hypot(x - A_.px, y - A_.py) < 90) && k < 300); E.items.push({ id: E.items.length, type, x, y, got: false, back: 0 }); } });
     E.shooters = []; E.bullets = []; E.pbullets = [];
@@ -1091,7 +1103,7 @@ function makeEngine(cfg) {
   function knock(m) {
     const dx = m.x - A_.px, dy = m.y - A_.py, d = Math.hypot(dx, dy) || 1;
     let nx = m.x + dx / d * 150, ny = m.y + dy / d * 150;
-    if (!free(nx, ny) || !safe(nx, ny)) [nx, ny] = randPos(260);
+    if (!free(nx, ny, 8) || !safe(nx, ny) || !entityClear(nx, ny, m, E.mons.concat(E.shooters), 44)) [nx, ny] = randPos(260, E.mons.concat(E.shooters), 44);
     m.x = m.hx = m.tx = nx; m.y = m.hy = m.ty = ny; E.invuln = TUNE.invHit;
   }
   function closeEnc() {
@@ -1229,8 +1241,9 @@ function makeEngine(cfg) {
 
   /* --- gerak monster tiap frame --- */
   function step(m, dt, v, now) {
+    m.walking = false;
     if (m.gone || m.engaged || m.hold) return;   /* dipancing peluru: diam sampai tantangan dimulai (hold: hanya uji) */
-    if (m.dead) { if (now > m.respawn) { if (wordMode() && !arm(m)) return; const [x, y] = randPos(240, E.mons.filter(o => !o.dead && o !== m)); m.x = m.hx = m.tx = x; m.y = m.hy = m.ty = y; m.dead = false; const g = $('#mon-' + m.id); if (g) g.removeAttribute('display'); } return; }
+    if (m.dead) { if (now > m.respawn) { if (wordMode() && !arm(m)) return; const [x, y] = randPos(240, E.mons.concat(E.shooters).filter(o => !o.dead && o !== m), 44); m.x = m.hx = m.tx = x; m.y = m.hy = m.ty = y; m.dead = false; const g = $('#mon-' + m.id); if (g) g.removeAttribute('display'); } return; }
     const dx = A_.px - m.x, dy = A_.py - m.y, d = Math.hypot(dx, dy); let vx = 0, vy = 0, sp = v * .55;
     if (E.invuln <= 0 && d < TUNE.aggro) { vx = dx / d; vy = dy / d; sp = v; }
     else {
@@ -1238,7 +1251,7 @@ function makeEngine(cfg) {
       if (td < 8 || m.wait <= 0) { for (let k = 0; k < 12; k++) { const a = Math.random() * 6.283, r = rnd(40, 150), x = m.hx + Math.cos(a) * r, y = m.hy + Math.sin(a) * r; if (free(x, y) && safe(x, y) && inMain(x, y)) { m.tx = x; m.ty = y; break; } } m.wait = rnd(2, 5); }
       else { vx = (m.tx - m.x) / td; vy = (m.ty - m.y) / td; }
     }
-    if (vx || vy) { const nx = m.x + vx * sp * dt, ny = m.y + vy * sp * dt; if (free(nx, ny) && safe(nx, ny)) { m.x = nx; m.y = ny; if (Math.abs(vx) > .1) m.face = vx > 0 ? 1 : -1; } else m.wait = 0; }
+    if (vx || vy) { const nx = m.x + vx * sp * dt, ny = m.y + vy * sp * dt; if (free(nx, ny, 8) && safe(nx, ny) && entityClear(nx, ny, m, E.mons.concat(E.shooters), 44)) { m.x = nx; m.y = ny; m.walking = true; if (Math.abs(vx) > .1) m.face = vx > 0 ? 1 : -1; } else m.wait = 0; }
     if (d < TUNE.contact * (m.sc || 1) && E.invuln <= 0 && !A_.enc) startEnc(m);
   }
   E.update = (dt, busy, rdt) => {
@@ -1270,7 +1283,7 @@ function makeEngine(cfg) {
     if (E.needsRebuild && !A_.enc) { E.needsRebuild = false; E.refreshLayers(); }
     E.mons.forEach(m => {
       if (m.dead) return; const g = $('#mon-' + m.id), f = $('#mf-' + m.id);
-      if (m.angry > 0) m.angry -= dt; const jx = m.angry > 0 ? (Math.random() - .5) * 8 : 0; if (g) g.setAttribute('transform', `translate(${(m.x + jx).toFixed(1)} ${m.y.toFixed(1)})`); if (f) f.setAttribute('transform', `scale(${m.face * (m.sc || 1)} ${m.sc || 1})`);
+      if (m.angry > 0) m.angry -= dt; const jx = m.angry > 0 ? (Math.random() - .5) * 8 : 0; if (g) g.setAttribute('transform', `translate(${(m.x + jx).toFixed(1)} ${m.y.toFixed(1)})`); if (f) f.setAttribute('transform', `scale(${m.face * (m.sc || 1)} ${m.sc || 1})`); const inner = g && g.querySelector('.mon'); if (inner) inner.classList.toggle('walk', !!m.walking);
     });
   };
   E.key = e => {

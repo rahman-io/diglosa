@@ -113,6 +113,25 @@ tpl=tpl.replace('__HEROWALK_B64__',base64.b64encode(open(os.path.join(SRC,'hero-
 tpl=tpl.replace('__HEROWALKBLINK_B64__',base64.b64encode(open(os.path.join(SRC,'hero-walk-blink.webp'),'rb').read()).decode('ascii'))
 tpl=tpl.replace('__HEROSHOOT_B64__',base64.b64encode(open(os.path.join(SRC,'hero-shoot.webp'),'rb').read()).decode('ascii'))
 tpl=tpl.replace('__WEAPONS_B64__',base64.b64encode(open(os.path.join(SRC,'weapons.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__GUMPAL_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'gumpal-kecil-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__LENDIR_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'lendir-kecil-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__SEMAK_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'semak-kecil-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__GUMPAL_SALAM_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'gumpal-salam-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__LENDIR_KUALI_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'lendir-kuali-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__SEMAK_GIGIT_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'semak-gigit-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__BAYANGAN_KECIL_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'bayangan-kecil-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__BAYANGAN_GERBANG_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'bayangan-gerbang-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__JAM_PASIR_KECIL_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'jam-pasir-kecil-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__JAM_PASIR_LIAR_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'jam-pasir-liar-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__GUMPAL_SALAM_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'gumpal-salam-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__LENDIR_KUALI_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'lendir-kuali-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__SEMAK_GIGIT_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'semak-gigit-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__BAYANGAN_GERBANG_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'bayangan-gerbang-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__JAM_PASIR_LIAR_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'jam-pasir-liar-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__HANTU_PORTAL_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'hantu-portal-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__KRISTAL_LIAR_BLINK_B64__',base64.b64encode(open(os.path.join(SRC,'kristal-liar-blink.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__HANTU_PORTAL_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'hantu-portal-walk.webp'),'rb').read()).decode('ascii'))
+tpl=tpl.replace('__KRISTAL_LIAR_WALK_B64__',base64.b64encode(open(os.path.join(SRC,'kristal-liar-walk.webp'),'rb').read()).decode('ascii'))
 import json, glob   # sprite tokoh beranimasi (src/npc, dibuat oleh tools/make_npc.py): satu tabel JS berisi ukuran dan data gambar
 _spr = {}
 for _jf in sorted(glob.glob(os.path.join(SRC, 'npc', '*.json'))):
@@ -186,7 +205,7 @@ import os as _os
 _site = _os.environ.get('SITE_URL', '').rstrip('/')
 _tags = '' if not _site else ('<link rel="canonical" href="%s/"><meta property="og:url" content="%s/"><meta property="og:image" content="%s/preview.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="%s/preview.jpg">' % ((_site,) * 4))
 out = out.replace('<!--__SEO_URL__-->', _tags)
-assert '__SEO_URL__' not in out and '__WORDS__' not in out and '__CATS__' not in out and '__IELTS' not in out and '__FOREST_B64__' not in out and '__ISTANA_B64__' not in out and '__HEROSHOOT_B64__' not in out and '__WEAPONS_B64__' not in out and '__HERO_B64__' not in out and '__CAVE_B64__' not in out and '__VILLAGE_B64__' not in out and '__MARKET_B64__' not in out and '__SATWA_B64__' not in out and '__KOTA_B64__' not in out and '__WAKTU_B64__' not in out and '__TITLEBG_B64__' not in out and '__HEROHEAD_B64__' not in out and '__HEROBLINK_B64__' not in out and '__HEROWALK_B64__' not in out and '__HEROWALKBLINK_B64__' not in out
+assert '__SEO_URL__' not in out and '__WORDS__' not in out and '__CATS__' not in out and '__IELTS' not in out and '__FOREST_B64__' not in out and '__ISTANA_B64__' not in out and '__HEROSHOOT_B64__' not in out and '__WEAPONS_B64__' not in out and '__GUMPAL_BLINK_B64__' not in out and '__LENDIR_BLINK_B64__' not in out and '__SEMAK_BLINK_B64__' not in out and '__GUMPAL_SALAM_BLINK_B64__' not in out and '__LENDIR_KUALI_BLINK_B64__' not in out and '__SEMAK_GIGIT_BLINK_B64__' not in out and '__BAYANGAN_KECIL_BLINK_B64__' not in out and '__BAYANGAN_GERBANG_BLINK_B64__' not in out and '__JAM_PASIR_KECIL_BLINK_B64__' not in out and '__JAM_PASIR_LIAR_BLINK_B64__' not in out and '__HANTU_PORTAL_BLINK_B64__' not in out and '__KRISTAL_LIAR_BLINK_B64__' not in out and '__GUMPAL_SALAM_WALK_B64__' not in out and '__LENDIR_KUALI_WALK_B64__' not in out and '__SEMAK_GIGIT_WALK_B64__' not in out and '__BAYANGAN_GERBANG_WALK_B64__' not in out and '__JAM_PASIR_LIAR_WALK_B64__' not in out and '__HANTU_PORTAL_WALK_B64__' not in out and '__KRISTAL_LIAR_WALK_B64__' not in out and '__HERO_B64__' not in out and '__CAVE_B64__' not in out and '__VILLAGE_B64__' not in out and '__MARKET_B64__' not in out and '__SATWA_B64__' not in out and '__KOTA_B64__' not in out and '__WAKTU_B64__' not in out and '__TITLEBG_B64__' not in out and '__HEROHEAD_B64__' not in out and '__HEROBLINK_B64__' not in out and '__HEROWALK_B64__' not in out and '__HEROWALKBLINK_B64__' not in out
 open(os.path.join(DIST,'diglosa.html'),'w',encoding='utf-8').write(out)
 shutil.copy(os.path.join(SRC,'preview.jpg'), os.path.join(DIST,'preview.jpg'))
 print('Selesai: %s (%d KB, %d kata)' % (os.path.join(DIST,'diglosa.html'), len(out)//1024, len(words)))

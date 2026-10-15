@@ -226,6 +226,11 @@ select.inp{font-size:1rem;padding:10px 14px}
 .alife:hover{filter:brightness(1.2)}
 .mon{animation:advsquash .8s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
 @keyframes advsquash{0%,100%{transform:scale(1,1)}50%{transform:scale(1.08,.9)}}
+.mon:has(.gumpal-blink){animation:none}
+.gumpal-walk-sheet{display:none}
+.mon.walk .gumpal-idle-sheet{display:none}
+.mon.walk .gumpal-walk-sheet{display:block;animation:monsterwalksheet .72s steps(1,end) infinite}
+@keyframes monsterwalksheet{0%{transform:translateX(0)}16%{transform:translateX(-192px)}33%{transform:translateX(-384px)}50%{transform:translateX(-576px)}66%{transform:translateX(-768px)}83%{transform:translateX(-960px)}100%{transform:translateX(0)}}
 .encpanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,620px);max-height:92%;overflow-y:auto;background:var(--parch);border:5px solid var(--wood2);border-radius:22px;box-shadow:0 8px 0 var(--wood3),0 16px 32px rgba(0,0,0,.5);padding:14px 16px;color:var(--ink)}
 @media (max-width:700px){.encpanel{position:fixed;width:calc(100% - 16px);max-height:90vh;z-index:75}}
 .enchead{display:flex;gap:12px;align-items:center}
@@ -438,6 +443,9 @@ select.inp{font-size:1rem;padding:10px 14px}
 @media (prefers-reduced-motion:reduce){.mist .mf{animation:none}}
 
 /* monster kata marah saat ditembak */
+@keyframes gumpalblink{0%,82%{transform:translateX(0)}84%{transform:translateX(-192px)}86%{transform:translateX(-384px)}88%{transform:translateX(-576px)}90%,100%{transform:translateX(0)}}
+.gumpal-blink-sheet{animation:gumpalblink 5.2s steps(1,end) infinite}
+@media (prefers-reduced-motion:reduce){.gumpal-blink-sheet{animation:none}}
 @keyframes mangry{0%{transform:scale(1)}25%{transform:scale(1.28,.86) rotate(-6deg)}50%{transform:scale(.92,1.2) rotate(6deg)}75%{transform:scale(1.2,.9) rotate(-4deg)}100%{transform:scale(1)}}
 #world .mon.angry{animation:mangry .65s ease-in-out;transform-box:fill-box;transform-origin:center bottom;filter:hue-rotate(-18deg) saturate(2.2) brightness(1.15)}
 
