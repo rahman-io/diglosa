@@ -1,0 +1,7 @@
+{
+  "name": "Diglosa",
+  "description": "Petualangan Kata - English A1 vocabulary adventure RPG and IELTS exam simulator with painted maps, interactive NPCs, boss duels, shooter mechanics, and full minigames.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || true; // Allow read for local sync validation
+    }
+
+    // VIP Purchases
+    match /vip_purchases/{purchaseId} {
+      allow read: if true; // Public read for license/email restoration lookups
+      allow create, update: if true; // Public create for checkout transactions
+    }
+
+    // B2B Licenses
+    match /b2b_licenses/{licenseId} {
+      allow read: if true; // Allow client to check B2B code validity
+      allow write: if false; // Only manageable server-side
+    }
+  }
+}

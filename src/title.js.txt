@@ -12,7 +12,7 @@ const TITLE_LOGO = `<svg class="t-logosvg" viewBox="0 30 420 170" role="img" ari
     <path d="M-5 7 L5 7 L0 16 Z" fill="#ffb02e" stroke="#5a2e0c" stroke-width="3" stroke-linejoin="round"/></g>
   <text x="210" y="168" text-anchor="middle" font-family="'Lilita One','Fredoka','Trebuchet MS',sans-serif" font-size="84" letter-spacing="2" fill="#fff7e0" stroke="#fff7e0" stroke-width="28" paint-order="stroke" stroke-linejoin="round">DIGLOSA</text>
   <text x="210" y="168" text-anchor="middle" font-family="'Lilita One','Fredoka','Trebuchet MS',sans-serif" font-size="84" letter-spacing="2" fill="url(#tL1)" stroke="#5a2e0c" stroke-width="14" paint-order="stroke" stroke-linejoin="round">DIGLOSA</text></svg>`;
-const T_ACTIONS = ['setdiff', 'setctrl', 'fsenter', 'fsexit', 'setautofs', 'sound', 'reset', 'say', 'buyheart', 'buyfull', 'closep', 'pwainstall', 'pwaremove'];
+const T_ACTIONS = ['setdiff', 'setctrl', 'fsenter', 'fsexit', 'setautofs', 'sound', 'reset', 'say', 'buyheart', 'buyfull', 'closep', 'pwainstall', 'pwaremove', 'infotab', 'openvip', 'viptab'];
 let tEl = null;
 const trophyHTML = () => {
   const rows = AREAS.map(a => { const s = areaStats(a), won = S.won[a.id], pct = won ? 100 : Math.min(100, Math.round(s.seen / s.n * 100));
@@ -50,7 +50,7 @@ Object.assign(TITLE, {
     return `<div class="t-stage"><img class="t-bg" src="${TITLE_BG}" alt="" draggable="false"><div class="t-sunglow"></div><div class="t-flies">${TITLE_FLIES}</div>${TITLE_HERO}
       <div class="t-top">${pill(forestHeart(true), `${S.hp}<small>/${S.maxhp}</small>`, 'gem', 'Isi nyawa')}${pill(forestGem(), S.gems, 'gem', 'Cara mendapat berlian')}${pill(commonIcon('crown', 'cui-inline'), `Lv ${lv.n}`, 'profile', 'Profil dan XP')}</div>
       <div class="t-side t-left">${sq('msg', forestIcon('message', 'fui-inline'), 'Pesan', unread ? '<i class="bdg">1</i>' : '')}${sq('trophy', commonIcon('crown', 'cui-inline'), 'Trofi')}</div>
-      <div class="t-side t-right">${sq('profile', heroHead(), 'Profil')}${sq('map', forestIcon('map', 'fui-inline'), 'Peta')}</div>
+      <div class="t-side t-right">${sq('profile', heroHead(), 'Profil')}${sq('map', forestIcon('map', 'fui-inline'), 'Peta')}${sq('info', commonIcon('book', 'cui-inline'), 'Info')}</div>
       <div class="t-logo">${TITLE_LOGO}<div class="t-sub">Petualangan Kata</div>${has ? `<div class="t-resume">Lv. ${String(lv.n).padStart(2, '0')} · ${where}${S.streak > 1 ? ' · ' + S.streak + ' hari' : ''}</div>` : ''}</div>
       <div class="t-bottom">
         <div class="t-brow"><div class="t-b"><button class="t-round t-opt" data-t="modal" data-p="opt" aria-label="Opsi"><span>${forestIcon('settings')}</span></button><span class="lb">Opsi</span></div>
@@ -66,7 +66,7 @@ Object.assign(TITLE, {
   },
   modalHTML(p) {
     if (p === 'pwa') return pwaHTML();
-    if (p === 'msg' || p === 'gem' || p === 'opt') return panelHTML(p);
+    if (p === 'msg' || p === 'gem' || p === 'opt' || p === 'info') return panelHTML(p);
     return ({ trophy: trophyHTML, profile: profileHTML, map: mapHTML, help: helpHTML })[p]();
   },
   open(p) {
@@ -105,6 +105,11 @@ Object.assign(TITLE, {
   init() {
     tEl = document.createElement('div'); tEl.id = 'title'; tEl.className = 't-dusk'; tEl.hidden = true; document.body.appendChild(tEl);
     tEl.addEventListener('click', e => {
+      const a = e.target.closest('[data-a]');
+      if (a && T_ACTIONS.includes(a.dataset.a)) {
+        this.act(a, e);
+        return;
+      }
       const t = e.target.closest('[data-t]');
       if (t) {
         const k = t.dataset.t;
@@ -116,8 +121,6 @@ Object.assign(TITLE, {
         return;
       }
       if (e.target.id === 'tovl') return this.close();
-      const a = e.target.closest('[data-a]');
-      if (a && T_ACTIONS.includes(a.dataset.a)) this.act(a, e);
     });
     document.addEventListener('keydown', e => {
       if (!this.on) return;

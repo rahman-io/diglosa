@@ -1,0 +1,720 @@
+
+html[data-skin="petualangan"]{
+  --ink:#4a2a0e; --muted:#8a6a45; --wood1:#c98a3c; --wood2:#8a4b1c; --wood3:#4b2a0e;
+  --parch:#fff1d0; --parch2:#f4dca6; --orange:#f5a53a; --gold:#ffd24a;
+  --sun:#ffd23f; --mint:#34d9a8; --coral:#ff6b6b; --sky:#4cc9f0; --pink:#ff9ad5; --lav:#c8b8ff; --violet:#7c4dff;
+  --font-h:'Lilita One','Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --font-b:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+  box-sizing:border-box; color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html[data-skin="petualangan"] *{box-sizing:border-box;margin:0;padding:0}
+html[data-skin="petualangan"]{background:#4f9a3c;scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html[data-skin="petualangan"] body{background-color:#6fb34a;background-image:radial-gradient(rgba(255,255,255,.18) 2px,transparent 2.6px),linear-gradient(180deg,#9bd16b 0%,#5fae45 55%,#3f8a35 100%);background-size:30px 30px,100% 100%;background-attachment:fixed,fixed;color:var(--ink);font-family:var(--font-b);font-weight:700;line-height:1.45;min-height:100vh;overflow-x:hidden}
+html[data-skin="petualangan"] button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+html[data-skin="petualangan"] a{color:inherit}
+html[data-skin="petualangan"] button:focus-visible,html[data-skin="petualangan"] input:focus-visible,html[data-skin="petualangan"] select:focus-visible,html[data-skin="petualangan"] a:focus-visible{outline:4px solid #2b7bd9;outline-offset:3px}
+html[data-skin="petualangan"] h1,html[data-skin="petualangan"] h2,html[data-skin="petualangan"] h3,html[data-skin="petualangan"] h4{font-family:var(--font-h);font-weight:400;letter-spacing:.02em;line-height:1.15}
+html[data-skin="petualangan"] .wrap{max-width:1120px;margin:0 auto;padding:14px 16px 56px}
+html[data-skin="petualangan"] .wrap.g{max-width:780px}
+html[data-skin="petualangan"] .card{background:var(--parch);border:4px solid var(--wood2);border-radius:22px;box-shadow:0 5px 0 var(--wood3),0 12px 20px rgba(0,0,0,.25);padding:20px;color:var(--ink)}
+html[data-skin="petualangan"] .card + .card{margin-top:18px}
+html[data-skin="petualangan"] .btn{display:inline-block;font:400 1.1rem var(--font-h);letter-spacing:.03em;padding:11px 24px;border-radius:14px;border:3px solid #8a3f0c;background:linear-gradient(180deg,#ffc95e,#f08a1e);color:#fff8e6;text-shadow:0 2px 0 #8a3f0c;box-shadow:0 4px 0 #8a3f0c;text-decoration:none;text-align:center;transition:transform .08s,box-shadow .08s}
+html[data-skin="petualangan"] .btn:hover{filter:brightness(1.06)}
+html[data-skin="petualangan"] .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #8a3f0c}
+html[data-skin="petualangan"] .btn.mint{background:linear-gradient(180deg,#98e88a,#3fa84a);border-color:#1f6a2a;box-shadow:0 4px 0 #1f6a2a;text-shadow:0 2px 0 #1f6a2a}
+html[data-skin="petualangan"] .btn.coral{background:linear-gradient(180deg,#ff9a8a,#e0453f);border-color:#8a1f1a;box-shadow:0 4px 0 #8a1f1a;text-shadow:0 2px 0 #8a1f1a}
+html[data-skin="petualangan"] .btn.sky{background:linear-gradient(180deg,#8fd6ff,#3a8ee6);border-color:#1b4f9a;box-shadow:0 4px 0 #1b4f9a;text-shadow:0 2px 0 #1b4f9a}
+html[data-skin="petualangan"] .btn.ghost{background:var(--parch);color:var(--wood2);text-shadow:none;border-color:var(--wood2);box-shadow:0 4px 0 var(--wood3)}
+html[data-skin="petualangan"] .btn.sm{padding:5px 13px;font-size:.9rem;border-radius:10px}
+html[data-skin="petualangan"] .btn[disabled]{opacity:.5;pointer-events:none}
+html[data-skin="petualangan"] .actions{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 4px}
+html[data-skin="petualangan"] .actions.c{justify-content:center}
+html[data-skin="petualangan"] .pill,html[data-skin="petualangan"] .icon-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:12px;border:3px solid var(--wood3);background:linear-gradient(180deg,#c98a3c,#8a4b1c);color:#fff3d0;font:400 .98rem var(--font-h);text-shadow:0 2px 0 var(--wood3);white-space:nowrap;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+html[data-skin="petualangan"] .icon-btn{min-width:44px;height:44px;justify-content:center;font-size:1.1rem}
+html[data-skin="petualangan"] .icon-btn:active{transform:translateY(2px)}
+html[data-skin="petualangan"] .pill.warn{background:linear-gradient(180deg,#ff8a8a,#d92b4b);animation:pulse 1s infinite}
+html[data-skin="petualangan"] .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border:2px solid var(--wood2);border-radius:9px;background:var(--parch2);color:var(--wood3);font-weight:800;font-size:.84rem}
+html[data-skin="petualangan"] .sub{color:var(--muted)}
+html[data-skin="petualangan"] .bar{position:relative;height:14px;border-radius:99px;background:#3a2a1a;border:3px solid var(--wood3);overflow:hidden}
+html[data-skin="petualangan"] .bar .s,html[data-skin="petualangan"] .bar .m{position:absolute;inset:0 auto 0 0;border-radius:99px;transition:width .4s}
+html[data-skin="petualangan"] .bar .s{background:linear-gradient(90deg,#5fd06a,#98e88a)}
+html[data-skin="petualangan"] .bar .m{background:linear-gradient(90deg,#ffd24a,#f08a1e)}
+html[data-skin="petualangan"] .bar.mini{height:10px;border-width:2px}
+html[data-skin="petualangan"] .speak{width:54px;height:54px;border-radius:50%;border:3px solid #8a3f0c;background:radial-gradient(circle at 35% 28%,#ffe08a,#f0951e 75%);color:#6a2a05;font-size:1.4rem;box-shadow:0 4px 0 #8a3f0c}
+html[data-skin="petualangan"] .speak:active{transform:translateY(3px);box-shadow:0 1px 0 #8a3f0c}
+html[data-skin="petualangan"] .speak.xl{width:112px;height:112px;font-size:3rem;animation:pulse 2s ease-in-out infinite}
+html[data-skin="petualangan"] .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:linear-gradient(180deg,#c98a3c,#8a4b1c);color:#fff3d0;padding:9px 20px;border-radius:14px;border:3px solid var(--wood3);font:400 1rem var(--font-h);transition:.25s;z-index:80;max-width:90vw;text-align:center}
+html[data-skin="petualangan"] .toast.show{opacity:1;transform:translate(-50%,0)}
+html[data-skin="petualangan"] .cf{position:fixed;top:-40px;font-size:1.7rem;pointer-events:none;z-index:90;animation:fall linear forwards}
+html[data-skin="petualangan"] .owl{font-size:4.5rem;line-height:1;text-align:center;animation:bob 2.6s ease-in-out infinite}
+html[data-skin="petualangan"] .gtop{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+html[data-skin="petualangan"] .gt{flex:1;min-width:0}
+html[data-skin="petualangan"] .gtt{font:400 1.2rem var(--font-h);margin-bottom:6px;color:var(--wood3)}
+html[data-skin="petualangan"] .gtop .bar{height:16px}
+html[data-skin="petualangan"] .big{font-family:var(--font-b);font-weight:800;font-size:clamp(2.2rem,8vw,3.6rem);line-height:1.1;overflow-wrap:anywhere;color:var(--wood3)}
+html[data-skin="petualangan"] .hintx{color:var(--muted);font-weight:800;font-size:.85rem}
+html[data-skin="petualangan"] .kb{text-align:center;color:#2a4a1a;font-size:.85rem;margin-top:8px}
+html[data-skin="petualangan"] .scene{perspective:1300px;margin:6px auto 12px;max-width:600px;height:340px}
+html[data-skin="petualangan"] .fc{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,1.3,.5,1);cursor:pointer}
+html[data-skin="petualangan"] .fc.on{transform:rotateY(180deg)}
+html[data-skin="petualangan"] .face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;border-radius:30px;border:5px solid var(--wood2);box-shadow:0 7px 0 var(--wood3),0 14px 22px rgba(0,0,0,.25)}
+html[data-skin="petualangan"] .front{background:var(--parch)}
+html[data-skin="petualangan"] .back{background:linear-gradient(180deg,#dff4ff,#9fd6f5);transform:rotateY(180deg)}
+html[data-skin="petualangan"] .back .sub{color:#2a5a7a;font-size:1.1rem}
+html[data-skin="petualangan"] .qcard{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:28px 18px;margin-bottom:22px;min-height:210px;justify-content:center}
+html[data-skin="petualangan"] .qh{font-weight:800;color:var(--wood2)}
+html[data-skin="petualangan"] .opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+html[data-skin="petualangan"] .opt{display:flex;align-items:center;gap:12px;text-align:left;padding:15px;font:800 1.1rem var(--font-b);color:var(--ink);background:var(--parch);border:4px solid var(--wood2);border-radius:16px;box-shadow:0 4px 0 var(--wood3);transition:transform .08s,box-shadow .08s}
+html[data-skin="petualangan"] .opt:hover:not(:disabled){background:#fff8e2}
+html[data-skin="petualangan"] .opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--wood3)}
+html[data-skin="petualangan"] .opt kbd{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--wood2);display:grid;place-items:center;font:400 .9rem var(--font-h);background:var(--parch2);color:var(--wood3)}
+html[data-skin="petualangan"] .opt.right{background:linear-gradient(180deg,#a8f0a0,#4fc060);border-color:#1f6a2a;box-shadow:0 4px 0 #1f6a2a;color:#0a3a14}
+html[data-skin="petualangan"] .opt.wrong{background:linear-gradient(180deg,#ffb0a8,#e8504a);border-color:#8a1f1a;box-shadow:0 4px 0 #8a1f1a;color:#fff;animation:shake .4s}
+html[data-skin="petualangan"] .opt.dim{opacity:.5}
+html[data-skin="petualangan"] .fb{margin-top:20px;padding:14px 18px;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:4px solid var(--wood2);border-radius:16px}
+html[data-skin="petualangan"] .fb.ok{background:linear-gradient(180deg,#d4f8cc,#9fe090);color:#0a3a14}
+html[data-skin="petualangan"] .fb.no{background:linear-gradient(180deg,#ffd8d2,#ffa89e);color:#5a1010}
+html[data-skin="petualangan"] .blanks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+html[data-skin="petualangan"] .ch{width:34px;height:46px;border-bottom:4px solid var(--wood2);display:grid;place-items:center;font:800 1.8rem var(--font-b);color:var(--wood3)}
+html[data-skin="petualangan"] .ch.fixed{border-bottom-color:transparent}
+html[data-skin="petualangan"] .sp{width:20px}
+html[data-skin="petualangan"] .inp{width:100%;font:800 1.3rem var(--font-b);padding:13px 16px;border:4px solid var(--wood2);border-radius:14px;background:#fffaf0;color:var(--ink);outline:none;box-shadow:inset 0 3px 0 rgba(0,0,0,.08)}
+html[data-skin="petualangan"] .inp:focus{border-color:#2b7bd9}
+html[data-skin="petualangan"] .inp.shake{animation:shake .4s}
+html[data-skin="petualangan"] .inp:disabled{opacity:.7}
+html[data-skin="petualangan"] select.inp{font-size:1rem;padding:10px 14px}
+html[data-skin="petualangan"] .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+html[data-skin="petualangan"] .tile{position:relative;min-height:94px;padding:14px 8px;display:grid;place-items:center;text-align:center;font:800 1.08rem var(--font-b);color:var(--ink);background:var(--parch);border:4px solid var(--wood2);border-radius:16px;box-shadow:0 4px 0 var(--wood3);transition:transform .1s}
+html[data-skin="petualangan"] .tile small{position:absolute;top:6px;left:10px;font:800 .62rem var(--font-b);color:var(--muted)}
+html[data-skin="petualangan"] .tile.id{background:#e6f5c8}
+html[data-skin="petualangan"] .tile:hover{filter:brightness(1.04)}
+html[data-skin="petualangan"] .tile.sel{background:linear-gradient(180deg,#ffe28a,#f5a53a);transform:translateY(-4px)}
+html[data-skin="petualangan"] .tile.done{background:linear-gradient(180deg,#a8f0a0,#4fc060);opacity:.65;pointer-events:none}
+html[data-skin="petualangan"] .tile.bad{background:linear-gradient(180deg,#ffb0a8,#e8504a);color:#fff;animation:shake .4s}
+html[data-skin="petualangan"] .res{text-align:center;display:grid;gap:12px;justify-items:center;padding:28px 18px}
+html[data-skin="petualangan"] .res h2{color:var(--wood2)}
+html[data-skin="petualangan"] .stars{font-size:2.4rem;letter-spacing:6px}
+html[data-skin="petualangan"] .score{font:400 3.4rem var(--font-h);color:#f08a1e;text-shadow:0 3px 0 var(--wood3)}
+html[data-skin="petualangan"] .rchips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+html[data-skin="petualangan"] .missed{width:100%;max-width:520px;text-align:left;margin-top:8px}
+html[data-skin="petualangan"] .missed h3{font-size:1.1rem;margin-bottom:6px;color:var(--wood2)}
+html[data-skin="petualangan"] .dtools{display:grid;gap:12px}
+html[data-skin="petualangan"] .fchips{display:flex;gap:8px;flex-wrap:wrap}
+html[data-skin="petualangan"] .fchip{padding:5px 14px;border:3px solid var(--wood2);border-radius:12px;background:var(--parch);font:400 .95rem var(--font-h);color:var(--wood3)}
+html[data-skin="petualangan"] .fchip.on{background:linear-gradient(180deg,#ffc95e,#f08a1e);color:#fff8e6;text-shadow:0 2px 0 #8a3f0c}
+html[data-skin="petualangan"] .row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:2px dashed rgba(138,75,28,.4)}
+html[data-skin="petualangan"] .row:last-child{border-bottom:0}
+html[data-skin="petualangan"] .row .em{font-size:1.5rem;width:34px;text-align:center}
+html[data-skin="petualangan"] .row .wd{flex:1;min-width:0;display:grid}
+html[data-skin="petualangan"] .row .wd b{font:800 1.1rem var(--font-b)}
+html[data-skin="petualangan"] .row .wd small{color:var(--muted);font-weight:700}
+html[data-skin="petualangan"] .row .lv{font-size:.7rem;letter-spacing:1px;color:#f08a1e}
+html[data-skin="petualangan"] .row .speak{width:40px;height:40px;font-size:1.05rem}
+html[data-skin="petualangan"] .empty{text-align:center;padding:24px;color:var(--muted)}
+html[data-skin="petualangan"] .advwrap{position:relative;max-width:1120px;margin:0 auto}
+html[data-skin="petualangan"] .adv{position:relative;container-type:inline-size;aspect-ratio:1000/640;border-radius:28px;overflow:hidden;border:5px solid #2d2216;background:#2d2216;box-shadow:0 12px 30px rgba(0,0,0,.45);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+html[data-skin="petualangan"] .world{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer;touch-action:none;-webkit-touch-callout:none}
+html[data-skin="petualangan"] .npc{cursor:pointer}
+html[data-skin="petualangan"] .npc .em{animation:advidle 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+html[data-skin="petualangan"] .mk{animation:advfloat 1.3s ease-in-out infinite}
+html[data-skin="petualangan"] .nsp .gh,html[data-skin="petualangan"] .nsp .gp,html[data-skin="petualangan"] .nsp .nbl,html[data-skin="petualangan"] .nsp .nbub{opacity:0}
+html[data-skin="petualangan"] .nsp .nbr{transform-box:fill-box;transform-origin:50% 100%;animation:nBreathe 3.8s ease-in-out infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp .nbl{animation:nBlink 6.3s linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=call] .gi{animation:nIdleF var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=call] .gh{animation:nHelpF var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=call] .nbob{animation:nHop var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=call] .nbub{transform-box:fill-box;transform-origin:0 100%;animation:nBub var(--cd,11s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=done] .gi{animation:nIdleF var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=done] .gp{animation:nHelpF var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .nsp[data-s=done] .nbob{animation:nHopDone var(--dd,9s) linear infinite;animation-delay:var(--nd,0s)}
+html[data-skin="petualangan"] .npc.near .nsp .gi,html[data-skin="petualangan"] .npc.near .nsp .gh,html[data-skin="petualangan"] .npc.near .nsp .nbub{animation:none;opacity:0}
+html[data-skin="petualangan"] .npc.near .nsp .gp{animation:none;opacity:1}
+html[data-skin="petualangan"] .npc.near .nsp .nbob{animation:nHopNear 1.2s ease-in-out infinite}
+@keyframes nBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.99,1.02)}}
+@keyframes nBlink{0%,41.9%{opacity:0}42%,44.5%{opacity:1}44.6%,81.9%{opacity:0}82%,84.5%{opacity:1}84.6%,100%{opacity:0}}
+@keyframes nIdleF{0%,77.9%{opacity:1}78%,92%{opacity:0}92.1%,100%{opacity:1}}
+@keyframes nHelpF{0%,77.9%{opacity:0}78%,92%{opacity:1}92.1%,100%{opacity:0}}
+@keyframes nHop{0%,77.9%{transform:translateY(0)}80%{transform:translateY(calc(-11px * var(--hop,1)))}82%{transform:translateY(0)}84%{transform:translateY(calc(-11px * var(--hop,1)))}86%{transform:translateY(0)}88%{transform:translateY(calc(-7px * var(--hop,1)))}90%,100%{transform:translateY(0)}}
+@keyframes nHopDone{0%,77.9%{transform:translateY(0)}83%{transform:translateY(calc(-8px * var(--hop,1)))}88%,100%{transform:translateY(0)}}
+@keyframes nHopNear{0%,100%{transform:translateY(0)}35%{transform:translateY(calc(-8px * var(--hop,1)))}62%{transform:translateY(0)}}
+@keyframes nBub{0%,77%{opacity:0;transform:scale(.55)}80%{opacity:1;transform:scale(1.1)}82%,91%{opacity:1;transform:scale(1)}93%,100%{opacity:0;transform:scale(.8)}}
+html[data-skin="petualangan"] .nsp.fx-lite .nbob,html[data-skin="petualangan"] .nsp.fx-lite .nbr{animation:none}
+html[data-skin="petualangan"] .nsp.fx-off *{animation:none!important}
+@media (prefers-reduced-motion:reduce){html[data-skin="petualangan"] .nsp *{animation:none!important}}
+html[data-skin="petualangan"] .portal{animation:advglow 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+html[data-skin="petualangan"] .hudL{position:absolute;left:2cqw;top:2cqw;display:grid;gap:.7cqw;justify-items:start;pointer-events:none;z-index:3}
+html[data-skin="petualangan"] .ahud{display:flex;align-items:center}
+html[data-skin="petualangan"] .aav{width:9.4cqw;height:9.4cqw;border-radius:2cqw;border:.5cqw solid #4b2a0e;background:linear-gradient(180deg,#d9a24c,#9a5a22);display:grid;place-items:center;box-shadow:0 .5cqw 0 rgba(0,0,0,.4);z-index:2}
+html[data-skin="petualangan"] .aav svg{width:78%;height:78%}
+html[data-skin="petualangan"] .aname{margin-left:-1.4cqw;padding:.4cqw 2.6cqw .4cqw 2.2cqw;min-width:17cqw;background:linear-gradient(180deg,#ffe3a0,#f5a53a);border:.35cqw solid #a8531a;border-radius:.8cqw;color:#7a2a0a;font:400 clamp(11px,2.3cqw,26px) var(--font-h);box-shadow:0 .4cqw 0 rgba(0,0,0,.35)}
+html[data-skin="petualangan"] .alv{margin-left:.6cqw;font:400 clamp(10px,1.9cqw,22px) var(--font-h);color:#fff;text-shadow:.15cqw .15cqw 0 #000;white-space:nowrap}
+html[data-skin="petualangan"] .alv i{display:block;margin-top:.5cqw;width:17cqw;height:1.4cqw;background:#2a2230;border-radius:99px;overflow:hidden;border:.2cqw solid #000}
+html[data-skin="petualangan"] .alv i b{display:block;height:100%;background:linear-gradient(90deg,#ff9a3a,#ffc95e)}
+html[data-skin="petualangan"] .alogo{position:absolute;left:50%;top:1.4cqw;transform:translateX(-50%);width:23cqw;pointer-events:none;filter:drop-shadow(0 .5cqw 0 rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .alogo svg{width:100%;height:auto;display:block;overflow:visible}
+html[data-skin="petualangan"] .abtns{position:absolute;right:2cqw;top:1.4cqw;display:grid;gap:.4cqw;justify-items:center}
+html[data-skin="petualangan"] .abtn{position:relative;display:grid;justify-items:center;gap:.2cqw;width:12cqw}
+html[data-skin="petualangan"] .abtn .ic{font-size:clamp(18px,4.3cqw,50px);line-height:1;display:grid;place-items:center;filter:drop-shadow(0 .3cqw 0 rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .fui{display:block;width:1.25em;height:1.25em;object-fit:contain;pointer-events:none;filter:drop-shadow(0 .08em .04em rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .fui-inline{display:inline-block;width:1.35em;height:1.35em;object-fit:contain;vertical-align:middle;margin-right:.12em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .cui{display:inline-block;width:1.25em;height:1.25em;object-fit:contain;vertical-align:middle;pointer-events:none;filter:drop-shadow(0 .08em .04em rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .cui-inline{display:inline-block;width:1.35em;height:1.35em;object-fit:contain;vertical-align:middle;margin-right:.12em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .abtn .lb{padding:.1cqw 1.2cqw;background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:.3cqw solid #4b2a0e;border-radius:.7cqw;color:#fff3d0;font:400 clamp(9px,1.7cqw,19px) var(--font-h);text-shadow:0 .15cqw 0 #4b2a0e;min-width:9.5cqw;text-align:center;box-shadow:0 .3cqw 0 rgba(0,0,0,.4)}
+html[data-skin="petualangan"] .abtn:hover .lb{filter:brightness(1.15)}
+html[data-skin="petualangan"] .abtn:active{transform:translateY(.3cqw)}
+html[data-skin="petualangan"] .abtn .bdg{position:absolute;top:-.4cqw;right:1.6cqw;min-width:3cqw;height:3cqw;padding:0 .6cqw;border-radius:99px;background:#ff4f6a;border:.25cqw solid #fff;color:#fff;font:800 clamp(9px,1.7cqw,18px) var(--font-b);display:grid;place-items:center}
+html[data-skin="petualangan"] .talk{position:absolute;left:50%;bottom:3cqw;transform:translateX(-50%);padding:.8cqw 2.6cqw;font:400 clamp(12px,2.2cqw,24px) var(--font-h);background:linear-gradient(180deg,#ffc95e,#f08a1e);border:.4cqw solid #8a3f0c;border-radius:1.2cqw;color:#fff8e6;text-shadow:0 .2cqw 0 #8a3f0c;box-shadow:0 .5cqw 0 #8a3f0c;animation:pulse 1.2s infinite}
+html[data-skin="petualangan"] .talk[hidden]{display:none}
+html[data-skin="petualangan"] .ovl{position:absolute;inset:0;pointer-events:none}
+html[data-skin="petualangan"] .ovl > *{pointer-events:auto}
+html[data-skin="petualangan"] .modal{pointer-events:auto;background:rgba(30,22,10,.55)}
+html[data-skin="petualangan"] .mpanel{position:absolute;inset:5% 6%;background:var(--parch);border:5px solid var(--wood2);border-radius:22px;box-shadow:0 8px 0 var(--wood3),0 14px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;color:var(--ink)}
+html[data-skin="petualangan"] .mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:linear-gradient(180deg,#c98a3c,#8a4b1c);border-bottom:4px solid var(--wood3);color:#fff3d0}
+html[data-skin="petualangan"] .mhead h3{font:400 clamp(16px,2.2vw,26px) var(--font-h);text-shadow:0 2px 0 var(--wood3)}
+html[data-skin="petualangan"] .mbody{padding:14px 16px;overflow-y:auto;flex:1}
+html[data-skin="petualangan"] .mclose{width:38px;height:38px;border-radius:10px;border:3px solid var(--wood3);background:linear-gradient(180deg,#ff9a8a,#e0453f);color:#fff;font:800 1.1rem var(--font-b)}
+html[data-skin="petualangan"] .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+html[data-skin="petualangan"] .tabb{padding:4px 12px;border:3px solid var(--wood2);border-radius:10px;background:var(--parch2);font-size:1.2rem}
+html[data-skin="petualangan"] .tabb.on{background:linear-gradient(180deg,#ffc95e,#f08a1e)}
+html[data-skin="petualangan"] .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+html[data-skin="petualangan"] .item{display:grid;gap:2px;justify-items:center;text-align:center;padding:10px 6px;border:3px solid var(--wood2);border-radius:14px;background:#fffaf0}
+html[data-skin="petualangan"] .item span{font-size:1.5rem}
+html[data-skin="petualangan"] .item span .cui,html[data-skin="petualangan"] .item span .fui{width:1.5rem;height:1.5rem}
+html[data-skin="petualangan"] .item b{font:800 1rem var(--font-b)}
+html[data-skin="petualangan"] .item small{color:var(--muted);font-weight:700;font-size:.8rem}
+html[data-skin="petualangan"] .item i{font-style:normal;color:#f08a1e;font-size:.6rem;letter-spacing:1px}
+html[data-skin="petualangan"] .item.lock{background:#e9d9b4;color:var(--muted);border-style:dashed}
+html[data-skin="petualangan"] .qrow{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;padding:10px 0;border-bottom:2px dashed rgba(138,75,28,.4)}
+html[data-skin="petualangan"] .qrow:last-child{border:0}
+html[data-skin="petualangan"] .qrow b{font:400 1.05rem var(--font-h)}
+html[data-skin="petualangan"] .qrow .bar{grid-column:1/-1}
+html[data-skin="petualangan"] .qrow.done b::after{content:" ✔";color:#2fa84a}
+html[data-skin="petualangan"] .msg{padding:10px 12px;border:3px solid var(--wood2);border-radius:14px;background:#fffaf0;margin-bottom:10px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+html[data-skin="petualangan"] .msg h4{font-size:1.05rem;color:var(--wood2)}
+html[data-skin="petualangan"] .advbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px auto 0;max-width:1120px}
+html[data-skin="petualangan"] .advhelp{text-align:center;margin-top:10px;color:#1f3d12;font-size:.9rem}
+html[data-skin="petualangan"] .advlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:18px}
+html[data-skin="petualangan"] .acard{display:grid;grid-template-columns:48px 1fr;gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;background:var(--parch);border:4px solid var(--wood2);border-radius:18px;box-shadow:0 4px 0 var(--wood3)}
+html[data-skin="petualangan"] .acard:hover{background:#fff8e2}
+html[data-skin="petualangan"] .acard .ae{grid-row:1/3;font-size:2rem;width:48px;height:48px;display:grid;place-items:center;border:3px solid var(--wood2);border-radius:12px;background:var(--parch2)}
+html[data-skin="petualangan"] .acard .ae .fui{width:42px;height:42px}
+html[data-skin="petualangan"] .acard b{font:400 1.1rem var(--font-h)}
+html[data-skin="petualangan"] .acard small{color:var(--muted);font-weight:800;font-size:.8rem}
+html[data-skin="petualangan"] .acard .bar{grid-column:1/-1;margin-top:4px}
+html[data-skin="petualangan"] .alife{display:flex;gap:1cqw;align-items:center;padding:.3cqw 1.1cqw;background:rgba(30,20,10,.6);border:.3cqw solid #4b2a0e;border-radius:1cqw;font-size:clamp(10px,2cqw,22px);line-height:1.15;color:#fff;cursor:pointer;pointer-events:auto}
+html[data-skin="petualangan"] .hh{display:inline-flex;align-items:center;gap:.18em;line-height:1}
+html[data-skin="petualangan"] .life-icon{width:1.18em;height:1.18em;display:block;overflow:visible;filter:drop-shadow(0 .08em .05em rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .life-icon path{fill:#ff4f6a;stroke:#8a1030;stroke-width:3;stroke-linejoin:round}
+html[data-skin="petualangan"] .life-icon.empty-life path{fill:#f4f1e8;stroke:#b8b0a0}
+html[data-skin="petualangan"] .life-icon.monster-life path{fill:#7c3aed;stroke:#4c1d95}
+html[data-skin="petualangan"] .life-icon.monster-life.empty-life path{fill:#f4f1e8;stroke:#b8b0a0}
+html[data-skin="petualangan"] .gem-icon{width:1.18em;height:1.18em;display:inline-block;vertical-align:middle;overflow:visible;filter:drop-shadow(0 .08em .05em rgba(0,0,0,.35))}
+html[data-skin="petualangan"] .gem-icon>path:first-child{fill:#5be0ff;stroke:#0a5a7a;stroke-width:3;stroke-linejoin:round}
+html[data-skin="petualangan"] .gem-icon .shine{fill:#c4f6ff}
+html[data-skin="petualangan"] .gem-icon .facet{fill:none;stroke:#0a5a7a;stroke-width:1.5}
+html[data-skin="petualangan"] .alife .hg{font:400 clamp(10px,1.9cqw,21px) var(--font-h);color:#9ae8ff;white-space:nowrap}
+html[data-skin="petualangan"] .alife:hover{filter:brightness(1.2)}
+html[data-skin="petualangan"] .mon{animation:advsquash .8s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes advsquash{0%,100%{transform:scale(1,1)}50%{transform:scale(1.08,.9)}}
+html[data-skin="petualangan"] .mon:has(.gumpal-blink){animation:none}
+html[data-skin="petualangan"] .gumpal-walk-sheet{display:none}
+html[data-skin="petualangan"] .mon.walk .gumpal-idle-sheet{display:none}
+html[data-skin="petualangan"] .mon.walk .gumpal-walk-sheet{display:block;animation:monsterwalksheet .72s steps(1,end) infinite}
+@keyframes monsterwalksheet{0%{transform:translateX(0)}16%{transform:translateX(-192px)}33%{transform:translateX(-384px)}50%{transform:translateX(-576px)}66%{transform:translateX(-768px)}83%{transform:translateX(-960px)}100%{transform:translateX(0)}}
+html[data-skin="petualangan"] .encpanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,620px);max-height:92%;overflow-y:auto;background:var(--parch);border:5px solid var(--wood2);border-radius:22px;box-shadow:0 8px 0 var(--wood3),0 16px 32px rgba(0,0,0,.5);padding:14px 16px;color:var(--ink)}
+@media (max-width:700px){html[data-skin="petualangan"] .encpanel{position:fixed;width:calc(100% - 16px);max-height:90vh;z-index:75}}
+html[data-skin="petualangan"] .enchead{display:flex;gap:12px;align-items:center}
+html[data-skin="petualangan"] .encmon{width:64px;flex:none}
+html[data-skin="petualangan"] .encmon svg{width:100%;height:auto;display:block}
+html[data-skin="petualangan"] .enchearts{margin-left:auto;font-size:1.2rem;white-space:nowrap}
+html[data-skin="petualangan"] .encctx{margin:10px 0 4px;padding:10px 12px;background:#fffaf0;border:3px dashed var(--wood2);border-radius:12px;font-weight:700}
+html[data-skin="petualangan"] .encq{font:800 1.25rem var(--font-b);margin:10px 0}
+html[data-skin="petualangan"] .encopts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+html[data-skin="petualangan"] .encopts.tf{grid-template-columns:repeat(3,1fr)}
+html[data-skin="petualangan"] .encopt{display:flex;gap:8px;align-items:center;text-align:left;padding:10px 12px;font:800 1rem var(--font-b);color:var(--ink);background:#fffaf0;border:3px solid var(--wood2);border-radius:14px;box-shadow:0 3px 0 var(--wood3)}
+html[data-skin="petualangan"] .encopt:hover{background:#fff4d6}
+html[data-skin="petualangan"] .encopt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood3)}
+html[data-skin="petualangan"] .encopt kbd{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--wood2);display:grid;place-items:center;font:400 .85rem var(--font-h);background:var(--parch2);color:var(--wood3)}
+html[data-skin="petualangan"] .encfill{display:flex;gap:8px;align-items:center}
+html[data-skin="petualangan"] .encfoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:12px}
+html[data-skin="petualangan"] .enctimer{height:12px;border:3px solid var(--wood3);border-radius:99px;background:#3a2a1a;overflow:hidden;margin:8px 0}
+html[data-skin="petualangan"] .enctimer i{display:block;height:100%;background:linear-gradient(90deg,#ff7a3a,#ffd24a)}
+html[data-skin="petualangan"] .encfb{padding:12px 14px;border:3px solid var(--wood2);border-radius:14px;margin-top:10px;font-weight:700}
+html[data-skin="petualangan"] .encfb.ok{background:linear-gradient(180deg,#d4f8cc,#9fe090)}
+html[data-skin="petualangan"] .encfb.no{background:linear-gradient(180deg,#ffd8d2,#ffa89e)}
+html[data-skin="petualangan"] .encl{margin:0 0 0 18px;display:grid;gap:4px}
+html[data-skin="petualangan"] .winbox{text-align:center}
+html[data-skin="petualangan"] .note{font-size:.85rem;color:var(--muted);margin-top:8px}
+@media (max-width:560px){html[data-skin="petualangan"] .encopts,html[data-skin="petualangan"] .encopts.tf{grid-template-columns:1fr}}
+html[data-skin="petualangan"] .advwrap.full{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;max-width:none;margin:0;z-index:5;background:#2d2216}
+html[data-skin="petualangan"] .advwrap.full .adv{position:absolute;inset:0;aspect-ratio:auto;width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
+html[data-skin="petualangan"] .advwrap.full .hudL{left:calc(8px + env(safe-area-inset-left,0px));top:calc(8px + env(safe-area-inset-top,0px));gap:4px}
+html[data-skin="petualangan"] .advwrap.full .aav{width:46px;height:46px;border-width:3px;border-radius:12px;box-shadow:0 3px 0 rgba(0,0,0,.4)}
+html[data-skin="petualangan"] .advwrap.full .aname{margin-left:-8px;min-width:0;padding:3px 14px 3px 12px;font-size:14px;border-width:2px;border-radius:6px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+html[data-skin="petualangan"] .advwrap.full .alv{font-size:13px;margin-left:2px}
+html[data-skin="petualangan"] .advwrap.full .alv i{width:120px;height:8px;margin-top:3px;border-width:1.5px}
+html[data-skin="petualangan"] .advwrap.full .alife{font-size:14px;padding:3px 9px;border-width:2px;border-radius:10px;gap:8px}
+html[data-skin="petualangan"] .advwrap.full .alife .hg{font-size:13px}
+html[data-skin="petualangan"] .advwrap.full .alogo{top:calc(6px + env(safe-area-inset-top,0px));width:clamp(110px,24vw,170px)}
+html[data-skin="petualangan"] .advwrap.full .abtns{right:calc(8px + env(safe-area-inset-right,0px));top:calc(8px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;flex-wrap:wrap-reverse;align-content:flex-start;gap:4px;max-height:calc(100% - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+html[data-skin="petualangan"] .advwrap.full .abtn{width:58px}
+html[data-skin="petualangan"] .advwrap.full .abtn .ic{font-size:28px}
+html[data-skin="petualangan"] .advwrap.full .abtn .lb{font-size:11px;padding:1px 6px;min-width:52px;border-width:2px;border-radius:6px}
+html[data-skin="petualangan"] .advwrap.full .abtn .bdg{min-width:18px;height:18px;padding:0 4px;font-size:11px;top:-3px;right:3px;border-width:2px}
+html[data-skin="petualangan"] .advwrap.full .talk{bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:16px;padding:9px 22px;border-width:3px;border-radius:12px;box-shadow:0 4px 0 #8a3f0c}
+@media (max-width:520px) and (orientation:portrait){html[data-skin="petualangan"] .advwrap.full .alogo{display:none}}
+html[data-skin="petualangan"] .ctl{position:absolute;z-index:4;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html[data-skin="petualangan"] .fjoy{position:absolute;z-index:3;width:128px;height:128px;display:none;pointer-events:none}
+html[data-skin="petualangan"] .fjoy.show{display:block}
+html[data-skin="petualangan"] .fjoy .joyknob{transition:none}
+html[data-skin="petualangan"] .joyring{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(255,243,208,.22),rgba(75,42,14,.5));border:4px solid rgba(75,42,14,.85);box-shadow:inset 0 0 0 3px rgba(255,210,74,.35),0 4px 0 rgba(0,0,0,.3)}
+html[data-skin="petualangan"] .joyknob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a0,#f0951e 75%);border:3px solid #8a3f0c;box-shadow:0 3px 0 #8a3f0c;transition:transform .1s;pointer-events:none}
+html[data-skin="petualangan"] .joyknob.drag{transition:none}
+html[data-skin="petualangan"] .ctl-act{left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:84px;height:84px;border-radius:50%;border:4px solid #8a3f0c;background:radial-gradient(circle at 35% 30%,#ffe9a0,#f0951e 75%);color:#6a2a05;display:none;place-items:center;align-content:center;box-shadow:0 5px 0 #8a3f0c}
+html[data-skin="petualangan"] .ctl-act:active{transform:translateY(3px);box-shadow:0 2px 0 #8a3f0c}
+html[data-skin="petualangan"] .ctl-act.ready{display:grid;animation:pulse 1.1s infinite}
+html[data-skin="petualangan"] .ctl-act .actnm{position:absolute;bottom:100%;left:0;margin-bottom:8px;max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 9px;border-radius:8px;background:rgba(30,20,10,.8);border:2px solid #4b2a0e;color:#fff;font:700 12px var(--font-b);pointer-events:none}
+html[data-skin="petualangan"] .ctl-act .actnm:empty{display:none}
+html[data-skin="petualangan"] .ctl-act .actic{font-size:30px;line-height:1;display:grid;place-items:center}
+html[data-skin="petualangan"] .ctl-act .actic .fui{width:30px;height:30px}
+html[data-skin="petualangan"] .ctl-act .actlb{font:400 12px var(--font-h);margin-top:-2px}
+html[data-skin="petualangan"] .ctl-dpad{right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:150px;height:150px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px}
+html[data-skin="petualangan"] .dbtn{border-radius:14px;border:3px solid #4b2a0e;background:linear-gradient(180deg,#c98a3c,#8a4b1c);color:#fff3d0;font-size:24px;display:grid;place-items:center;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+html[data-skin="petualangan"] .dbtn.on{filter:brightness(1.3);transform:translateY(2px)}
+html[data-skin="petualangan"] .dbtn[data-dir=u]{grid-area:1/2}
+html[data-skin="petualangan"] .dbtn[data-dir=l]{grid-area:2/1}
+html[data-skin="petualangan"] .dbtn[data-dir=r]{grid-area:2/3}
+html[data-skin="petualangan"] .dbtn[data-dir=d]{grid-area:3/2}
+html[data-skin="petualangan"] .advwrap.busy .ctl{display:none}
+html[data-skin="petualangan"] .advwrap.hasctl .talk{display:none}
+html[data-skin="petualangan"] .advwrap.full.hasctl .abtns{max-height:calc(100% - 172px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+@media (max-height:430px){html[data-skin="petualangan"] .fjoy{width:104px;height:104px}
+html[data-skin="petualangan"] .joyknob{width:46px;height:46px;margin:-23px 0 0 -23px}
+html[data-skin="petualangan"] .ctl-dpad{width:126px;height:126px}
+html[data-skin="petualangan"] .ctl-act{width:72px;height:72px}
+html[data-skin="petualangan"] .advwrap.full.hasctl .abtns{max-height:calc(100% - 144px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+html[data-skin="petualangan"] .dlgav{overflow:hidden;width:64px;height:64px;flex:none;border:3px solid var(--wood2);border-radius:16px;background:var(--parch2);display:grid;place-items:center;font-size:2.5rem;line-height:1}
+html[data-skin="petualangan"] .dlgname{font:400 1.45rem var(--font-h);color:var(--wood3);line-height:1.1}
+html[data-skin="petualangan"] .dlgsub{font:800 1rem var(--font-b);color:var(--wood2);margin-top:2px;display:flex;align-items:center;gap:2px}
+html[data-skin="petualangan"] .dlgsub .fui-inline{width:22px;height:22px;margin-right:2px}
+html[data-skin="petualangan"] .dlglines{display:grid;gap:10px;margin:12px 0 4px}
+html[data-skin="petualangan"] .dlgline{padding:10px 12px;background:#fffaf0;border:3px dashed var(--wood2);border-radius:14px}
+html[data-skin="petualangan"] .dlgline .en{font:800 1.25rem var(--font-b);color:var(--ink);line-height:1.3}
+html[data-skin="petualangan"] .dlgline .id{font:700 1.05rem var(--font-b);font-style:italic;color:var(--muted);margin-top:3px;line-height:1.3}
+html[data-skin="petualangan"] .dlgstat{font:800 1rem var(--font-b);color:var(--wood2);margin:10px 0 2px}
+html[data-skin="petualangan"] .dlgacts{display:grid;gap:10px;margin-top:12px}
+html[data-skin="petualangan"] .dlgacts .acc,html[data-skin="petualangan"] .dlgacts .ign{display:block;width:100%;font:400 1.2rem var(--font-h);letter-spacing:.03em;padding:12px 18px;border-radius:14px;border:3px solid;text-align:center;text-decoration:none;cursor:pointer}
+html[data-skin="petualangan"] .dlgacts .acc{background:linear-gradient(180deg,#98e88a,#3fa84a);border-color:#1f6a2a;box-shadow:0 4px 0 #1f6a2a;color:#fff8e6;text-shadow:0 2px 0 #1f6a2a}
+html[data-skin="petualangan"] .dlgacts .ign{background:var(--parch);border-color:var(--wood2);box-shadow:0 4px 0 var(--wood3);color:var(--wood2)}
+html[data-skin="petualangan"] .dlgacts .acc:active,html[data-skin="petualangan"] .dlgacts .ign:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+html[data-skin="petualangan"] .dlgmore{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+html[data-skin="petualangan"] .dlgmore button,html[data-skin="petualangan"] .dlgmore a{padding:9px 14px;font:800 1rem var(--font-b);color:var(--ink);background:#fffaf0;border:3px solid var(--wood2);border-radius:14px;box-shadow:0 3px 0 var(--wood3);text-decoration:none}
+html[data-skin="petualangan"] .dlgmore button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood3)}
+html[data-skin="petualangan"] .dlgmore button.on{background:linear-gradient(180deg,#ffe28a,#f5a53a)}
+@keyframes advidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes advfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes advglow{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.08);opacity:1}}
+@media (max-width:760px){html[data-skin="petualangan"] .tiles{grid-template-columns:repeat(3,1fr);gap:10px}
+html[data-skin="petualangan"] .mpanel{inset:3% 3%}}
+@media (max-width:700px){html[data-skin="petualangan"] .ovl.modal{position:fixed;inset:0;z-index:70}
+html[data-skin="petualangan"] .ovl:not(.modal){position:static;inset:auto}}
+@media (max-width:560px){html[data-skin="petualangan"] .opts{grid-template-columns:1fr}
+html[data-skin="petualangan"] .scene{height:290px}
+html[data-skin="petualangan"] .ch{width:28px;height:40px;font-size:1.5rem}}
+html[data-skin="petualangan"] .duel .dhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+html[data-skin="petualangan"] .duel .dside{display:grid;gap:2px;min-width:0}
+html[data-skin="petualangan"] .duel .dside.r{text-align:right}
+html[data-skin="petualangan"] .duel .dside b{font:400 1.1rem var(--font-h);color:var(--wood3)}
+html[data-skin="petualangan"] .duel .dh{display:flex;align-items:center;gap:.18em;font-size:1.15rem;white-space:nowrap}
+html[data-skin="petualangan"] .duel .dvs{font:400 1.7rem var(--font-h);color:#c0392b;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+html[data-skin="petualangan"] .duel .darena{display:flex;align-items:flex-end;justify-content:space-between;margin:8px 0 4px;padding:6px 14px 0;border:3px solid var(--wood2);border-radius:16px;background:linear-gradient(180deg,#ffe3a6 0,#ffc95e 62%,#8fc650 62%,#6fae3d 100%);overflow:hidden}
+html[data-skin="petualangan"] .duel .dhero{height:104px;width:auto;flex:none;overflow:visible}
+html[data-skin="petualangan"] .duel .dmon{height:88px;width:auto;flex:none;overflow:visible}
+html[data-skin="petualangan"] .duel .hit{animation:dHit .55s ease-out}
+html[data-skin="petualangan"] .duel .gone{opacity:.25;filter:grayscale(1)}
+@keyframes dHit{0%,100%{transform:translateX(0)}15%{transform:translateX(-9px) rotate(-3deg)}35%{transform:translateX(8px) rotate(3deg)}55%{transform:translateX(-5px)}75%{transform:translateX(3px)}}
+html[data-skin="petualangan"] .duel .dgrab{display:grid;gap:6px;margin:10px 0}
+html[data-skin="petualangan"] .duel .dgrab small{text-align:center;font-weight:700;color:var(--wood3)}
+html[data-skin="petualangan"] .duel .dgbtn{width:100%;padding:14px 12px;font:400 1.7rem var(--font-h);color:#fff;text-shadow:0 3px 0 #8a3a00;background:linear-gradient(180deg,#ffb347,#f0701e);border:4px solid #8a3a00;border-radius:18px;box-shadow:0 5px 0 #6a2c00;animation:dPulse 1s ease-in-out infinite}
+html[data-skin="petualangan"] .duel .dgbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #6a2c00}
+@keyframes dPulse{0%,100%{box-shadow:0 5px 0 #6a2c00,0 0 0 0 rgba(255,170,60,.7)}50%{box-shadow:0 5px 0 #6a2c00,0 0 0 10px rgba(255,170,60,0)}}
+html[data-skin="petualangan"] .duel .encopt.dis{opacity:.5;pointer-events:none;filter:grayscale(.35)}
+html[data-skin="petualangan"] .duel .encopt.dis.ok{opacity:1;filter:none;background:linear-gradient(180deg,#d4f8cc,#9fe090);border-color:#3a9a3a}
+html[data-skin="petualangan"] .duel .encopt.dis.bad{opacity:1;filter:none;background:linear-gradient(180deg,#ffd8d2,#ffa89e);border-color:#c0392b}
+html[data-skin="petualangan"] .duel .encopt.mp::after{content:'\1F47E';margin-left:auto}
+@media (prefers-reduced-motion:reduce){html[data-skin="petualangan"] .duel .hit,html[data-skin="petualangan"] .duel .dgbtn{animation:none}}
+html[data-skin="petualangan"] .duel .dgear{display:flex;gap:8px;justify-content:center;font-size:1.3rem;margin:2px 0 0}
+html[data-skin="petualangan"] .duel .dhard{display:inline-block;margin:6px 0 0;padding:3px 12px;border-radius:99px;background:#d6f1ff;border:2px solid #3a86a8;color:#14506a;font-weight:800;font-size:.85rem}
+html[data-skin="petualangan"] .areaprog{margin-top:.6cqw;padding:.3cqw 1.1cqw;background:rgba(30,20,10,.62);border:.3cqw solid #4b2a0e;border-radius:1cqw;color:#ffe9b0;font:700 clamp(9px,1.7cqw,19px)/1.25 var(--font-b);max-width:46cqw;pointer-events:none}
+html[data-skin="petualangan"] .ctl-shoot{right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:84px;height:84px;border-radius:50%;border:4px solid #7a1414;background:radial-gradient(circle at 35% 30%,#ffb0a0,#e23a2a 75%);color:#fff;display:grid;place-items:center;align-content:center;font:400 .8rem var(--font-h);box-shadow:0 5px 0 #7a1414;cursor:pointer;z-index:5}
+html[data-skin="petualangan"] .ctl-shoot .actic{font-size:1.9rem;line-height:1}
+html[data-skin="petualangan"] .ctl-shoot .actlb{font-size:.78rem;letter-spacing:.02em}
+html[data-skin="petualangan"] .ctl-shoot:active{transform:translateY(3px);box-shadow:0 2px 0 #7a1414}
+html[data-skin="petualangan"] .hitflash{position:fixed;inset:0;pointer-events:none;z-index:999;opacity:0;background:radial-gradient(ellipse at center,rgba(255,40,40,0) 38%,rgba(255,40,40,.5) 100%)}
+html[data-skin="petualangan"] .hitflash.on{animation:hitf .38s ease-out}
+@keyframes hitf{from{opacity:1}to{opacity:0}}
+@keyframes kickk{0%{transform:translateX(0) scale(1,1)}40%{transform:translateX(-5px) scale(1.05,.95)}100%{transform:none}}
+html[data-skin="petualangan"] #plin.kick{animation:kickk .16s ease-out;transform-box:fill-box;transform-origin:center bottom}
+html[data-skin="petualangan"] .res{grid-template-columns:minmax(0,1fr)}
+html[data-skin="petualangan"] .rchips{max-width:100%}
+html[data-skin="petualangan"] .pill{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere;line-height:1.2}
+html[data-skin="petualangan"] .rdoor{width:100%;box-sizing:border-box;padding:10px 14px;border-radius:14px;border:3px solid #8a4b1c;background:linear-gradient(180deg,#fff0c8,#ffe0a0);color:#5a3410;font:700 .98rem/1.35 var(--font-b);overflow-wrap:anywhere}
+html[data-skin="petualangan"] .btn{max-width:100%;white-space:normal;text-align:center}
+html[data-skin="petualangan"] .meaning{margin-top:10px;padding:8px 12px;border-radius:12px;background:#fff7dc;border:2px dashed #c98a3c;font:700 1.05rem var(--font-b);color:#5a3410;text-align:center;overflow-wrap:anywhere}
+html[data-skin="petualangan"] .meaning.peek{background:#e9f7d8;border-color:#6aa535}
+html[data-skin="petualangan"] .ctl-shoot .ammo{position:absolute;top:-6px;right:-6px;min-width:26px;padding:1px 6px;border-radius:13px;background:#2b1a10;border:2px solid #ffd24a;color:#ffe9a0;font:400 .85rem var(--font-h);text-align:center}
+html[data-skin="petualangan"] .ctl-wpn{right:calc(26px + env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:3px solid #4b2a0e;background:radial-gradient(circle at 35% 30%,#fff1c4,#d9a04a 80%);display:grid;place-items:center;font-size:1.5rem;cursor:pointer;z-index:5;box-shadow:0 4px 0 #4b2a0e}
+html[data-skin="petualangan"] .ctl-wpn:active{transform:translateY(3px);box-shadow:0 1px 0 #4b2a0e}
+html[data-skin="petualangan"] .wlist{display:grid;gap:6px}
+html[data-skin="petualangan"] .wrow{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:12px;border:3px solid #c9a56a;background:#fff7dc}
+html[data-skin="petualangan"] .wrow.on{border-color:#3fa34d;background:#e9f7d8}
+html[data-skin="petualangan"] .wrow.lock{opacity:.55}
+html[data-skin="petualangan"] .wrow .we{font-size:1.7rem}
+html[data-skin="petualangan"] .wrow .wi{flex:1;min-width:0}
+html[data-skin="petualangan"] .wrow .wi b{display:block}
+html[data-skin="petualangan"] .wrow .wi small{display:block;font:600 .8rem/1.3 var(--font-b);color:#6a4a20;overflow-wrap:anywhere}
+html[data-skin="petualangan"] .advwrap.busy .hudL,html[data-skin="petualangan"] .advwrap.busy .abtns,html[data-skin="petualangan"] .advwrap.busy .ctl,html[data-skin="petualangan"] .advwrap.busy .fjoy{visibility:hidden}
+html[data-skin="petualangan"] .duel .darena{position:relative;container-type:inline-size}
+html[data-skin="petualangan"] .duel .dmon{transform:translateX(calc(var(--p,0) * -48cqw));will-change:transform}
+html[data-skin="petualangan"] .duel .dmon.atk{animation:mdash .6s ease-in-out forwards}
+@keyframes mdash{0%{transform:translateX(calc(var(--p,0) * -48cqw))}38%{transform:translateX(calc(-100cqw + 190px))}100%{transform:translateX(calc(var(--p,0) * -30cqw))}}
+html[data-skin="petualangan"] .duel .dmon.stumble{animation:mstum .5s ease-out forwards}
+@keyframes mstum{0%{transform:translateX(calc(var(--p,0) * -48cqw))}30%{transform:translateX(calc(var(--p,0) * -48cqw + 30px)) rotate(10deg)}100%{transform:translateX(calc(var(--p,0) * -48cqw))}}
+html[data-skin="petualangan"] .duel .dmon.mhit{animation:mknock .5s ease-out .27s both}
+@keyframes mknock{0%{transform:translateX(calc(var(--p,0) * -48cqw));filter:none}20%{transform:translateX(calc(var(--p,0) * -48cqw + 22px)) scale(1.12,.86);filter:brightness(2.6) saturate(.3)}100%{transform:translateX(calc(var(--p,0) * -48cqw));filter:none}}
+html[data-skin="petualangan"] .duel .dmon.boom{animation:mboom .6s ease-out .3s forwards}
+@keyframes mboom{0%{transform:translateX(calc(var(--p,0) * -48cqw)) scale(1);opacity:1;filter:none}35%{transform:translateX(calc(var(--p,0) * -48cqw)) scale(1.35);opacity:1;filter:brightness(2.5)}100%{transform:translateX(calc(var(--p,0) * -48cqw)) scale(.2);opacity:0}}
+html[data-skin="petualangan"] .duel .dmon.froze{filter:hue-rotate(160deg) brightness(1.2)}
+html[data-skin="petualangan"] .duel .dhero.hit{animation:hhurt .45s ease-out .22s both}
+@keyframes hhurt{0%{transform:none}25%{transform:translateX(-16px) rotate(-6deg);filter:brightness(2) sepia(1) hue-rotate(-30deg)}100%{transform:none}}
+html[data-skin="petualangan"] .duel .dhero.down{animation:hdown .8s ease-in .35s forwards}
+@keyframes hdown{from{transform:none;opacity:1}to{transform:translateY(12px) rotate(-78deg);opacity:.55}}
+html[data-skin="petualangan"] .duel .dbullet{position:absolute;left:84px;bottom:50px;width:16px;height:16px;border-radius:50%;background:var(--c,#ffd24a);border:2px solid #fff;box-shadow:0 0 12px var(--c,#ffd24a);animation:dshot .26s linear .04s both}
+@keyframes dshot{from{transform:translateX(0)}to{transform:translateX(calc(100cqw - calc(var(--p,0) * 48cqw) - 250px))}}
+html[data-skin="petualangan"] .duel .dnum{position:absolute;right:calc(var(--p,0) * 48cqw + 46px);bottom:92px;font:400 1.7rem var(--font-h);color:#ffe35a;-webkit-text-stroke:3px #2b1a10;paint-order:stroke fill;animation:dnum .85s ease-out .27s both}
+@keyframes dnum{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-36px)}}
+html[data-skin="petualangan"] .duel .dp{position:absolute;right:calc(var(--p,0) * 48cqw + 54px);bottom:46px;width:10px;height:10px;border-radius:3px;background:var(--c,#fff);animation:dpart .65s ease-out .3s both}
+@keyframes dpart{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.3) rotate(240deg);opacity:0}}
+html[data-skin="petualangan"] .encpanel.fxoff *{animation:none!important;transition:none!important}
+html[data-skin="petualangan"] .cf.lose{filter:grayscale(.4)}
+html[data-skin="petualangan"] .wico{display:inline-block;width:var(--w,56px);height:calc(var(--w,56px) * 136 / 160);background-image:var(--wsheet);background-repeat:no-repeat;background-size:calc(var(--w,56px) * 4) calc(var(--w,56px) * 136 / 160 * 2);background-position:calc(var(--c,0) * var(--w,56px) * -1) calc(var(--r,0) * var(--w,56px) * 136 / 160 * -1);vertical-align:middle}
+html[data-skin="petualangan"] .ctl-wpn .actic{display:grid;place-items:center;line-height:0}
+html[data-skin="petualangan"] .wrow .we{display:grid;place-items:center;min-width:60px}
+@keyframes dshot{0%{transform:translateX(0);opacity:1}88%{opacity:1}100%{transform:translateX(calc(100cqw - calc(var(--p,0) * 48cqw) - 250px));opacity:0}}
+html[data-skin="petualangan"] .rpg{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(96vw,720px);z-index:90;display:none}
+html[data-skin="petualangan"] .rpg.show{display:block;animation:rpgin .35s ease-out}
+@keyframes rpgin{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translate(-50%,0)}}
+html[data-skin="petualangan"] .rpgname{display:inline-block;margin:0 0 -4px 18px;padding:6px 18px;background:#fff7dc;border:4px solid #c98a3c;border-bottom:none;border-radius:14px 14px 0 0;font:400 1.15rem var(--font-h);color:#5a3410;position:relative;z-index:1}
+html[data-skin="petualangan"] .rpgskip{position:absolute;right:6px;top:0;padding:4px 12px;border-radius:10px;border:3px solid #8a4b1c;background:#c98a3c;color:#fff3d0;font:400 .85rem var(--font-h);cursor:pointer}
+html[data-skin="petualangan"] .rpgbox{display:flex;gap:12px;align-items:stretch;position:relative;background:#fff7dc;border:5px solid #c98a3c;border-radius:0 16px 16px 16px;padding:10px 14px 10px 10px;box-shadow:0 8px 0 rgba(75,42,14,.6),0 14px 30px rgba(0,0,0,.45);min-height:104px;cursor:pointer}
+html[data-skin="petualangan"] .rpgav{flex:none;width:84px;height:84px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#ffe9a0,#c98a3c);border:4px solid #8a4b1c;display:grid;place-items:center;font-size:3rem;line-height:1}
+html[data-skin="petualangan"] .rpgtx{flex:1;min-width:0}
+html[data-skin="petualangan"] .rpg-en{font:800 1.12rem/1.35 var(--font-b);color:#3a2412;min-height:2.7em;margin:0;overflow-wrap:anywhere}
+html[data-skin="petualangan"] .rpg-id{font:600 .95rem/1.3 var(--font-b);color:#7a5a30;margin:6px 0 0;opacity:0;transition:opacity .3s;overflow-wrap:anywhere}
+html[data-skin="petualangan"] .rpg-id.on{opacity:1}
+html[data-skin="petualangan"] .rpgnext{position:absolute;right:12px;bottom:6px;color:#c98a3c;font-size:1.3rem;animation:rpgblink 1s infinite}
+@keyframes rpgblink{50%{opacity:.2}}
+html[data-skin="petualangan"] .rpgacts{display:flex;gap:10px;margin-top:10px;justify-content:center;flex-wrap:wrap}
+@media (max-height:480px){html[data-skin="petualangan"] .rpg{bottom:6px}
+html[data-skin="petualangan"] .rpgav{width:56px;height:56px;font-size:2.1rem}
+html[data-skin="petualangan"] .rpgbox{min-height:76px;padding:6px 10px 6px 6px}
+html[data-skin="petualangan"] .rpg-en{font-size:.98rem;min-height:2.6em}
+html[data-skin="petualangan"] .rpg-id{font-size:.85rem;margin-top:3px}
+html[data-skin="petualangan"] .rpgname{padding:3px 14px;font-size:1rem}
+html[data-skin="petualangan"] .rpgacts{margin-top:6px}}
+html[data-skin="petualangan"] .mist{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity 2.4s ease;background:radial-gradient(ellipse at 50% 55%,rgba(var(--tint),.16) 0%,rgba(var(--tint),.38) 58%,rgba(8,6,22,.70) 100%),rgba(26,24,44,.16)}
+html[data-skin="petualangan"] .mist .mf{position:absolute;width:70%;height:55%;border-radius:50%;background:radial-gradient(closest-side,rgba(235,238,255,.46),rgba(235,238,255,0));will-change:transform;animation:mistdrift 22s ease-in-out infinite alternate}
+html[data-skin="petualangan"] .mist .mf.a{left:-15%;top:12%}
+html[data-skin="petualangan"] .mist .mf.b{left:45%;top:48%;animation-duration:28s;animation-delay:-9s}
+html[data-skin="petualangan"] .mist .mf.c{left:10%;top:62%;width:90%;animation-duration:34s;animation-delay:-16s}
+@keyframes mistdrift{from{transform:translateX(-6%) scale(1)}to{transform:translateX(12%) scale(1.15)}}
+html[data-skin="petualangan"] .mist.lift{opacity:0}
+html[data-skin="petualangan"] .mist.lift::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,244,190,.6),rgba(255,244,190,0) 70%);animation:mistflash 1.8s ease-out forwards}
+@keyframes mistflash{from{opacity:1}to{opacity:0}}
+html[data-skin="petualangan"] .mist.fx-lite .mf{animation:none;will-change:auto}
+html[data-skin="petualangan"] .mist.fx-off .mf{display:none}
+html[data-skin="petualangan"] .mist.fx-off{background:rgba(var(--tint),.12)}
+@media (prefers-reduced-motion:reduce){html[data-skin="petualangan"] .mist .mf{animation:none}}
+@keyframes gumpalblink{0%,82%{transform:translateX(0)}84%{transform:translateX(-192px)}86%{transform:translateX(-384px)}88%{transform:translateX(-576px)}90%,100%{transform:translateX(0)}}
+html[data-skin="petualangan"] .gumpal-blink-sheet{animation:gumpalblink 5.2s steps(1,end) infinite}
+@media (prefers-reduced-motion:reduce){html[data-skin="petualangan"] .gumpal-blink-sheet{animation:none}}
+@keyframes mangry{0%{transform:scale(1)}25%{transform:scale(1.28,.86) rotate(-6deg)}50%{transform:scale(.92,1.2) rotate(6deg)}75%{transform:scale(1.2,.9) rotate(-4deg)}100%{transform:scale(1)}}
+html[data-skin="petualangan"] #world .mon.angry{animation:mangry .65s ease-in-out;transform-box:fill-box;transform-origin:center bottom;filter:hue-rotate(-18deg) saturate(2.2) brightness(1.15)}
+html[data-skin="petualangan"] #owlfly{position:fixed;left:0;top:0;width:64px;height:54px;line-height:1;z-index:95;pointer-events:none;display:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));will-change:transform}
+html[data-skin="petualangan"] .owlletter{position:fixed;z-index:94;font-size:28px;pointer-events:none}
+html[data-skin="petualangan"] .owlskip{position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top,0px));z-index:96}
+html[data-skin="petualangan"] .pwa-bar{height:18px;border-radius:99px;background:rgba(0,0,0,.2);border:3px solid var(--wood3);overflow:hidden;margin:10px 0 6px}
+html[data-skin="petualangan"] .pwa-rec{border-left:5px solid #f08a2e;background:rgba(240,138,46,.14);border-radius:8px;padding:8px 12px;margin:0 0 6px}
+html[data-skin="petualangan"] .pwa-rec p{margin:0 0 4px}
+html[data-skin="petualangan"] .pwa-rec ul{margin:0;padding-left:20px}
+html[data-skin="petualangan"] .pwa-rec li{margin:2px 0}
+html[data-skin="petualangan"] .pwa-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5fd06a,#98e88a);transition:width .2s linear}
+html[data-skin="petualangan"] .rpgav-story{height:132px;overflow:hidden}
+html[data-skin="petualangan"] .rpgsprite{display:block;width:100%;height:100%;overflow:hidden}
+html[data-skin="petualangan"] .rpgsprite .nbub{display:none}
+@media (max-height:480px){html[data-skin="petualangan"] .rpgav-story{height:84px}}
+html[data-skin="petualangan"] .owl-sprite{position:relative;display:inline-block;width:96px;height:81px;vertical-align:middle}
+html[data-skin="petualangan"] .owl-sprite img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;pointer-events:none}
+html[data-skin="petualangan"] .owl-sprite .ow-idle{opacity:1}
+html[data-skin="petualangan"] #owlfly .owl-sprite{width:100%;height:100%}
+html[data-skin="petualangan"] .rpgav .owl-sprite{width:110%;height:100%}
+html[data-skin="petualangan"] .owl-sprite[data-pose=idle] .ow-idle{animation:owOpen 5s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=idle] .ow-blink{animation:owBlink 5s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=fly] .ow-idle,html[data-skin="petualangan"] .owl-sprite[data-pose=land] .ow-idle,html[data-skin="petualangan"] .owl-sprite[data-pose=happy] .ow-idle{opacity:0}
+html[data-skin="petualangan"] .owl-sprite[data-pose=fly] .ow-up{animation:owUp .56s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=fly] .ow-out{animation:owOut .56s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=fly] .ow-down{animation:owDown .56s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=land] .ow-land,html[data-skin="petualangan"] .owl-sprite[data-pose=happy] .ow-happy{opacity:1}
+html[data-skin="petualangan"] .owl-sprite[data-pose=talk] .ow-idle{animation:owQuiet 2.8s step-end infinite}
+html[data-skin="petualangan"] .owl-sprite[data-pose=talk] .ow-talk{animation:owTalk 2.8s step-end infinite}
+@keyframes owOpen{0%,94%,100%{opacity:1}95%,98%{opacity:0}}
+@keyframes owBlink{0%,94%,100%{opacity:0}95%,98%{opacity:1}}
+@keyframes owUp{0%,100%{opacity:1}25%,99.99%{opacity:0}}
+@keyframes owOut{0%,50%,100%{opacity:0}25%,75%{opacity:1}}
+@keyframes owDown{0%,75%,100%{opacity:0}50%{opacity:1}}
+@keyframes owQuiet{0%,65%,100%{opacity:1}20%{opacity:0}}
+@keyframes owTalk{0%,65%,100%{opacity:0}20%{opacity:1}}
+html[data-skin="petualangan"] .owl-sprite.fx-off img{animation:none!important;opacity:0!important}
+html[data-skin="petualangan"] .owl-sprite.fx-off .ow-idle{opacity:1!important}
+@media(prefers-reduced-motion:reduce){html[data-skin="petualangan"] .owl-sprite img{animation:none!important;opacity:0!important}
+html[data-skin="petualangan"] .owl-sprite .ow-idle{opacity:1!important}}
+html[data-skin="petualangan"] #xapp .wrap.g{max-width:900px}
+html[data-skin="petualangan"] #xapp .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 18px;flex-wrap:wrap}
+html[data-skin="petualangan"] #xapp .brand{display:flex;align-items:center;gap:12px;font:400 1.5rem var(--font-h);color:var(--wood3)}
+html[data-skin="petualangan"] #xapp .seg{display:flex;gap:8px;flex-wrap:wrap}
+html[data-skin="petualangan"] #xapp .seg button{padding:6px 14px;border:3px solid var(--wood2);border-radius:12px;background:var(--parch);font:400 .95rem var(--font-h);color:var(--wood3)}
+html[data-skin="petualangan"] #xapp .seg button.on{background:linear-gradient(180deg,#ffc95e,#f08a1e);color:#fff8e6;text-shadow:0 2px 0 #8a3f0c}
+html[data-skin="petualangan"] #xapp .tw{overflow-x:auto;margin:10px 0}
+html[data-skin="petualangan"] #xapp table{border-collapse:collapse;width:100%;min-width:520px}
+html[data-skin="petualangan"] #xapp th,html[data-skin="petualangan"] #xapp td{border:2px solid var(--wood2);padding:8px 10px;text-align:left;font-size:.93rem;vertical-align:top}
+html[data-skin="petualangan"] #xapp th{background:linear-gradient(180deg,#ffc95e,#f08a1e);color:#fff8e6;font-family:var(--font-h);font-weight:400;text-shadow:0 2px 0 #8a3f0c}
+html[data-skin="petualangan"] #xapp td{background:#fffaf0}
+html[data-skin="petualangan"] #xapp .info p{margin:8px 0}
+html[data-skin="petualangan"] #xapp .info ul{margin:8px 0 8px 20px}
+html[data-skin="petualangan"] #xapp .info h2,html[data-skin="petualangan"] #xapp .info h3,html[data-skin="petualangan"] #xapp .card h2,html[data-skin="petualangan"] #xapp .card h3{color:var(--wood2)}
+html[data-skin="petualangan"] #xapp .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+html[data-skin="petualangan"] #xapp .tbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:4px solid var(--wood3);border-radius:0 0 16px 16px;padding:8px 10px 10px;margin-bottom:12px;box-shadow:0 5px 0 rgba(0,0,0,.3)}
+html[data-skin="petualangan"] #xapp .trow{display:flex;align-items:center;gap:12px}
+html[data-skin="petualangan"] #xapp .trow .gtt{flex:1;margin:0;font:400 1.2rem var(--font-h);color:#fff3d0;text-shadow:0 2px 0 var(--wood3)}
+html[data-skin="petualangan"] #xapp .pal{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+html[data-skin="petualangan"] #xapp .pn{width:34px;height:34px;border-radius:9px;border:3px solid var(--wood3);background:var(--parch);font:400 .9rem var(--font-h);color:var(--wood3)}
+html[data-skin="petualangan"] #xapp .pn.on{background:linear-gradient(180deg,#98e88a,#3fa84a);color:#0a3a14}
+html[data-skin="petualangan"] #xapp .sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+html[data-skin="petualangan"] #xapp .sh b{font:400 1.1rem var(--font-h);color:var(--wood2)}
+html[data-skin="petualangan"] #xapp .player{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border:3px dashed var(--wood2);border-radius:14px;margin-bottom:8px}
+html[data-skin="petualangan"] #xapp .scriptbox{padding:12px;border:3px solid var(--wood2);border-radius:12px;background:#fffaf0;color:var(--ink);margin:8px 0}
+html[data-skin="petualangan"] #xapp .rd{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:900px){html[data-skin="petualangan"] #xapp .rd{grid-template-columns:1fr 1fr;align-items:start}}
+html[data-skin="petualangan"] #xapp .passage{padding:16px;border:3px solid var(--wood2);border-radius:14px;background:#fffaf0;color:var(--ink)}
+html[data-skin="petualangan"] #xapp .passage h4{font-size:1.05rem;margin:10px 0 4px;color:#a8531a}
+html[data-skin="petualangan"] #xapp .passage p{margin:8px 0}
+html[data-skin="petualangan"] #xapp .q{padding:14px 0;border-bottom:2px dashed rgba(138,75,28,.4)}
+html[data-skin="petualangan"] #xapp .q:last-child{border:0}
+html[data-skin="petualangan"] #xapp .qn{display:inline-grid;place-items:center;min-width:32px;height:32px;padding:0 6px;border-radius:50%;border:3px solid var(--wood3);background:linear-gradient(180deg,#ffd98a,#f5a53a);color:#7a2a0a;font:400 .95rem var(--font-h);margin-right:8px}
+html[data-skin="petualangan"] #xapp .choices{display:grid;gap:8px;margin-top:10px}
+html[data-skin="petualangan"] #xapp .choice{display:flex;gap:10px;align-items:center;text-align:left;padding:10px 14px;font-weight:800;color:var(--ink);background:var(--parch);border:3px solid var(--wood2);border-radius:14px;box-shadow:0 3px 0 var(--wood3)}
+html[data-skin="petualangan"] #xapp .choice:hover{background:#fff8e2}
+html[data-skin="petualangan"] #xapp .choice:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood3)}
+html[data-skin="petualangan"] #xapp .choice kbd{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--wood2);display:grid;place-items:center;font:400 .9rem var(--font-h);background:var(--parch2);color:var(--wood3)}
+html[data-skin="petualangan"] #xapp .choice.on{background:linear-gradient(180deg,#ffe28a,#f5a53a);border-color:#a8531a}
+html[data-skin="petualangan"] #xapp .tf{grid-template-columns:repeat(3,1fr)}
+html[data-skin="petualangan"] #xapp .tf .choice{justify-content:center;text-align:center}
+html[data-skin="petualangan"] #xapp .fill{font:800 1.05rem var(--font-b);padding:6px 12px;border:3px solid var(--wood2);border-radius:10px;background:#fffaf0;color:var(--ink);width:min(210px,100%);margin:2px 6px}
+html[data-skin="petualangan"] #xapp .ta{width:100%;font:700 1.05rem var(--font-b);padding:14px;border:3px solid var(--wood2);border-radius:14px;background:#fffaf0;color:var(--ink);resize:vertical;min-height:170px;margin-top:10px}
+html[data-skin="petualangan"] #xapp .fill:focus,html[data-skin="petualangan"] #xapp .ta:focus{outline:none;border-color:#2b7bd9}
+html[data-skin="petualangan"] #xapp .wcount{font-size:.9rem;color:var(--muted);margin-top:6px}
+html[data-skin="petualangan"] #xapp .wcount.ok{color:#1f8a3a}
+html[data-skin="petualangan"] #xapp .note{font-size:.85rem;color:var(--muted);margin-top:8px}
+html[data-skin="petualangan"] #xapp .chart{display:grid;gap:8px;margin:12px 0;padding:14px;border:3px solid var(--wood2);border-radius:14px;background:#fffaf0;color:var(--ink)}
+html[data-skin="petualangan"] #xapp .chart .br{display:grid;grid-template-columns:80px 1fr 28px;gap:10px;align-items:center;font-weight:800}
+html[data-skin="petualangan"] #xapp .chart .bar{height:20px;border:3px solid var(--wood3);border-radius:6px;background:linear-gradient(180deg,#8fd6ff,#3a8ee6)}
+html[data-skin="petualangan"] #xapp .cue{padding:16px;margin:12px 0;background:linear-gradient(180deg,#ffe3a0,#f5c25a);border:4px solid var(--wood2);border-radius:16px;color:#5a2a05}
+html[data-skin="petualangan"] #xapp .cue ul{margin:6px 0 0 20px}
+html[data-skin="petualangan"] #xapp .bubble{background:#fffaf0;color:var(--ink);border:3px solid var(--wood2);border-radius:18px 18px 18px 4px;padding:14px 18px;font:800 1.15rem var(--font-b);margin:12px 0;box-shadow:0 4px 0 var(--wood3)}
+html[data-skin="petualangan"] #xapp .timebar{height:16px;border:3px solid var(--wood3);border-radius:99px;background:#3a2a1a;overflow:hidden;margin:10px 0}
+html[data-skin="petualangan"] #xapp .timebar i{display:block;height:100%;background:linear-gradient(90deg,#ffd24a,#f08a1e);transition:width 1s linear}
+html[data-skin="petualangan"] #xapp .tr{padding:12px;border:3px dashed var(--wood2);border-radius:12px;min-height:60px;color:var(--muted)}
+html[data-skin="petualangan"] #xapp .score{font:400 3rem var(--font-h);color:#f08a1e;text-shadow:0 3px 0 var(--wood3)}
+html[data-skin="petualangan"] #xapp .rv{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:3px solid var(--wood2);border-radius:14px;margin-top:8px;color:#1d1a3a}
+html[data-skin="petualangan"] #xapp .rv.ok{background:linear-gradient(180deg,#d4f8cc,#9fe090)}
+html[data-skin="petualangan"] #xapp .rv.no{background:linear-gradient(180deg,#ffd8d2,#ffa89e)}
+html[data-skin="petualangan"] #xapp .rv small{display:block;font-weight:700;opacity:.85}
+html[data-skin="petualangan"] #xapp .res4{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+html[data-skin="petualangan"] #xapp .rc{padding:14px;text-align:center;background:var(--c);border:4px solid var(--wood2);border-radius:18px;box-shadow:0 4px 0 var(--wood3);color:#1d1a3a}
+html[data-skin="petualangan"] #xapp .rc .score{font-size:2.4rem;color:#1d1a3a;text-shadow:none}
+html[data-skin="petualangan"] #xapp .crit{display:grid;gap:10px;margin:12px 0}
+html[data-skin="petualangan"] #xapp .crit .t{font-weight:800;color:var(--wood2)}
+html[data-skin="petualangan"] #xapp .met{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+html[data-skin="petualangan"] #xapp details{margin-top:10px}
+html[data-skin="petualangan"] #xapp summary{cursor:pointer;font-weight:800;color:var(--wood2)}
+html[data-skin="petualangan"] #xapp .copybox{width:100%;min-height:110px;font:700 .9rem var(--font-b);padding:10px;border:3px solid var(--wood2);border-radius:12px;background:#fffaf0;color:var(--ink)}
+html[data-skin="petualangan"] #xapp .hrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:2px dashed rgba(138,75,28,.4)}
+html[data-skin="petualangan"] #xapp .hrow:last-child{border:0}
+@media (max-width:760px){html[data-skin="petualangan"] #xapp .two{grid-template-columns:1fr}}
+@media (max-width:560px){html[data-skin="petualangan"] #xapp .tf{grid-template-columns:1fr}
+html[data-skin="petualangan"] #xapp .chart .br{grid-template-columns:64px 1fr 24px}}
+
+.travel{position:fixed;inset:0;z-index:200;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 45%,#c58bff 0%,#5b1fb0 45%,#1a0638 100%);color:#fff;font:400 clamp(1.3rem,4vw,2.4rem) 'Lilita One','Fredoka',sans-serif;opacity:0;pointer-events:none;transition:opacity .3s}
+.travel.show{opacity:1;pointer-events:auto}
+html.adv-full,html.adv-full body{overflow:hidden;height:100%;overscroll-behavior:none}
+html.no-kb .kb,html.no-kb .kbhint,html.no-kb .opt kbd,html.no-kb .encopt kbd{display:none!important}
+html,body{-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none;touch-action:pan-x pan-y}
+*{-webkit-user-select:none;user-select:none}
+input,textarea,select,.copybox{-webkit-user-select:text;user-select:text}
+.tv-ring{width:min(40vw,200px);height:min(40vw,200px);margin:0 auto 18px;border-radius:50%;border:12px solid rgba(255,255,255,.35);border-top-color:#ffd24a;animation:tvspin 1s linear infinite}
+@keyframes tvspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.tv-ring{animation:none}.travel{transition:none}}
+
+
+html .qstrip{margin:14px 0 0;padding-bottom:22px}   /* the html prefix makes these spacings win over the skin's margin reset */
+.qstrip .darena{display:flex;align-items:flex-end;justify-content:space-between;position:relative;container-type:inline-size;padding:4px 12px 0;border:3px solid #8a4b1c;border-radius:16px;background:linear-gradient(180deg,#ffe3a6 0,#ffc95e 60%,#8fc650 60%,#6fae3d 100%);overflow:hidden}
+.qstrip .dhero{height:92px;width:auto;flex:none;overflow:visible}
+.qstrip .dmon{height:70px;width:auto;flex:none;overflow:visible;transform:translateX(calc(var(--p,0) * -46cqw))}
+.qstrip .dmon.atk{animation:qdash .6s ease-in-out forwards}
+@keyframes qdash{0%{transform:translateX(calc(var(--p,0) * -46cqw))}38%{transform:translateX(calc(-100cqw + 190px))}100%{transform:translateX(calc(var(--p,0) * -26cqw))}}
+.qstrip .dmon.mhit{animation:qknock .5s ease-out .27s both}
+@keyframes qknock{0%{transform:translateX(calc(var(--p,0) * -46cqw));filter:none}20%{transform:translateX(calc(var(--p,0) * -46cqw + 20px)) scale(1.12,.86);filter:brightness(2.6) saturate(.3)}100%{transform:translateX(calc(var(--p,0) * -46cqw));filter:none}}
+.qstrip .dhero.hit{animation:qhurt .45s ease-out .22s both}
+@keyframes qhurt{0%{transform:none}25%{transform:translateX(-14px) rotate(-6deg);filter:brightness(2) sepia(1) hue-rotate(-30deg)}100%{transform:none}}
+.qstrip .dbullet{position:absolute;left:78px;bottom:42px;width:14px;height:14px;border-radius:50%;background:var(--c,#4fd8ff);border:2px solid #fff;box-shadow:0 0 12px var(--c,#4fd8ff);animation:qshot .26s linear .04s both}
+@keyframes qshot{0%{transform:translateX(0);opacity:1}88%{opacity:1}100%{transform:translateX(calc(100cqw - calc(var(--p,0) * 46cqw) - 230px));opacity:0}}
+.qstrip .dnum{position:absolute;right:calc(var(--p,0) * 46cqw + 40px);bottom:76px;font:400 1.5rem inherit;font-weight:800;color:#ffe35a;-webkit-text-stroke:3px #2b1a10;paint-order:stroke fill;animation:qnum .85s ease-out .27s both}
+@keyframes qnum{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+html .qtbar{position:relative;height:20px;margin-top:14px;border-radius:10px;background:#3a2412;overflow:hidden;border:2px solid #8a4b1c}
+.qtbar i{display:block;height:100%;background:linear-gradient(90deg,#f0951e,#ffd24a);transition:width .1s linear}
+.qtbar.low i{background:linear-gradient(90deg,#e23a2a,#ff8a5a)}
+.qtbar b{position:absolute;right:8px;top:0;font-weight:800;font-size:.85rem;line-height:16px;color:#fff;text-shadow:0 1px 0 #000}
+@media (max-height:480px){html .qstrip{margin-top:8px;padding-bottom:12px}.qstrip .dhero{height:58px}.qstrip .dmon{height:44px}.qstrip .darena{padding-top:2px}html .qtbar{height:14px;margin-top:8px}.qtbar b{font-size:.75rem;line-height:10px}.qstrip .dbullet{bottom:26px}.qstrip .dnum{bottom:44px}}
+html .tile{min-width:0;overflow:hidden}
+html .tile span{overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){.qstrip *{animation:none!important}}
+
+/* ===== Menu depan (selalu bergaya Petualangan; html[data-skin] dipaksa saat menu tampil) ===== */
+html.titling,html.titling body{overflow:hidden;height:100%;overscroll-behavior:none}
+html.titling #app,html.titling #xapp{display:none!important}
+#title[hidden]{display:none}
+#title{--u:min(1cqmin,5px);position:fixed;inset:0;z-index:40;overflow:hidden;container-type:size;background:#2a1a08;color:#fff3d0;font-family:'Nunito','Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+#title button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#title button:focus-visible{outline:calc(var(--u)*.9) solid #fff;outline-offset:calc(var(--u)*.6)}
+
+/* tema tunggal: senja */
+#title.t-dusk{--tb-l:#d46f70;--tb-c:#e7725e;--tb-r:#db716c}
+
+@keyframes tFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(10px,-16px)}}
+
+/* bilah atas: nyawa, berlian, XP */
+#title .t-top{position:absolute;left:0;right:0;top:calc(var(--u)*2 + env(safe-area-inset-top,0px));display:flex;justify-content:center;gap:calc(var(--u)*5.5);padding:0 calc(var(--u)*6) 0 calc(var(--u)*7);z-index:3}
+#title .t-pill{position:relative;flex:1 1 0;max-width:calc(var(--u)*31);min-width:0;height:calc(var(--u)*9);display:flex;align-items:center;justify-content:center;border:calc(var(--u)*.8) solid #4b2a0e;border-radius:99px;background:linear-gradient(180deg,#b06a22,#7a3e12);box-shadow:0 calc(var(--u)*.9) 0 rgba(50,25,6,.55),inset 0 calc(var(--u)*.7) 0 rgba(255,216,150,.35);padding:0 calc(var(--u)*5.2) 0 calc(var(--u)*7);font:400 calc(var(--u)*4.7) 'Lilita One','Fredoka','Trebuchet MS',sans-serif;color:#fff3d0;text-shadow:0 calc(var(--u)*.45) 0 #4b2a0e;white-space:nowrap}
+#title .t-pill .ti{position:absolute;left:calc(var(--u)*-1.6);top:50%;transform:translateY(-50%);width:calc(var(--u)*11.2);height:calc(var(--u)*11.2);display:grid;place-items:center;font-size:calc(var(--u)*6.4);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8e4,#efca83);border:calc(var(--u)*.8) solid #4b2a0e;box-shadow:0 calc(var(--u)*.7) 0 rgba(50,25,6,.5);text-shadow:none}
+#title .t-pill small{font-size:.62em;opacity:.8;margin-left:.2em}
+#title .tplus{position:absolute;right:calc(var(--u)*-1.4);top:50%;transform:translateY(-50%);width:calc(var(--u)*8.6);height:calc(var(--u)*8.6);display:grid;place-items:center;padding:0;border-radius:calc(var(--u)*2.4);border:calc(var(--u)*.8) solid #8a4b1c;background:linear-gradient(180deg,#ffe27a,#f5a53a);color:#fff;font:400 calc(var(--u)*7) 'Lilita One',sans-serif;line-height:1;text-shadow:0 calc(var(--u)*.45) 0 #8a4b1c;box-shadow:0 calc(var(--u)*.7) 0 #6a3a10}
+#title .tplus::after{content:'';position:absolute;inset:calc(var(--u)*-2)}
+#title .tplus:active{transform:translateY(-46%)}
+
+/* tombol samping */
+#title .t-side{position:absolute;top:calc(var(--u)*17 + env(safe-area-inset-top,0px));display:grid;gap:calc(var(--u)*3.6);z-index:3}
+#title .t-left{left:calc(var(--u)*2.4)}
+#title .t-right{right:calc(var(--u)*2.4)}
+#title .t-sq{position:relative;width:calc(var(--u)*14);display:grid;justify-items:center;gap:calc(var(--u)*.9);padding:0;background:none;border:0;color:#fff3d0}
+#title .t-sq .ic{width:calc(var(--u)*14);height:calc(var(--u)*14);display:grid;place-items:center;font-size:calc(var(--u)*7.8);border-radius:calc(var(--u)*3.2);border:calc(var(--u)*.9) solid #4b2a0e;background:linear-gradient(180deg,#fff0c4,#efc064);box-shadow:0 calc(var(--u)*1) 0 #6a3a10,inset 0 0 0 calc(var(--u)*.7) rgba(255,255,255,.4);line-height:1}
+#title .t-sq .ic svg{width:84%;height:84%}
+#title .t-sq .ic img{width:84%;height:84%;object-fit:contain}
+#title .t-sq:active .ic{transform:translateY(calc(var(--u)*.7))}
+#title .lb{padding:calc(var(--u)*.1) calc(var(--u)*1.8);background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:calc(var(--u)*.6) solid #4b2a0e;border-radius:calc(var(--u)*1.3);color:#fff3d0;font:400 calc(var(--u)*3.3) 'Lilita One','Fredoka',sans-serif;text-shadow:0 calc(var(--u)*.4) 0 #4b2a0e;white-space:nowrap;line-height:1.35}
+#title .t-sq .bdg{position:absolute;top:calc(var(--u)*-1.6);right:calc(var(--u)*-1.4);min-width:calc(var(--u)*5.6);height:calc(var(--u)*5.6);padding:0 calc(var(--u)*1.1);display:grid;place-items:center;border-radius:99px;background:#ff4f6a;border:calc(var(--u)*.55) solid #fff;color:#fff;font:800 calc(var(--u)*3.3) 'Nunito',sans-serif;font-style:normal}
+
+/* logo */
+#title .t-logo{position:absolute;left:50%;top:calc(var(--u)*16.5 + env(safe-area-inset-top,0px));transform:translateX(-50%);width:min(62cqw,calc(var(--u)*96));z-index:2;pointer-events:none;display:grid;justify-items:center;gap:calc(var(--u)*1)}
+#title .t-logosvg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 calc(var(--u)*1) 0 rgba(60,30,6,.35));animation:tLogo 3.6s ease-in-out infinite}
+#title .t-sub{padding:calc(var(--u)*.6) calc(var(--u)*4.2);background:linear-gradient(180deg,#c98a3c,#8a4b1c);border:calc(var(--u)*.8) solid #4b2a0e;border-radius:calc(var(--u)*2);color:#fff3d0;font:400 calc(var(--u)*3.7) 'Lilita One','Fredoka',sans-serif;letter-spacing:.04em;text-shadow:0 calc(var(--u)*.45) 0 #4b2a0e;box-shadow:0 calc(var(--u)*.9) 0 rgba(50,25,6,.5);white-space:nowrap}
+@keyframes tLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--u)*-1.2))}}
+
+/* tombol bawah: Opsi, Mulai, Cara Main */
+#title .t-bottom{position:absolute;left:0;right:0;bottom:calc(var(--u)*3 + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:calc(var(--u)*2.4);z-index:3}
+#title .t-resume{padding:calc(var(--u)*.7) calc(var(--u)*3.6);border-radius:99px;background:rgba(60,32,8,.72);border:calc(var(--u)*.5) solid rgba(255,230,170,.55);color:#fff3d0;font:800 calc(var(--u)*3.2) 'Nunito',sans-serif;white-space:nowrap}
+#title .t-brow{display:flex;align-items:flex-end;justify-content:space-between;width:min(94cqw,calc(var(--u)*92));padding:0 calc(var(--u)*3)}
+#title .t-b{display:grid;justify-items:center;gap:calc(var(--u)*1.4)}
+#title .t-round{display:grid;place-items:center;padding:0;border-radius:50%;border:calc(var(--u)*1.1) solid #4b2a0e;background:radial-gradient(circle at 35% 28%,#ffdc92,#d98a2b 58%,#a85d17);box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28);color:#fff;font:400 calc(var(--u)*9) 'Lilita One',sans-serif;text-shadow:0 calc(var(--u)*.6) 0 #5a300c;line-height:1}
+#title .t-round.t-opt,#title .t-round.t-help{width:calc(var(--u)*17);height:calc(var(--u)*17)}
+#title .t-round.t-opt span{font-size:calc(var(--u)*9.5);text-shadow:none}
+#title .t-round.play{width:calc(var(--u)*27);height:calc(var(--u)*27);background:radial-gradient(circle at 35% 26%,#ffd27a,#ff9a2e 52%,#e2620f);border-width:calc(var(--u)*1.3);animation:tPulse 2.2s ease-in-out infinite}
+#title .t-round.play svg{width:46%;height:46%;margin-left:6%;filter:drop-shadow(0 calc(var(--u)*.6) 0 rgba(120,50,0,.6))}
+#title .t-round:active{transform:translateY(calc(var(--u)*.9))}
+#title .t-b.main .lb{font-size:calc(var(--u)*4.4);padding:calc(var(--u)*.3) calc(var(--u)*3.2)}
+@keyframes tPulse{0%,100%{box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),0 0 0 0 rgba(255,214,110,.75),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28)}60%{box-shadow:0 calc(var(--u)*1.4) 0 #5a300c,0 calc(var(--u)*2.6) calc(var(--u)*3) rgba(0,0,0,.3),0 0 0 calc(var(--u)*4.5) rgba(255,214,110,0),inset 0 0 0 calc(var(--u)*.8) rgba(255,255,255,.28)}}
+
+/* jendela (memakai gaya panel Petualangan) */
+#title #tovl{position:absolute;inset:0;z-index:20;display:none;background:rgba(25,12,2,.58)}
+#title #tovl.show{display:block}
+#title #tovl .mpanel{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(580px,calc(100% - 20px));max-height:calc(100% - 26px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0}
+#title #tovl .mbody{min-height:0}
+#title #tovl .t-mini{width:90px;height:12px;border-radius:99px;background:#3a2a1a;border:3px solid #4b2a0e;overflow:hidden}
+#title #tovl .t-mini i{display:block;height:100%;background:linear-gradient(90deg,#5fd06a,#98e88a)}
+#title #tovl .t-prof{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+#title #tovl .t-pav{flex:none;width:76px;height:76px;border-radius:18px;border:4px solid #4b2a0e;background:linear-gradient(180deg,#fff0c4,#efc064);display:grid;place-items:center}
+#title #tovl .t-pav svg{width:88%;height:88%}
+#title #tovl .t-prof h3{font-size:1.4rem;color:#8a4b1c}
+#title #tovl .t-prof .bar{margin:6px 0 4px}
+#title #tovl .t-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+#title #tovl .t-stat{display:flex;gap:10px;align-items:center;padding:10px 12px;border:3px solid #8a4b1c;border-radius:14px;background:#fffaf0}
+#title #tovl .t-stat span{font-size:1.7rem;line-height:1}
+#title #tovl .t-stat span img{width:1.7rem;height:1.7rem;object-fit:contain;vertical-align:middle}
+#title #tovl .t-stat b{display:block;font-size:1.15rem;color:#4a2a0e}
+#title #tovl .t-stat small{color:#8a6a45;font-weight:800}
+
+@media (orientation:portrait) and (max-height:700px){
+  #title .t-resume{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  #title *{animation:none!important}
+}
+
+/* menu jeda */
+#gmenu{position:fixed;inset:0;z-index:150;display:none;background:rgba(25,12,2,.6)}
+#gmenu.show{display:block}
+#gmenu .mpanel{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(420px,calc(100% - 24px));min-height:0}
+#gmenu .pmlist{display:grid;gap:12px}
+#gmenu .pmlist .btn{width:100%;text-align:center;padding:14px 18px;font-size:1.15rem}
+#gmenu .note{margin-top:12px}
+
+/* pemain bernapas saat diam: dada naik sedikit, berpusat di kaki; berhenti saat berjalan */
+.hbreath{transform-box:fill-box;transform-origin:50% 100%;animation:hBreathe 3.6s ease-in-out infinite}
+#pl.mv .hbreath{animation:none}
+@keyframes hBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.992,1.018)}}
+@media (prefers-reduced-motion:reduce){.hbreath{animation:none}}
+
+/* kedipan acak: lapisan mata tertutup menyala sekitar 0,15 detik; dua irama berbeda untuk pose diam dan berjalan */
+.hblink{opacity:0}
+.hb1{animation:hBlinkA 8.6s linear infinite}
+.hb2{animation:hBlinkB 7.3s linear infinite -2.1s}
+@keyframes hBlinkA{0%,29.9%{opacity:0}30%,31.8%{opacity:1}31.9%,73.9%{opacity:0}74%,75.8%{opacity:1}75.9%,78.9%{opacity:0}79%,80.8%{opacity:1}80.9%,100%{opacity:0}}
+@keyframes hBlinkB{0%,19.9%{opacity:0}20%,22.1%{opacity:1}22.2%,61.9%{opacity:0}62%,64.1%{opacity:1}64.2%,89.9%{opacity:0}90%,92.1%{opacity:1}92.2%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.hblink{animation:none}}
+
+/* lukisan halaman depan (1536 x 1024, lebar), selalu memenuhi seluruh layar seperti peta hutan dan Istana:
+   --iw, --ih = lebar dan tinggi lukisan yang tampil; --il, --it = tepi kiri dan atasnya (boleh negatif, berarti terpotong).
+   Letak pemain dan matahari dihitung dari pecahan lukisan lewat nilai-nilai ini.
+   - layar tegak: lukisan setinggi min(155cqw, 77cqh), ditempel di dasar dan digeser agar kastil, matahari, dan jalan terlihat;
+     langit di atasnya diperpanjang dengan warna tepi lukisan (--tb-*).
+   - layar lebar: lukisan menutupi seluruh layar (cover) dengan titik fokus vertikal 60 persen. */
+#title .t-stage{--ih:min(155cqw,77cqh);--iw:calc(1.5 * var(--ih));--il:calc(50% - .78 * var(--ih));--it:calc(100cqh - var(--ih));position:absolute;inset:0;container-type:size;overflow:hidden;background:linear-gradient(to right,var(--tb-l),var(--tb-c),var(--tb-r))}
+#title .t-bg{position:absolute;left:var(--il);top:var(--it);width:var(--iw);height:var(--ih);max-width:none;display:block;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 9%);mask-image:linear-gradient(to bottom,transparent 0,#000 9%);user-select:none}
+#title .t-sunglow{position:absolute;left:calc(var(--il) + .5 * var(--iw));top:calc(var(--it) + .25 * var(--ih));width:calc(.55 * var(--ih));height:calc(.55 * var(--ih));transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,244,190,.5),rgba(255,244,190,0) 62%);mix-blend-mode:screen;pointer-events:none;animation:tGlow 6.5s ease-in-out infinite}
+#title .t-flies{position:absolute;inset:0;pointer-events:none}
+#title .t-fly{position:absolute;width:calc(var(--u)*1.1);height:calc(var(--u)*1.1);border-radius:50%;background:#fff6a8;box-shadow:0 0 calc(var(--u)*2.6) calc(var(--u)*.9) rgba(255,240,150,.85);opacity:.85;animation:tFloat 6s ease-in-out infinite}
+#title .t-hero{position:absolute;left:calc(var(--il) + .5 * var(--iw));top:calc(var(--it) + .4616 * var(--ih));height:calc(.231 * var(--ih));width:auto;aspect-ratio:60/110;transform:translateX(-50%);overflow:visible;pointer-events:none;z-index:1}
+@keyframes tGlow{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#title .t-sunglow,#title .t-fly{animation:none}}
+@media (min-aspect-ratio:1/1){
+  #title .t-stage{--iw:max(100cqw,150cqh);--ih:calc(var(--iw) / 1.5);--il:calc((100cqw - var(--iw)) * .5);--it:calc((100cqh - var(--ih)) * .6)}
+  #title .t-bg{-webkit-mask-image:none;mask-image:none}
+  #title .t-logo{left:calc(var(--u)*17 + 0px);transform:none;top:calc(var(--u)*12);width:min(30cqw,calc(var(--u)*72))}
+  #title .t-bottom{left:auto;right:calc(var(--u)*5);width:min(46cqw,calc(var(--u)*92))}
+  #title .t-brow{width:100%;padding:0}
+}
+@media (min-aspect-ratio:1/1) and (max-height:430px){
+  #title .t-sub,#title .t-resume{display:none}
+}
+

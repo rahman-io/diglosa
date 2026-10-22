@@ -49,11 +49,8 @@ const escA = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g,
 const GOAL = 20, KEY = 'hoot-a1-v1', TOTAL = WORDS.length;
 
 /* ---------- state ---------- */
-const defaults = () => ({ p: {}, xp: 0, streak: 0, last: '', day: { d: '', n: 0 }, sound: true, topic: -1, map: 'hutan', ctrl: 'joystick', autofs: true, hp: 5, maxhp: 5, gems: 0, gemTotal: 0, kills: 0, diff: 'petualang', won: {}, adv: { done: {}, portal: 0, msgDay: '', castle: 0 } });
-function load() {
-  try { const r = localStorage.getItem(KEY); if (r) return Object.assign(defaults(), JSON.parse(r)); } catch (e) {}
-  return defaults();
-}
+const defaults = () => ({ p: {}, xp: 0, streak: 0, last: '', day: { d: '', n: 0 }, sound: true, topic: -1, map: 'hutan', ctrl: 'joystick', autofs: true, hp: 5, maxhp: 5, gems: 0, gemTotal: 0, kills: 0, diff: 'petualang', won: {}, adv: { done: {}, portal: 0, msgDay: '', castle: 0 }, isVip: false, vipCode: '' });
+function load() {  try { const r = localStorage.getItem(KEY); if (r) { const res = Object.assign(defaults(), JSON.parse(r)); if (!Array.isArray(res.drops)) res.drops = []; return res; } } catch (e) {}  return defaults(); }
 let S = load();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 /* Statistik tanpa identitas (GoatCounter). Tidak melakukan apa pun bila skripnya tidak dimuat (mis. saat main lokal). */
@@ -2316,6 +2313,7 @@ function vHomeA() {
         <button class="abtn" data-a="panel" data-p="msg" aria-label="Pesan"><span class="ic">${forestIcon('message')}</span><span class="lb">Pesan</span>${unread ? '<span class="bdg">1</span>' : ''}</button>
         <button class="abtn" data-a="panel" data-p="quest" aria-label="Misi"><span class="ic">${forestIcon('quest')}</span><span class="lb">Misi</span>${qOpen ? `<span class="bdg">${qOpen}</span>` : ''}</button>
         <button class="abtn" data-a="panel" data-p="world" aria-label="Peta dunia"><span class="ic">${forestIcon('map')}</span><span class="lb">Peta</span></button>
+        <button class="abtn" data-a="panel" data-p="info" aria-label="Informasi & Legal"><span class="ic">${commonIcon('book')}</span><span class="lb">Info</span></button>
         <button class="abtn" data-a="panel" data-p="opt" aria-label="Opsi"><span class="ic">${forestIcon('settings')}</span><span class="lb">Opsi</span></button>
       </div>
       ${controlsHTML(S)}
@@ -2367,7 +2365,9 @@ function dlgHTML() {
 function panelHTML(p) {
   const head = t => `<div class="mpanel" role="dialog" aria-label="${t}"><div class="mhead"><h3>${t}</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody">`;
   let body = '';
-  if (p === 'world') { body = head('Peta Dunia') + worldPanel(INNER_MAPS.includes(S.map) ? S.map : 'hutan'); }
+  if (p === 'vip') { return vipModalHTML(); }
+  else if (p === 'info') { return infoModalHTML(); }
+  else if (p === 'world') { body = head('Peta Dunia') + worldPanel(INNER_MAPS.includes(S.map) ? S.map : 'hutan'); }
   else if (p === 'gem') { body = head('Nyawa dan Berlian') + CM().E.gemBody(); }
   else if (p === 'win') {
     const a = AREAS.find(x => x.id === ADV.winId) || AREAS[0];
@@ -2388,7 +2388,7 @@ function panelHTML(p) {
     body = head('Tas Kata') + gearHTML() + `<p class="sub" style="margin-bottom:10px">Terkumpul ${tot.seen} dari ${tot.n} kata. Ketuk kata untuk mendengar ucapannya.</p>
       <div class="tabs">${AREAS.map((x, k) => `<button class="tabb ${k === ADV.bag ? 'on' : ''}" data-a="bagtab" data-i="${k}" aria-label="${x.name}">${forestIcon(forestAreaIcon(x.id), 'fui-inline')}</button>`).join('')}</div>
       <h4 style="margin-bottom:8px">${a.name}: ${got.length}/${ids.length}</h4>
-      <div class="items">${items}${locked ? `<div class="item lock"><span>❔</span><small>${locked} kata belum ditemukan</small></div>` : ''}</div>
+      <div class="items">${items}${locked ? `<div class="item lock"><span>%3F</span><small>${locked} kata belum ditemukan</small></div>` : ''}</div>
       <div class="actions"><button class="btn sm" data-a="start" data-m="dict">${commonIcon('book', 'cui-inline')} Buka kamus lengkap</button></div>`;
   } else if (p === 'msg') {
     const wi = wotd(), w = WORDS[wi], st = stats();
@@ -2398,7 +2398,7 @@ function panelHTML(p) {
   } else if (p === 'quest') {
     body = head('Daftar Misi') + questList().map(q => `<div class="qrow ${q.done ? 'done' : ''}"><div><b>${q.t}</b><br><small class="sub">${q.d}</small></div>${q.i != null && !q.done ? `<button class="btn sm" data-a="goquest" data-i="${q.i}">Pergi</button>` : '<span></span>'}<div class="bar mini"><span class="m" style="width:${Math.min(100, q.p * 100)}%"></span></div></div>`).join('');
   } else {
-    body = head('Opsi') + HOST.menuBtn() + CM().E.diffHTML() + storyHTML() + ctrlPanelHTML(S) + fxPanelHTML(S) + qtPanelHTML(S) + storyReplayHTML() + pwaPanelHTML() + privacyHTML() + fsPanelHTML(S) + `
+    body = head('Opsi') + HOST.menuBtn() + `<h4 style="margin:16px 0 8px">Akses VIP & Informasi</h4><div class="actions" style="margin-top:0"><button class="btn sm ${S.isVip ? 'mint' : 'coral'}" data-a="openvip">👑 Status VIP: ${S.isVip ? 'Aktif' : 'Demo Gratis (Beli VIP)'}</button><button class="btn sm ghost" data-a="panel" data-p="info">ℹ️ Info Legal & Kontak</button></div>` + CM().E.diffHTML() + storyHTML() + ctrlPanelHTML(S) + fxPanelHTML(S) + qtPanelHTML(S) + storyReplayHTML() + pwaPanelHTML() + privacyHTML() + fsPanelHTML(S) + `
       <h4 style="margin:16px 0 8px">Suara efek</h4><div class="actions" style="margin-top:0"><button class="btn sm ghost" data-a="sound">${commonIcon('speaker', 'cui-inline')} ${S.sound ? 'Nyala' : 'Mati'}</button></div>
       <h4 style="margin:16px 0 8px">Progres</h4><div class="actions" style="margin-top:0"><button class="btn sm coral" data-a="reset">Reset progres</button></div>`;
   }
@@ -2740,10 +2740,64 @@ Object.assign(A, {
   closep() {
     const p = ADV.panel; ADV.panel = null;
     if (p === 'win' && ADV.winq.length) { ADV.panel = 'win'; ADV.winId = ADV.winq.shift(); renderOverlay(); return; }
-    if (['msg', 'quest', 'gem', 'win', 'cavewin', 'vilwin', 'mktwin', 'satwin', 'kotwin', 'wktwin'].includes(p)) render(); else renderOverlay();
+    if (['msg', 'quest', 'gem', 'win', 'cavewin', 'vilwin', 'mktwin', 'satwin', 'kotwin', 'wktwin', 'vip', 'info'].includes(p)) render(); else renderOverlay();
   },
+  infotab(el) { INFO_TAB = el.dataset.tab || el.dataset.t; renderOverlay(); },
+  openinfo(el) { if (el && (el.dataset.tab || el.dataset.t)) INFO_TAB = el.dataset.tab || el.dataset.t; ADV.panel = 'info'; renderOverlay(); },
   bagtab(el) { ADV.bag = +el.dataset.i; renderOverlay(); },
   goquest(el) { ADV.panel = null; render(); toNpc(+el.dataset.i); },
+  openvip() { openVipModal(); },
+  viptab(el) { VIP_TAB = el.dataset.t; renderOverlay(); },
+  async vipcheckout() {
+    const emailEl = document.getElementById('vipemail'), methodEl = document.getElementById('vippaymethod');
+    const email = emailEl ? emailEl.value : '';
+    const paymentMethod = methodEl ? methodEl.value : 'qris';
+    S.vipEmail = email; save();
+    try {
+      toast('Memproses tagihan...');
+      const res = await (await fetch('/api/payment/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, paymentMethod }) })).json();
+      if (res.success) { VIP_PAY_DATA = res; renderOverlay(); }
+      else { toast('Gagal: ' + (res.error || 'Terjadi kesalahan')); }
+    } catch (e) { toast('Masalah jaringan'); }
+  },
+  async vipsandboxpay(el) {
+    try {
+      toast('Mengonfirmasi pembayaran...');
+      const res = await (await fetch('/api/payment/sandbox-confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ transactionId: el.dataset.tx }) })).json();
+      if (res.success) {
+        S.isVip = true; S.vipCode = res.vipCode; save();
+        toast('🎉 ' + res.message);
+        ADV.panel = null; render();
+      } else { toast('Gagal: ' + (res.error || 'Terjadi kesalahan')); }
+    } catch (e) { toast('Masalah jaringan'); }
+  },
+  vipresetpay() { VIP_PAY_DATA = null; renderOverlay(); },
+  async b2bclaim() {
+    const codeEl = document.getElementById('b2bcode'); const code = codeEl ? codeEl.value : '';
+    if (!code) { toast('Masukkan kode lisensi B2B'); return; }
+    try {
+      toast('Memverifikasi kode B2B...');
+      const res = await (await fetch('/api/license/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })).json();
+      if (res.success) {
+        S.isVip = true; S.vipCode = res.vipCode; save();
+        toast('🎉 ' + res.message);
+        ADV.panel = null; render();
+      } else { toast('❌ ' + (res.message || 'Gagal klaim kode')); }
+    } catch (e) { toast('Masalah jaringan'); }
+  },
+  async viprestore() {
+    const keyEl = document.getElementById('restorekey'); const key = keyEl ? keyEl.value : '';
+    if (!key) { toast('Masukkan Email atau Kode VIP'); return; }
+    try {
+      toast('Memeriksa riwayat...');
+      const res = await (await fetch('/api/license/restore', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) })).json();
+      if (res.success) {
+        S.isVip = true; S.vipCode = res.vipCode; save();
+        toast('🎉 Akses VIP Berhasil Dipulihkan!');
+        ADV.panel = null; render();
+      } else { toast('❌ ' + (res.message || 'Tidak ditemukan')); }
+    } catch (e) { toast('Masalah jaringan'); }
+  },
 });
 document.addEventListener('keyup', e => { if (!IX.active && !TITLE.on && view === 'home') advKey(e, false); });
 window.addEventListener('blur', () => ADV.keys.clear());
@@ -2788,6 +2842,244 @@ const HOST = {
   enterFs: m => enterFs(m), exitFs: () => exitFs(), fsPanelHTML: s => fsPanelHTML(s),
   titleOn: () => TITLE.on, showTitle: () => TITLE.show(), pauseMenu: c => PM.open(c), menuBtn: () => TITLE.on ? '' : `<div class="actions" style="margin:0 0 6px"><button class="btn" data-a="totitle">${commonIcon('home', 'cui-inline')} Menu depan</button></div>`
 };
+let INFO_TAB = 'produk';
+
+function infoModalHTML() {
+  const navTabs = `<div class="infotabs" style="display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px">
+    <button class="tabb ${INFO_TAB === 'produk' ? 'on' : ''}" data-a="infotab" data-tab="produk" style="flex:1;min-width:90px;padding:8px 4px;font-size:0.8rem">👑 Produk & Harga</button>
+    <button class="tabb ${INFO_TAB === 'syarat' ? 'on' : ''}" data-a="infotab" data-tab="syarat" style="flex:1;min-width:90px;padding:8px 4px;font-size:0.8rem">📜 Syarat & Ketentuan</button>
+    <button class="tabb ${INFO_TAB === 'refund' ? 'on' : ''}" data-a="infotab" data-tab="refund" style="flex:1;min-width:90px;padding:8px 4px;font-size:0.8rem">🔄 Kebijakan Refund</button>
+    <button class="tabb ${INFO_TAB === 'kontak' ? 'on' : ''}" data-a="infotab" data-tab="kontak" style="flex:1;min-width:90px;padding:8px 4px;font-size:0.8rem">📞 Kontak Bisnis</button>
+  </div>`;
+
+  let content = '';
+
+  if (INFO_TAB === 'produk') {
+    content = `
+      <div style="margin-bottom:12px">
+        <h4 style="margin:0 0 6px;color:#d35400">📜 Layanan & Produk Diglosa</h4>
+        <p style="font-size:0.85rem;color:#444;line-height:1.4;margin:0"><b>Diglosa</b> adalah platform edukasi interaktif berbasis RPG untuk pembelajaran kosakata bahasa Inggris dasar (A1) dan simulasi tes IELTS secara mandiri.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:#f8f9fa;border:2px solid #e2e8f0;border-radius:8px;padding:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <b style="color:#27ae60">🌿 Versi Demo (Hutan Kata)</b>
+            <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:bold">GRATIS</span>
+          </div>
+          <p style="font-size:0.8rem;color:#666;margin:0">Akses 100% gratis tanpa pendaftaran untuk mencoba gameplay, latihan kosakata dasar, dan pertarungan monster di area Hutan Kata.</p>
+        </div>
+
+        <div style="background:#fff9e6;border:2px solid #f39c12;border-radius:8px;padding:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <b style="color:#d35400">👑 Akses VIP Lifetime Pass</b>
+            <span style="background:#e67e22;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8rem;font-weight:bold">Rp 49.000</span>
+          </div>
+          <p style="font-size:0.8rem;color:#555;margin:4px 0">Membuka penuh 7 Portal Dunia (Desa, Pasar, Satwa, Gerbang, Waktu, Gua Portal) + IELTS Exam Simulator + Cloud Save.</p>
+          <p style="font-size:0.75rem;color:#888;margin:4px 0 0;font-style:italic">Tipe Produk: Pembelian Akses Digital Sekali Bayar (Lifetime Access).</p>
+        </div>
+
+        <div style="background:#f0f8ff;border:2px solid #3498db;border-radius:8px;padding:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <b style="color:#2980b9">🏫 Lisensi Sekolah / Bimbel (B2B)</b>
+            <span style="background:#2980b9;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8rem;font-weight:bold">Rp 149.000</span>
+          </div>
+          <p style="font-size:0.8rem;color:#555;margin:4px 0">Paket lisensi rombongan hingga 30 siswa untuk kelas/sekolah dengan kode aktivasi khusus dan dashboard progres.</p>
+          <p style="font-size:0.75rem;color:#888;margin:4px 0 0;font-style:italic">Tipe Produk: Lisensi Rombongan Institusi / Sekolah.</p>
+        </div>
+      </div>
+    `;
+  } else if (INFO_TAB === 'syarat') {
+    content = `
+      <div style="font-size:0.85rem;color:#333;line-height:1.5">
+        <h4 style="margin:0 0 8px;color:#2c3e50">📜 Syarat & Ketentuan Layanan</h4>
+        <ol style="margin:0;padding-left:18px">
+          <li style="margin-bottom:6px"><b>Persetujuan Layanan:</b> Dengan menggunakan aplikasi Diglosa atau melakukan pembelian VIP, pengguna menyetujui seluruh ketentuan layanan ini.</li>
+          <li style="margin-bottom:6px"><b>Produk Digital & Aktivasi:</b> Akses VIP dan Lisensi B2B bersifat digital instan. Hak akses akan langsung aktif setelah sistem pembayaran mengonfirmasi transaksi.</li>
+          <li style="margin-bottom:6px"><b>Mata Uang & Pembayaran:</b> Seluruh transaksi menggunakan mata uang Rupiah Indonesia (IDR). Pembayaran diproses secara aman melalui mitra Payment Gateway resmi (Midtrans) via QRIS dan Virtual Account Bank.</li>
+          <li style="margin-bottom:6px"><b>Keamanan & Kode VIP:</b> Pengguna bertanggung jawab menjaga Kode VIP / Kode B2B milik sendiri. Kode ini dapat digunakan untuk fitur Pulihkan Pembelian (Restore Purchase).</li>
+        </ol>
+      </div>
+    `;
+  } else if (INFO_TAB === 'refund') {
+    content = `
+      <div style="font-size:0.85rem;color:#333;line-height:1.5">
+        <h4 style="margin:0 0 8px;color:#c0392b">🔄 Kebijakan Pengembalian Dana (Refund Policy)</h4>
+        <p style="margin-bottom:8px">Karena produk Diglosa merupakan <b>Layanan Digital Akses Langsung</b>, pada umumnya transaksi yang telah berhasil diproses tidak dapat dibatalkan. Namun pengembalian dana (refund) dapat diajukan dalam kondisi berikut:</p>
+        
+        <div style="background:#fff5f5;border-left:4px solid #e74c3c;padding:8px 12px;margin-bottom:10px;border-radius:4px">
+          <b>Syarat Klaim Refund (100% Guaranteed):</b>
+          <ul style="margin:4px 0 0 16px;padding:0">
+            <li>Terjadi transaksi ganda (terpotong 2x) untuk 1 pesanan yang sama.</li>
+            <li>Pembayaran dinyatakan sukses di bank/QRIS tetapi akses VIP tidak aktif dalam 1x24 jam dan gagal dipulihkan via tombol Restore.</li>
+          </ul>
+        </div>
+
+        <b>Prosedur Pengajuan Refund:</b>
+        <ol style="margin:4px 0 0 18px;padding:0">
+          <li>Kirim email ke <b>rahman.udemy.manager@gmail.com</b> atau WhatsApp Customer Service.</li>
+          <li>Lampirkan <b>Order ID Midtrans</b>, <b>Bukti Transfer/QRIS</b>, serta Email akun Anda.</li>
+          <li>Tim kami akan memverifikasi dan memproses pengembalian dana penuh ke rekening/e-wallet Anda maksimal 3 hari kerja.</li>
+        </ol>
+      </div>
+    `;
+  } else if (INFO_TAB === 'kontak') {
+    content = `
+      <div style="font-size:0.85rem;color:#333;line-height:1.5">
+        <h4 style="margin:0 0 8px;color:#2980b9">📞 Layanan Bantuan & Kontak Bisnis</h4>
+        <p style="margin-bottom:10px">Tim Customer Care Diglosa siap membantu Anda apabila memiliki kendala transaksi, aktivasi B2B sekolah, atau pertanyaan seputar aplikasi.</p>
+
+        <div style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px">
+          <div><b>🏢 Nama Usaha/Platform:</b> Diglosa Edukasi Digital</div>
+          <div><b>✉️ Email Support Resmi:</b> <a href="mailto:rahman.udemy.manager@gmail.com" style="color:#2980b9;text-decoration:underline">rahman.udemy.manager@gmail.com</a></div>
+          <div><b>💬 WhatsApp Customer Service:</b> <a href="https://wa.me/6287753935810" target="_blank" style="color:#27ae60;font-weight:bold;text-decoration:underline">+62 877-5393-5810</a></div>
+          <div><b>🕒 Jam Operasional:</b> Senin - Jumat (08:00 - 17:00 WIB)</div>
+          <div><b>📍 Lokasi & Alamat Operasional:</b> 84316 - SUMBAWA - NUSA TENGGARA BARAT</div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `<div class="mpanel" role="dialog" aria-label="Informasi Diglosa & Legal"><div class="mhead"><h3>ℹ️ Informasi & Legalitas Diglosa</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody">${navTabs}${content}</div></div>`;
+}
+
+let VIP_TAB = 'buy';
+let VIP_PAY_DATA = null;
+let VIP_MSG = '';
+
+function openVipModal(targetArea) {
+  VIP_TAB = 'buy';
+  VIP_PAY_DATA = null;
+  VIP_MSG = '';
+  ADV.panel = 'vip';
+  if (targetArea) {
+    const names = { ielts: 'Istana IELTS', gua: 'Gua Portal', desa: 'Desa Sapaan', pasar: 'Pasar Rasa', satwa: 'Hutan Satwa', gerbang: 'Gerbang Kota', waktu: 'Menara Waktu' };
+    VIP_MSG = `Portal ${names[targetArea] || targetArea} Khusus Versi VIP! Silakan aktifkan lisensi atau beli akses untuk membuka semua portal.`;
+  }
+  renderOverlay();
+}
+
+function gateOk(to) {
+  if (to === 'hutan') return true;
+  if (S.isVip) return true;
+  openVipModal(to);
+  return false;
+}
+
+function vipModalHTML() {
+  if (S.isVip) {
+    return `<div class="mpanel" role="dialog" aria-label="Status VIP"><div class="mhead"><h3>✨ Status VIP Aktif</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody" style="text-align:center">
+      <div style="font-size:3.5rem;margin:10px 0">👑</div>
+      <h3 style="color:#2ecc71;margin-bottom:6px">Akses VIP Diglosa Aktif Selamanya!</h3>
+      <p>Seluruh portal, materi A1, IELTS Simulator, dan fitur PWA offline terbuka penuh untuk Anda.</p>
+      ${S.vipCode ? `<p style="margin:12px 0;padding:10px;background:#f0f8ff;border:2px dashed #3498db;border-radius:8px"><b>Kode VIP Anda:</b> <code style="font-size:1.2rem;font-weight:bold;color:#2980b9;letter-spacing:1px">${S.vipCode}</code><br><small style="color:#7f8c8d">Simpan kode ini jika Anda berpindah perangkat di kemudian hari.</small></p>` : ''}
+      <div class="actions c"><button class="btn mint" data-a="closep">Kembali Main</button></div>
+    </div></div>`;
+  }
+
+  const navTabs = `<div class="viptabs" style="display:flex;gap:6px;margin-bottom:14px">
+    <button class="tabb ${VIP_TAB === 'buy' ? 'on' : ''}" data-a="viptab" data-t="buy" style="flex:1;padding:8px">💳 Beli VIP (QRIS/Bank)</button>
+    <button class="tabb ${VIP_TAB === 'b2b' ? 'on' : ''}" data-a="viptab" data-t="b2b" style="flex:1;padding:8px">🏫 Kode B2B / Kursus</button>
+    <button class="tabb ${VIP_TAB === 'restore' ? 'on' : ''}" data-a="viptab" data-t="restore" style="flex:1;padding:8px">🔄 Pulihkan Akses</button>
+  </div>`;
+
+  let content = '';
+
+  if (VIP_TAB === 'buy') {
+    if (!VIP_PAY_DATA) {
+      content = `
+        <div class="vipbanner" style="background:linear-gradient(135deg, #f39c12, #d35400);color:#fff;padding:12px;border-radius:10px;margin-bottom:12px;text-align:center">
+          <div style="font-size:1.4rem;font-weight:800">👑 PROMO LAUNCHING VIP PASS</div>
+          <p style="margin:4px 0 0;font-size:0.9rem">Buka Seluruh Portal, Area IELTS, & Peta Penuh Selamanya!</p>
+          <div style="font-size:1.5rem;font-weight:bold;margin-top:6px">Rp 49.000 <span style="font-size:0.85rem;text-decoration:line-through;opacity:0.75">Rp 149.000</span></div>
+        </div>
+        ${VIP_MSG ? `<div style="background:#fff3cd;color:#856404;padding:8px 12px;border-radius:6px;font-size:0.85rem;margin-bottom:10px;border-left:4px solid #ffebaa">${VIP_MSG}</div>` : ''}
+        <div style="margin-bottom:12px;font-size:0.85rem">
+          <b>Keuntungan Akses VIP:</b>
+          <ul style="margin:4px 0 10px 18px;padding:0">
+            <li>Buka 6 Portal Area (Desa, Pasar, Hutan, Gerbang, Menara, Gua Portal)</li>
+            <li>Akses penuh IELTS Exam Simulator</li>
+            <li>Sinkronisasi Cloud Save & Restore Purchase tanpa hilang</li>
+          </ul>
+        </div>
+        <div class="vipform" style="display:flex;flex-direction:column;gap:8px">
+          <label style="font-weight:bold;font-size:0.85rem">Email Pembeli (Untuk Bukti & Restore):</label>
+          <input type="email" id="vipemail" class="inp" placeholder="nama@email.com" value="${S.vipEmail || ''}" style="padding:8px">
+          
+          <label style="font-weight:bold;font-size:0.85rem;margin-top:4px">Metode Pembayaran:</label>
+          <select id="vippaymethod" class="inp" style="padding:8px">
+            <option value="qris">📱 QRIS (GoPay, OVO, DANA, ShopeePay, m-Banking)</option>
+            <option value="bank_transfer">🏦 Virtual Account Bank (BCA, Mandiri, BNI, BRI)</option>
+          </select>
+
+          <button class="btn mint" data-a="vipcheckout" style="padding:10px;font-weight:bold;margin-top:6px">💳 Lanjutkan Pembayaran (Rp 49.000)</button>
+        </div>
+      `;
+    } else {
+      content = `
+        <div style="text-align:center">
+          <h4 style="margin:0 0 6px">Tagihan Pembayaran Berhasil Dibuat</h4>
+          <p style="font-size:0.85rem;color:#666;margin-bottom:12px">Order ID: <b>${VIP_PAY_DATA.transactionId}</b> | Kode VIP: <b>${VIP_PAY_DATA.vipCode}</b></p>
+          
+          ${VIP_PAY_DATA.paymentMethod === 'qris' ? `
+            <div style="background:#fff;padding:12px;border-radius:10px;display:inline-block;border:2px solid #ddd;margin-bottom:10px">
+              <img src="${VIP_PAY_DATA.qrisUrl}" alt="QRIS" style="width:180px;height:180px;display:block;margin:0 auto">
+              <div style="font-size:0.8rem;color:#333;margin-top:6px">Scan dengan GoPay / DANA / OVO / m-Banking</div>
+            </div>
+          ` : `
+            <div style="background:#f8f9fa;padding:14px;border-radius:10px;border:2px dashed #27ae60;margin-bottom:12px">
+              <div style="font-size:0.85rem;color:#555">Nomor Virtual Account (${VIP_PAY_DATA.bankName}):</div>
+              <div style="font-size:1.5rem;font-weight:bold;color:#27ae60;letter-spacing:1px;margin:6px 0">${VIP_PAY_DATA.vaNumber}</div>
+              <div style="font-size:0.8rem;color:#777">Total Transfer: <b>Rp ${VIP_PAY_DATA.amount.toLocaleString('id-ID')}</b></div>
+            </div>
+          `}
+
+          <div style="background:#e8f4f8;padding:10px;border-radius:8px;font-size:0.8rem;color:#2c3e50;margin-bottom:12px;text-align:left">
+            ℹ️ Sistem akan otomatis mengonfirmasi pembayaran. Untuk pengujian instan, klik tombol Sandbox di bawah ini:
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn mint" data-a="vipsandboxpay" data-tx="${VIP_PAY_DATA.transactionId}" style="flex:1;padding:8px">⚡ Uji Coba Bayar Instan (Sandbox)</button>
+            <button class="btn ghost" data-a="vipresetpay" style="flex:1;padding:8px">Batal / Ganti Metode</button>
+          </div>
+        </div>
+      `;
+    }
+  } else if (VIP_TAB === 'b2b') {
+    content = `
+      <div style="margin-bottom:12px">
+        <h4 style="margin:0 0 4px">Klaim Lisensi Tempat Kursus / Sekolah</h4>
+        <p style="font-size:0.85rem;color:#555;margin:0">Masukkan kode akses unik yang diberikan oleh lembaga/tempat kursus Anda.</p>
+      </div>
+      <div class="vipform" style="display:flex;flex-direction:column;gap:10px">
+        <input type="text" id="b2bcode" class="inp" placeholder="Contoh: ENGLISHFIRST2026" style="padding:10px;text-transform:uppercase;letter-spacing:1px;font-weight:bold">
+        <button class="btn mint" data-a="b2bclaim" style="padding:10px;font-weight:bold">🎓 Aktivasi Kode B2B</button>
+      </div>
+      <div style="margin-top:14px;background:#f8f9fa;padding:10px;border-radius:8px;font-size:0.8rem;color:#666">
+        <b>Contoh Kode Demo B2B:</b>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <span style="background:#e1f5fe;color:#0288d1;padding:3px 8px;border-radius:4px;font-family:monospace">ENGLISHFIRST2026</span>
+          <span style="background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:4px;font-family:monospace">BIMBELVIP2026</span>
+          <span style="background:#fff3e0;color:#e65100;padding:3px 8px;border-radius:4px;font-family:monospace">DIGLOSAB2B</span>
+        </div>
+      </div>
+    `;
+  } else if (VIP_TAB === 'restore') {
+    content = `
+      <div style="margin-bottom:12px">
+        <h4 style="margin:0 0 4px">Pulihkan Pembelian VIP / Akses B2B</h4>
+        <p style="font-size:0.85rem;color:#555;margin:0">Apabila Anda mengganti HP atau menyetel ulang browser, ketikkan Email atau Kode VIP/Lisensi Anda untuk mengembalikan status VIP.</p>
+      </div>
+      <div class="vipform" style="display:flex;flex-direction:column;gap:10px">
+        <input type="text" id="restorekey" class="inp" placeholder="Email / Kode VIP (misal: DIG-VIP-...)" style="padding:10px">
+        <button class="btn mint" data-a="viprestore" style="padding:10px;font-weight:bold">🔄 Pulihkan Pembelian</button>
+      </div>
+    `;
+  }
+
+  return `<div class="mpanel" role="dialog" aria-label="Akses VIP Diglosa"><div class="mhead"><h3>👑 Akses VIP Diglosa</h3><button class="mclose" data-a="closep" aria-label="Tutup">✕</button></div><div class="mbody">${navTabs}${content}</div></div>`;
+}
+
 function showIELTS() { app.innerHTML = ''; app.hidden = true; xapp.hidden = false; IX.enter(); }
 function showHoot() { IX.leave(); xapp.hidden = true; app.hidden = false; view = 'home'; render(); }
 function travel(dest) {

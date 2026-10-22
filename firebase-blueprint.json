@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "VIPPurchase": {
+      "title": "VIP Purchase",
+      "description": "Records of VIP purchases made via QRIS or Bank Transfer",
+      "type": "object",
+      "properties": {
+        "vipCode": {
+          "type": "string",
+          "description": "Unique VIP code generated for restoration"
+        },
+        "email": {
+          "type": "string",
+          "description": "Customer email used during checkout"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Payment method (qris, bank_transfer, sandbox)"
+        },
+        "paymentAmount": {
+          "type": "number",
+          "description": "Amount paid in IDR"
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "Transaction identifier from payment processor"
+        },
+        "status": {
+          "type": "string",
+          "description": "Payment status (completed, pending, failed)"
+        },
+        "userId": {
+          "type": "string",
+          "description": "User identifier associated with this purchase"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when created"
+        }
+      },
+      "required": ["vipCode", "email", "status", "createdAt"]
+    },
+    "B2BLicense": {
+      "title": "B2B License",
+      "description": "Institutional license codes for schools and language courses",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "License activation code"
+        },
+        "institutionName": {
+          "type": "string",
+          "description": "Name of the partner school/course"
+        },
+        "maxUses": {
+          "type": "number",
+          "description": "Maximum allowed student activations"
+        },
+        "currentUses": {
+          "type": "number",
+          "description": "Current number of activations"
+        },
+        "status": {
+          "type": "string",
+          "description": "License status (active, expired, exhausted)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when created"
+        }
+      },
+      "required": ["code", "institutionName", "maxUses", "currentUses", "status"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User profile with VIP status and game metadata",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique user ID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "isVip": {
+          "type": "boolean",
+          "description": "Whether the user has full VIP access"
+        },
+        "vipCode": {
+          "type": "string",
+          "description": "Active VIP code or claimed B2B license code"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp when updated"
+        }
+      },
+      "required": ["userId", "isVip"]
+    }
+  },
+  "firestore": {
+    "/vip_purchases/{purchaseId}": {
+      "schema": {
+        "$ref": "#/entities/VIPPurchase"
+      },
+      "description": "VIP purchases collection"
+    },
+    "/b2b_licenses/{licenseId}": {
+      "schema": {
+        "$ref": "#/entities/B2BLicense"
+      },
+      "description": "B2B institution license collection"
+    },
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "User profile documents"
+    }
+  }
+}
